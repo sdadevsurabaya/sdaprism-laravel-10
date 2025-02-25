@@ -77,6 +77,130 @@
                 </a>
                 <!--end:Menu link-->
             </div>
+
+            <div class="menu-item">
+                <div class="menu-content pb-2">
+                    <span class="menu-section text-muted text-uppercase fs-7 fw-bold">Master</span>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link" href="{{ url('/') }}">
+                    <span class="menu-icon">
+                        <i class="ki-duotone ki-square-brackets fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </span>
+                    <span class="menu-title">Brand</span>
+                </a>
+                <!--end:Menu link-->
+            </div>
+
+            <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link" href="{{ url('/') }}">
+                    <span class="menu-icon">
+                        <i class="ki-duotone ki-square-brackets fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </span>
+                    <span class="menu-title">Product</span>
+                </a>
+                <!--end:Menu link-->
+            </div>
+
+            <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link" href="{{ url('/') }}">
+                    <span class="menu-icon">
+                        <i class="ki-duotone ki-square-brackets fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </span>
+                    <span class="menu-title">Customer</span>
+                </a>
+                <!--end:Menu link-->
+            </div>
+
+            <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link" href="{{ url('/') }}">
+                    <span class="menu-icon">
+                        <i class="ki-duotone ki-square-brackets fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </span>
+                    <span class="menu-title">Price</span>
+                </a>
+                <!--end:Menu link-->
+            </div>
+
+            <div class="menu-item">
+                <div class="menu-content pb-2">
+                    <span class="menu-section text-muted text-uppercase fs-7 fw-bold">Transaction</span>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link" href="{{ url('/') }}">
+                    <span class="menu-icon">
+                        <i class="ki-duotone ki-square-brackets fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </span>
+                    <span class="menu-title">Price List</span>
+                </a>
+                <!--end:Menu link-->
+            </div>
+
+            <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link" href="{{ url('/') }}">
+                    <span class="menu-icon">
+                        <i class="ki-duotone ki-square-brackets fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </span>
+                    <span class="menu-title">Quotation</span>
+                </a>
+                <!--end:Menu link-->
+            </div>
+
+            <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link" href="{{ url('/') }}">
+                    <span class="menu-icon">
+                        <i class="ki-duotone ki-square-brackets fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </span>
+                    <span class="menu-title">Proforma Invoice</span>
+                </a>
+                <!--end:Menu link-->
+            </div>
+
+            <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link" href="{{ url('/') }}">
+                    <span class="menu-icon">
+                        <i class="ki-duotone ki-square-brackets fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </span>
+                    <span class="menu-title">Tax Invoice</span>
+                </a>
+                <!--end:Menu link-->
+            </div>
             @endrole
 
 
