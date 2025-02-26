@@ -174,11 +174,13 @@
 
     <section>
         <div class="container py-4">
-            <a class="text-decoration-none" href="/">
-                <img src="{{ url('') }}/sdamember-template/img/logo/sda-member-logo.png" height="auto"
-                    style="width: 65vw; max-width: 320px;" alt="">
-            </a>
+            <figure class="figure m-0">
+                <img src="{{ asset('sdamember-template/img/account/maskot.png') }}" class="figure-img" width="auto"
+                    style="height: 32vh;" alt="...">
+            </figure>
         </div>
+        <h1>Price Information System & Management</h1>
+
     </section>
 
     <section>
@@ -236,12 +238,12 @@
                 <button type="submit" class="btn btn-lg btn-dark rounded-0">
                     <span class="indicator-label">Masuk </span>
                 </button>
-                <div class="d-flex align-items-center gap-2">
+                {{-- <div class="d-flex align-items-center gap-2">
                     <hr class="m-0 opacity-100 w-100">
                     <span>atau</span>
                     <hr class="m-0 opacity-100 w-100">
-                </div>
-                <div class="text-center fs-3 d-flex align-items-center gap-4 justify-content-center">
+                </div> --}}
+                {{-- <div class="text-center fs-3 d-flex align-items-center gap-4 justify-content-center">
                     <a class="text-reset text-decoration-none" href="/auth/google">
                         <i class="bi bi-google"></i>
                     </a>
@@ -251,19 +253,19 @@
                     <a class="text-reset text-decoration-none" href="#">
                         <i class="bi bi-apple"></i>
                     </a> --}}
-                </div>
+                {{-- </div> --}}
             </form>
         </div>
     </section>
 
-    <section>
+    {{-- <section>
         <div class="container py-4">
             <span>
                 Belum punya akun SDA MEMBER? <a class="text-decoration-none" style="color: #fd4f00;"
                     href="{{ route('register') }}">Daftar</a>
             </span>
         </div>
-    </section>
+    </section> --}}
 
     {{-- this loading spinner --}}
     <div class="collapse backdrop-spinner" id="loading">

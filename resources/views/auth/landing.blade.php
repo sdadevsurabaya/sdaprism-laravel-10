@@ -1,7 +1,7 @@
 {{-- @extends('layouts.indracostorepoint.app') --}}
 @extends('layouts.sdamember.app')
 @section('title')
-    Member
+    PRISM
 @endsection
 
 @section('content')
@@ -11,6 +11,7 @@
                 <img src="{{ asset('sdamember-template/img/png/logo_isp.png') }}" height="auto"
                     style="width: 65vw; max-width: 320px;" alt="">
             </a>
+            <h1>Price Information System & Management</h1>
         </div>
     </section>
 
