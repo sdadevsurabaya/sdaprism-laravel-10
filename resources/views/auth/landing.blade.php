@@ -1,5 +1,5 @@
 {{-- @extends('layouts.indracostorepoint.app') --}}
-@extends('layouts.sdamember.app')
+@extends('front.layouts.sdamember.app')
 @section('title')
     PRISM
 @endsection

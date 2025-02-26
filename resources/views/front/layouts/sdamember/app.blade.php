@@ -1,10 +1,10 @@
-@include('layouts.sdamember.header')
+@include('front.layouts.sdamember.header')
 
 <body class="text-center justify-content-evenly">
 
     @yield('content')
 
-    @include('layouts.sdamember.footer')
+    @include('front.layouts.sdamember.footer')
 
     @stack('scripts')
 

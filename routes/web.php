@@ -36,6 +36,7 @@ use App\Http\Controllers\Back\Setting_web\Setting_webController;
 use App\Http\Controllers\Back\Setting_menu\Setting_menuController;
 
 use App\Http\Controllers\Back\Brand\BrandController;
+use App\Http\Controllers\Back\Product\ProductController;
 
 //Back-end
 
@@ -62,12 +63,6 @@ use App\Http\Controllers\Admin\FileController;
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\NewsController;
-
-
-
-
-
-
 
 
 /*
@@ -147,6 +142,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Rute untuk brand
     Route::resource('brands', BrandController::class);
+
+    Route::resource('products', ProductController::class);
 
     // Rute untuk berita
     Route::resource('news', NewsController::class);

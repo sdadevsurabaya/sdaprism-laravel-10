@@ -1,5 +1,5 @@
 {{-- @extends('layouts.indracostorepoint.app-home') --}}
-@extends('layouts.sdamember.app-home')
+@extends('front.layouts.sdamember.app-home')
 @section('title')
     Verifikasi Email
 @endsection

@@ -1,11 +1,11 @@
-@include('layouts.sdamember.header')
+@include('front.layouts.sdamember.header')
 
 <x-navbar />
 
 @yield('content')
 
-@include('layouts.sdamember.navdown')
-@include('layouts.sdamember.footer')
+@include('front.layouts.sdamember.navdown')
+@include('front.layouts.sdamember.footer')
 
 @stack('scripts')
 

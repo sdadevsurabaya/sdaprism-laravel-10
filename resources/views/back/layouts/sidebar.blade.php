@@ -86,7 +86,7 @@
 
             <div class="menu-item">
                 <!--begin:Menu link-->
-                <a class="menu-link" href="{{ url('/') }}">
+                <a class="menu-link" href="{{ url('/brands') }}">
                     <span class="menu-icon">
                         <i class="ki-duotone ki-square-brackets fs-2">
                             <span class="path1"></span>
@@ -100,7 +100,7 @@
 
             <div class="menu-item">
                 <!--begin:Menu link-->
-                <a class="menu-link" href="{{ url('/') }}">
+                <a class="menu-link" href="{{ url('/products') }}">
                     <span class="menu-icon">
                         <i class="ki-duotone ki-square-brackets fs-2">
                             <span class="path1"></span>
