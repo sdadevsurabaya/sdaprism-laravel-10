@@ -37,6 +37,7 @@ use App\Http\Controllers\Back\Setting_menu\Setting_menuController;
 
 use App\Http\Controllers\Back\Brand\BrandController;
 use App\Http\Controllers\Back\Product\ProductController;
+use App\Http\Controllers\Back\Customer\CustomerController;
 
 //Back-end
 
@@ -144,6 +145,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('brands', BrandController::class);
 
     Route::resource('products', ProductController::class);
+    Route::resource('customers', CustomerController::class);
 
     // Rute untuk berita
     Route::resource('news', NewsController::class);
