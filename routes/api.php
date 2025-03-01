@@ -112,6 +112,10 @@ use App\Http\Controllers\Api\MasterMerchant\Point\PostPointBonusController;
 
 
 
+use App\Http\Controllers\Api\Quotation\QuotationController;
+use App\Http\Controllers\Api\Quotation\DetailQuotationProductController;
+use App\Http\Controllers\Api\Customers\CustomerController;
+use App\Http\Controllers\Api\Product\ProductController;
 
 
 
@@ -145,132 +149,154 @@ Route::post('registerMemberMerchant', RegisterMemberMerchantController::class);
 Route::post('postPointMerchant', PostPointBonusController::class);
 
 
-#Members
-Route::get('allmembers', [GetMemberController::class, 'index']);
-Route::post('pointmember', [GetPointMemberController::class, 'index']);
-Route::post('claimvouchermember', [ClaimVoucherMemberController::class, 'index']);
-Route::post('vouchermember', [GetMemberVoucherController::class, 'index']);
-Route::post('leadermember', [GetLeaderController::class, 'index']);
-Route::post('updatepasswordmember', [UpdatePasswordMemberController::class, 'index']);
-Route::post('updateimagemember', [UpdateImageMemberController::class, 'index']);
-Route::post('updateusedvouchermember', [UpdateMemberVoucherController::class, 'index']);
-Route::post('memberinfo', [GetMemberInfoController::class, 'index']);
-Route::post('membermigration', [MigrationMemberController::class, 'index']);
+// #Members
+// Route::get('allmembers', [GetMemberController::class, 'index']);
+// Route::post('pointmember', [GetPointMemberController::class, 'index']);
+// Route::post('claimvouchermember', [ClaimVoucherMemberController::class, 'index']);
+// Route::post('vouchermember', [GetMemberVoucherController::class, 'index']);
+// Route::post('leadermember', [GetLeaderController::class, 'index']);
+// Route::post('updatepasswordmember', [UpdatePasswordMemberController::class, 'index']);
+// Route::post('updateimagemember', [UpdateImageMemberController::class, 'index']);
+// Route::post('updateusedvouchermember', [UpdateMemberVoucherController::class, 'index']);
+// Route::post('memberinfo', [GetMemberInfoController::class, 'index']);
+// Route::post('membermigration', [MigrationMemberController::class, 'index']);
 
 
-#Merchant
-Route::get('allmerchant', [GetMerchantController::class, 'index']);
-#Promo
-Route::get('allpromo', [GetPromoController::class, 'index']);
-#Uniquecode
-Route::post('uniquecode', [GetUniquecodeController::class, 'index']);
-#Voucher
-Route::get('allvouchers', [GetVouchersController::class, 'index']);
+// #Merchant
+// Route::get('allmerchant', [GetMerchantController::class, 'index']);
+// #Promo
+// Route::get('allpromo', [GetPromoController::class, 'index']);
+// #Uniquecode
+// Route::post('uniquecode', [GetUniquecodeController::class, 'index']);
+// #Voucher
+// Route::get('allvouchers', [GetVouchersController::class, 'index']);
 
 
-#News
-Route::post('news', [GetNewsController::class, 'index']);
+// #News
+// Route::post('news', [GetNewsController::class, 'index']);
 
-Route::get('member-profile', [MemberProfileController::class, 'index']);
+// Route::get('member-profile', [MemberProfileController::class, 'index']);
 
 
 #Setting Web
-Route::post('updateimageweb', [UpdateImageWebController::class, 'index']);
-Route::post('updateimagebanner', [UpdateImageBannerController::class, 'index']);
+// Route::post('updateimageweb', [UpdateImageWebController::class, 'index']);
+// Route::post('updateimagebanner', [UpdateImageBannerController::class, 'index']);
 
-Route::post('updateMember', [UpdateMemberController::class, 'update']);
-Route::post('updateimage', [UpdateMemberController::class, 'updateimage']);
-Route::post('postmachines', [PostMachinesMemberController::class, 'store']);
+// Route::post('updateMember', [UpdateMemberController::class, 'update']);
+// Route::post('updateimage', [UpdateMemberController::class, 'updateimage']);
+// Route::post('postmachines', [PostMachinesMemberController::class, 'store']);
 
 #update status voucher
-Route::post('updatestatusvoucher', [UpdateVoucherController::class, 'index']);
+// Route::post('updatestatusvoucher', [UpdateVoucherController::class, 'index']);
 
-Route::group(['middleware' => ['jwt.verify']], function () {
-    Route::get('logout', [ApiController::class, 'logout']);
-    Route::get('get_user', [ApiController::class, 'get_user']);
-
-    #Beranda
-    Route::get('getBeranda', [GetBerandaController::class, 'index']);
-
-    #Brand
-    Route::get('getBrand', [GetBrandController::class, 'index']);
-    Route::post('postBrand', [PostBrandController::class, 'index']);
-    Route::post('updateBrand', [UpdateBrandController::class, 'index']);
-    Route::delete('deleteBrand', [DeleteBrandController::class, 'index']);
-
-    #Offering
-    Route::get('getOffering', [GetOfferingController::class, 'index']);
-    Route::post('postOffering', [PostOfferingController::class, 'index']);
-    Route::post('updateOffering', [UpdateOfferingController::class, 'index']);
-    Route::delete('deleteOffering', [DeleteOfferingController::class, 'index']);
-
-    #Recommend
-    Route::get('getRecommend', [GetRecommendController::class, 'index']);
-    Route::post('postRecommend', [PostRecommendController::class, 'index']);
-    Route::post('updateRecommend', [UpdateRecommendController::class, 'index']);
-    Route::delete('deleteRecommend', [DeleteRecommendController::class, 'index']);
-
-    #Member
-    Route::get('getVoucherMemberList', [GetMemberVoucherController::class, 'indexMobile']);
-    Route::get('getLogPointMember', [GetLogPointMemberController::class, 'index']);
-    Route::post('postClaimvouchermember', [ClaimVoucherMemberController::class, 'indexMobile']);
-    Route::post('postUpdateProfil', [UpdateImageMemberController::class, 'indexMobile']);
-    Route::post('updateDataDiri', PostProfilRequiredMemberController::class);
-    Route::post('checkDataDiri', DataDiriMemberController::class);
-    Route::post('aktifkanVoucher', ActivateVoucherController::class);
-
-    #Voucher
-    Route::get('getVouchersList', [GetVouchersController::class, 'IndexMobile']);
-
-    #Point
-    Route::post('postClaimPoint', [PostPointMemberController::class, 'Index']);
-    #Token FIrebase
-    Route::post('updateTokenFirebase', [UpdateTokenFirebaseController::class, 'Index']);
-
-    //buatkan route post
+// Route::apiResource('quotations', QuotationController::class);
 
 
-    #Seacrh
-    Route::post('postSearch', [PostSeacrhController::class, 'Index']);
-    Route::get('getSearch', [GetSeacrhController::class, 'Index']);
+// Route::group(['middleware' => ['jwt.verify']], function () {
+//     Route::get('logout', [ApiController::class, 'logout']);
+//     Route::get('get_user', [ApiController::class, 'get_user']);
 
-    #List
-    Route::get('getPromoNews', [GetNewsController::class, 'indexMobile']);
+//     #Beranda
+//     Route::get('getBeranda', [GetBerandaController::class, 'index']);
 
-    #Notif
-    Route::get('getNotif', GetNotifMemberController::class);
-    Route::post('postNotifById', PostNotifByIdMemberController::class);
-    Route::get('getNotifList', GetNotifListMemberController::class);
-    Route::post('postNotifAll', PostNotifMemberController::class);
+//     #Brand
+//     Route::get('getBrand', [GetBrandController::class, 'index']);
+//     Route::post('postBrand', [PostBrandController::class, 'index']);
+//     Route::post('updateBrand', [UpdateBrandController::class, 'index']);
+//     Route::delete('deleteBrand', [DeleteBrandController::class, 'index']);
+
+//     #Offering
+//     Route::get('getOffering', [GetOfferingController::class, 'index']);
+//     Route::post('postOffering', [PostOfferingController::class, 'index']);
+//     Route::post('updateOffering', [UpdateOfferingController::class, 'index']);
+//     Route::delete('deleteOffering', [DeleteOfferingController::class, 'index']);
+
+//     #Recommend
+//     Route::get('getRecommend', [GetRecommendController::class, 'index']);
+//     Route::post('postRecommend', [PostRecommendController::class, 'index']);
+//     Route::post('updateRecommend', [UpdateRecommendController::class, 'index']);
+//     Route::delete('deleteRecommend', [DeleteRecommendController::class, 'index']);
+
+//     #Member
+//     Route::get('getVoucherMemberList', [GetMemberVoucherController::class, 'indexMobile']);
+//     Route::get('getLogPointMember', [GetLogPointMemberController::class, 'index']);
+//     Route::post('postClaimvouchermember', [ClaimVoucherMemberController::class, 'indexMobile']);
+//     Route::post('postUpdateProfil', [UpdateImageMemberController::class, 'indexMobile']);
+//     Route::post('updateDataDiri', PostProfilRequiredMemberController::class);
+//     Route::post('checkDataDiri', DataDiriMemberController::class);
+//     Route::post('aktifkanVoucher', ActivateVoucherController::class);
+
+//     #Voucher
+//     Route::get('getVouchersList', [GetVouchersController::class, 'IndexMobile']);
+
+//     #Point
+//     Route::post('postClaimPoint', [PostPointMemberController::class, 'Index']);
+//     #Token FIrebase
+//     Route::post('updateTokenFirebase', [UpdateTokenFirebaseController::class, 'Index']);
+
+//     //buatkan route post
 
 
-    #Promo
-    Route::get('getPromoList', GetPromoListMemberController::class);
-    Route::get('getPromo', PromoCollection::class);
-    Route::post('postPromoById', PostPromoByIdMemberController::class);
+//     #Seacrh
+//     Route::post('postSearch', [PostSeacrhController::class, 'Index']);
+//     Route::get('getSearch', [GetSeacrhController::class, 'Index']);
 
-    #FIREBASE
-    Route::get('sendNotif', [SendNotifMobile::class, 'index']);
+//     #List
+//     Route::get('getPromoNews', [GetNewsController::class, 'indexMobile']);
 
-    #JNE
-    Route::get('getCity', GetCityController::class);
-    Route::get('getDistrict', GetDistrictController::class);
-    Route::get('getProvince', GetProvinceController::class);
-    Route::get('getSubDistrict', GetSubDistrictController::class);
-
+//     #Notif
+//     Route::get('getNotif', GetNotifMemberController::class);
+//     Route::post('postNotifById', PostNotifByIdMemberController::class);
+//     Route::get('getNotifList', GetNotifListMemberController::class);
+//     Route::post('postNotifAll', PostNotifMemberController::class);
 
 
-    #Merchant
-    Route::get('getMerchant', [GetMerchantController::class, 'indexMobile']);
-    Route::get('getMerchantV2', [GetMerchantMobileController::class, 'index']);
-    Route::post('postMerchant', [PostMerchantController::class, 'index']);
-    Route::post('updateMerchant', [UpdateMerchantController::class, 'index']);
-    Route::delete('deleteMerchant', [DeleteMerchantController::class, 'index']);
+//     #Promo
+//     Route::get('getPromoList', GetPromoListMemberController::class);
+//     Route::get('getPromo', PromoCollection::class);
+//     Route::post('postPromoById', PostPromoByIdMemberController::class);
 
-    #Product Shop
-    Route::get('getProduct', [GetProductShopController::class, 'indexMobile']);
-    // Route::get('getProductV2', [GetProductShopController::class, 'indexMobile']);
-    Route::post('postProduct', [PostProductShopController::class, 'index']);
-    Route::post('updateProduct', [UpdateProductShopController::class, 'index']);
-    Route::delete('deleteProduct', [DeleteProductShopController::class, 'index']);
-});
+//     #FIREBASE
+//     Route::get('sendNotif', [SendNotifMobile::class, 'index']);
+
+//     #JNE
+//     Route::get('getCity', GetCityController::class);
+//     Route::get('getDistrict', GetDistrictController::class);
+//     Route::get('getProvince', GetProvinceController::class);
+//     Route::get('getSubDistrict', GetSubDistrictController::class);
+
+
+
+//     #Merchant
+//     Route::get('getMerchant', [GetMerchantController::class, 'indexMobile']);
+//     Route::get('getMerchantV2', [GetMerchantMobileController::class, 'index']);
+//     Route::post('postMerchant', [PostMerchantController::class, 'index']);
+//     Route::post('updateMerchant', [UpdateMerchantController::class, 'index']);
+//     Route::delete('deleteMerchant', [DeleteMerchantController::class, 'index']);
+
+//     #Product Shop
+//     Route::get('getProduct', [GetProductShopController::class, 'indexMobile']);
+//     // Route::get('getProductV2', [GetProductShopController::class, 'indexMobile']);
+//     Route::post('postProduct', [PostProductShopController::class, 'index']);
+//     Route::post('updateProduct', [UpdateProductShopController::class, 'index']);
+//     Route::delete('deleteProduct', [DeleteProductShopController::class, 'index']);
+// });
+
+Route::apiResource('quotations', QuotationController::class);
+Route::apiResource('detailquotation', DetailQuotationProductController::class);
+Route::apiResource('customers', CustomerController::class);
+
+
+
+Route::get('getAllCustomers', [CustomerController::class, 'getAllCustomers']);
+Route::get('getCustomerById', [CustomerController::class, 'getCustomerById']);
+Route::post('postCustomer', [CustomerController::class, 'postCustomer']);
+
+Route::get('getAllQuotations', [QuotationController::class, 'getAllQuotations']);
+Route::get('getQuotationById', [QuotationController::class, 'getQuotationById']);
+Route::post('postQuotation', [QuotationController::class, 'postQuotation']);
+
+
+Route::get('getAllProducts',[ProductController::class, 'getAllProducts']);
+Route::get('getProductById',[ProductController::class, 'getProductById']);
+Route::get('getSearchProduct',[ProductController::class, 'getSearchProduct']);

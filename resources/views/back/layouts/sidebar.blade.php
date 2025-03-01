@@ -31,8 +31,8 @@
             <!--end:Menu item-->
             {{-- @dump('ok') --}}
 
-            <div class="menu-item">
-                <!--begin:Menu link-->
+            {{-- <div class="menu-item">
+
                 <a class="menu-link" href="{{ url('') . '/' . 'add_member' }}">
                     <span class="menu-icon">
                         <span class="svg-icon svg-icon-muted svg-icon-2hx"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -45,13 +45,13 @@
                     </span>
                     <span class="menu-title">Add Member</span>
                 </a>
-                <!--end:Menu link-->
-            </div>
+
+            </div> --}}
 
 
             @role('Admin')
-            <div class="menu-item">
-                <!--begin:Menu link-->
+            {{-- <div class="menu-item">
+
                 <a class="menu-link" href="{{ url('/setting_menu') }}" target="_blank">
                     <span class="menu-icon">
                         <i class="ki-duotone ki-square-brackets fs-2">
@@ -61,8 +61,8 @@
                     </span>
                     <span class="menu-title">Menu</span>
                 </a>
-                <!--end:Menu link-->
-            </div>
+
+            </div> --}}
 
             <div class="menu-item">
                 <!--begin:Menu link-->
@@ -162,7 +162,7 @@
 
             <div class="menu-item">
                 <!--begin:Menu link-->
-                <a class="menu-link" href="{{ url('/') }}">
+                <a class="menu-link" href="{{ url('/quotations') }}">
                     <span class="menu-icon">
                         <i class="ki-duotone ki-square-brackets fs-2">
                             <span class="path1"></span>

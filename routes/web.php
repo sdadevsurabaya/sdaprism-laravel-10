@@ -38,7 +38,7 @@ use App\Http\Controllers\Back\Setting_menu\Setting_menuController;
 use App\Http\Controllers\Back\Brand\BrandController;
 use App\Http\Controllers\Back\Product\ProductController;
 use App\Http\Controllers\Back\Customer\CustomerController;
-
+use App\Http\Controllers\Back\Quotation\QuotationController;
 //Back-end
 
 //front-start
@@ -143,9 +143,9 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Rute untuk brand
     Route::resource('brands', BrandController::class);
-
     Route::resource('products', ProductController::class);
     Route::resource('customers', CustomerController::class);
+    Route::resource('quotations', QuotationController::class);
 
     // Rute untuk berita
     Route::resource('news', NewsController::class);

@@ -26,7 +26,7 @@ return new class extends Migration
             $table->text('contact_person')->nullable();
             $table->text('descriptions')->nullable();
             $table->text('remarks')->nullable();
-            $table->text('account options')->nullable();
+            $table->text('account_options')->nullable();
             $table->text('made_by')->nullable();
 
             $table->text('sub_total')->nullable();
