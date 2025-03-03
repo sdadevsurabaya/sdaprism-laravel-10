@@ -300,3 +300,7 @@ Route::post('postQuotation', [QuotationController::class, 'postQuotation']);
 Route::get('getAllProducts',[ProductController::class, 'getAllProducts']);
 Route::get('getProductById',[ProductController::class, 'getProductById']);
 Route::get('getSearchProduct',[ProductController::class, 'getSearchProduct']);
+
+
+
+Route::post('/quotation/detail/batch-store', [DetailQuotationProductController::class, 'addBatchStore']);
