@@ -67,6 +67,8 @@
                                                 <td>{{ $quotation->valid_until }}</td>
                                                 <td>{{ $quotation->total }}</td>
                                                 <td>
+                                                    <a href="{{ route('quotations.print', $quotation->id) }}" class="btn btn-success">Print PDF</a>
+
                                                     <a href="{{ route('quotations.show', $quotation) }}"
                                                         class="btn btn-info">Show</a>
                                                     <a href="{{ route('quotations.edit', $quotation) }}"

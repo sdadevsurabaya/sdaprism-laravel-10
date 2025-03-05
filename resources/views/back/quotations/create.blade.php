@@ -44,7 +44,11 @@
                                     <h1 class="h4 mb-4">Transaction <span class="text-muted">Quotation</span></h1>
                                     <div class="d-flex justify-content-between mb-4">
                                         <button class="btn btn-primary">Add New Customer</button>
-                                        <button class="btn btn-primary">Change Customer</button>
+                                        {{-- <button class="btn btn-primary">Change Customer</button> --}}
+                                        <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal"
+                                            data-bs-target="#customerModal">
+                                            Choose Customer
+                                        </button>
                                     </div>
                                     <div class="row g-3 mb-4">
                                         <div class="col-md-4">
@@ -209,80 +213,52 @@
         </div>
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="productModalLabel">Choose Product</h5>
-                    <div id="loadingSpinner" class="ms-2 text-center" style="display: none;">
-                        <div class="spinner-border" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div> Loading...
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Input Pencarian -->
-                    <div class="mb-3">
-                        <input type="text" id="searchInput" class="form-control" placeholder="Search products...">
-                    </div>
-                    <table class="table table-bordered" id="productTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Unit</th>
-                                <th>Price</th>
-                                <th>Select</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Data produk akan dimasukkan di sini -->
-                        </tbody>
-                    </table>
-                    <!-- Pagination -->
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination" id="pagination">
-                            <!-- Pagination items akan dimasukkan di sini -->
-                        </ul>
-                    </nav>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Modal Customer start-->
+    @include('back.quotations.modal_customer')
+    <!-- Modal Customer end-->
+
+
+    <!-- Modal Product start-->
+    @include('back.quotations.modal_product')
+
+    <!-- Modal Product end-->
 
     <script>
         var productQuotation = [];
         const productTableBody = document.querySelector('#productTable tbody');
+        const customerTableBody = document.querySelector('#customerTable tbody');
         document.addEventListener('DOMContentLoaded', function() {
 
-            const searchInput = document.getElementById('searchInput');
-            const pagination = document.getElementById('pagination');
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            let currentPage = 1; // Halaman saat ini
-            let totalPages = 1; // Total halaman
+            const searchInputProduct = document.getElementById('searchInputProduct');
+            const paginationProduct = document.getElementById('paginationProduct');
+            const loadingSpinnerProduct = document.getElementById('loadingSpinnerProduct');
+            let currentPageProduct = 1; // Halaman saat ini
+            let totalPagesProduct = 1; // Total halaman
+
+            const searchInputCustomer = document.getElementById('searchInputCustomer');
+            const paginationCustomer = document.getElementById('paginationCustomer');
+            const loadingSpinnerCustomer = document.getElementById('loadingSpinnerCustomer');
+            let currentPageCustomer = 1; // Halaman saat ini
+            let totalPagesCustomer = 1; // Total halaman
+
 
             // Array untuk menyimpan produk yang dipilih
 
 
             // Fungsi untuk mengambil data produk
             function fetchProducts(query = '', page = 1) {
-                loadingSpinner.style.display = 'block'; // Tampilkan spinner loading
+                loadingSpinnerProduct.style.display = 'block'; // Tampilkan spinner loading
                 const url = `http://127.0.0.1:8000/api/getSearchProduct?query=${query}&page=${page}`;
                 fetch(url)
                     .then(response => response.json())
-                    .then(data => {
+                    .then(dataProduct => {
                         // Kosongkan tabel sebelum menambahkan data baru
                         productTableBody.innerHTML = '';
-                        pagination.innerHTML = ''; // Kosongkan pagination
-                        loadingSpinner.style.display = 'none'; // Sembunyikan spinner loading
+                        paginationProduct.innerHTML = ''; // Kosongkan pagination
+                        loadingSpinnerProduct.style.display = 'none'; // Sembunyikan spinner loading
 
                         // Tambahkan setiap produk ke dalam tabel
-                        data.data.forEach(product => {
+                        dataProduct.data.forEach(product => {
                             const row = document.createElement('tr');
                             row.innerHTML = `
                         <td>${product.ID_BRGJADI}</td>
@@ -295,18 +271,80 @@
                         });
 
                         // Update totalPages
-                        totalPages = data.total_pages; // Asumsikan API mengembalikan total_pages
-                        renderPagination();
+                        totalPagesProduct = dataProduct.total_pages;
+                        // Asumsikan API mengembalikan total_pages
+                        renderPaginationProduct();
                     })
                     .catch(error => {
                         console.error('Error fetching products:', error);
-                        loadingSpinner.style.display = 'none'; // Sembunyikan spinner loading jika terjadi error
+                        loadingSpinnerProduct.style.display =
+                            'none'; // Sembunyikan spinner loading jika terjadi error
+                    });
+            }
+
+
+            // Fungsi untuk mengambil data produk
+            function fetchCustomers() {
+                loadingSpinnerCustomer.style.display = 'block'; // Tampilkan spinner loading
+                const url = `http://127.0.0.1:8000/api/getAllCustomers`;
+                fetch(url)
+                    .then(response => response.json())
+                    .then(dataCustomer => {
+                        // Pastikan data yang diterima adalah array sebelum melakukan forEach
+                        if (!Array.isArray(dataCustomer)) {
+                            throw new Error("Invalid API response format: Expected an array");
+                        }
+
+                        // Kosongkan tabel sebelum menambahkan data baru
+                        customerTableBody.innerHTML = '';
+                        paginationCustomer.innerHTML = ''; // Kosongkan pagination
+                        loadingSpinnerCustomer.style.display = 'none'; // Sembunyikan spinner loading
+
+                        // Tambahkan setiap customer ke dalam tabel
+                        dataCustomer.forEach(customer => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                    <td>${customer.id}</td>
+                    <td>${customer.business_name}</td>
+                    <td>${customer.email}</td>
+                    <td>${customer.telephone}</td>
+                    <td>
+                        <button class="btn btn-success" onclick="selectCustomer(
+                            '${customer.id}',
+                            '${customer.business_name}',
+                            '${customer.address}',
+                            '${customer.city}',
+                            '${customer.province}',
+                            '${customer.postcode}',
+                            '${customer.country}',
+                            '${customer.telephone}',
+                            '${customer.fax}',
+                            '${customer.pic}',
+                            '${customer.mobile}',
+                            '${customer.email}',
+                            '${customer.terms}',
+                            '${customer.business_type}'
+                        )">Select</button>
+                    </td>
+                `;
+                            customerTableBody.appendChild(row);
+                        });
+
+                        // Jika API tidak mengembalikan total_pages, hapus baris ini atau sesuaikan dengan respons API
+                        totalPagesCustomer = dataCustomer.total_pages || 1;
+                        renderPaginationCustomer();
+                    })
+                    .catch(error => {
+                        console.error('Error fetching customers:', error);
+                        loadingSpinnerCustomer.style.display =
+                            'none'; // Sembunyikan spinner loading jika terjadi error
                     });
             }
 
             // Fungsi untuk merender pagination
-            function renderPagination() {
-                pagination.innerHTML = ''; // Kosongkan pagination
+            function renderPaginationProduct() {
+                console.log(paginationProduct);
+                paginationProduct.innerHTML = ''; // Kosongkan pagination
 
                 // Tombol First
                 const firstLi = document.createElement('li');
@@ -314,10 +352,10 @@
                 firstLi.innerHTML = `<a class="page-link" href="#" aria-label="First">First</a>`;
                 firstLi.addEventListener('click', function(event) {
                     event.preventDefault();
-                    currentPage = 1; // Set ke halaman pertama
-                    fetchProducts(searchInput.value, currentPage);
+                    currentPageProduct = 1; // Set ke halaman pertama
+                    fetchProducts(searchInput.value, currentPageProduct);
                 });
-                pagination.appendChild(firstLi);
+                paginationProduct.appendChild(firstLi);
 
                 // Tombol Back
                 const backLi = document.createElement('li');
@@ -325,44 +363,44 @@
                 backLi.innerHTML = `<a class="page-link" href="#" aria-label="Back">Back</a>`;
                 backLi.addEventListener('click', function(event) {
                     event.preventDefault();
-                    if (currentPage > 1) {
-                        currentPage--; // Kurangi halaman
-                        fetchProducts(searchInput.value, currentPage);
+                    if (currentPageProduct > 1) {
+                        currentPageProduct--; // Kurangi halaman
+                        fetchProducts(searchInput.value, currentPageProduct);
                     }
                 });
-                pagination.appendChild(backLi);
+                paginationProduct.appendChild(backLi);
 
                 // Menentukan halaman yang akan ditampilkan
-                let startPage = Math.max(1, currentPage - 2);
-                let endPage = Math.min(totalPages, currentPage + 2);
+                let startPage = Math.max(1, currentPageProduct - 2);
+                let endPage = Math.min(totalPagesProduct, currentPageProduct + 2);
 
                 // Jika total halaman kurang dari 5, sesuaikan
-                if (totalPages <= 5) {
+                if (totalPagesProduct <= 5) {
                     startPage = 1;
-                    endPage = totalPages;
+                    endPage = totalPagesProduct;
                 } else {
                     // Jika halaman saat ini dekat dengan awal
-                    if (currentPage < 3) {
+                    if (currentPageProduct < 3) {
                         endPage = 5;
                     }
                     // Jika halaman saat ini dekat dengan akhir
-                    if (currentPage > totalPages - 2) {
-                        startPage = totalPages - 4;
+                    if (currentPageProduct > totalPagesProduct - 2) {
+                        startPage = totalPagesProduct - 4;
                     }
                 }
 
                 // Nomor Halaman
                 for (let i = startPage; i <= endPage; i++) {
                     const li = document.createElement('li');
-                    li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                    li.className = `page-item ${i === currentPageProduct ? 'active' : ''}`;
                     li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
                     li.addEventListener('click', function(event) {
                         event.preventDefault();
-                        currentPage = i; // Update halaman saat ini
+                        currentPageProduct = i; // Update halaman saat ini
                         fetchProducts(searchInput.value,
-                            currentPage); // Ambil produk berdasarkan halaman dan query
+                            currentPageProduct); // Ambil produk berdasarkan halaman dan query
                     });
-                    pagination.appendChild(li);
+                    paginationProduct.appendChild(li);
                 }
 
                 // Tombol Next
@@ -371,12 +409,12 @@
                 nextLi.innerHTML = `<a class="page-link" href="#" aria-label="Next">Next</a>`;
                 nextLi.addEventListener('click', function(event) {
                     event.preventDefault();
-                    if (currentPage < totalPages) {
-                        currentPage++; // Tambah halaman
-                        fetchProducts(searchInput.value, currentPage);
+                    if (currentPageProduct < totalPagesProduct) {
+                        currentPageProduct++; // Tambah halaman
+                        fetchProducts(searchInput.value, currentPageProduct);
                     }
                 });
-                pagination.appendChild(nextLi);
+                paginationProduct.appendChild(nextLi);
 
                 // Tombol Last
                 const lastLi = document.createElement('li');
@@ -384,10 +422,98 @@
                 lastLi.innerHTML = `<a class="page-link" href="#" aria-label="Last">Last</a>`;
                 lastLi.addEventListener('click', function(event) {
                     event.preventDefault();
-                    currentPage = totalPages; // Set ke halaman terakhir
-                    fetchProducts(searchInput.value, currentPage);
+                    currentPageProduct = totalPagesProduct; // Set ke halaman terakhir
+                    fetchProducts(searchInput.value, currentPageProduct);
                 });
-                pagination.appendChild(lastLi);
+                paginationProduct.appendChild(lastLi);
+            }
+
+
+            // Fungsi untuk merender pagination
+            function renderPaginationCustomer() {
+                console.log(paginationCustomer);
+                paginationCustomer.innerHTML = ''; // Kosongkan pagination
+
+                // Tombol First
+                const firstLi = document.createElement('li');
+                firstLi.className = 'page-item';
+                firstLi.innerHTML = `<a class="page-link" href="#" aria-label="First">First</a>`;
+                firstLi.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    currentPageCustomer = 1; // Set ke halaman pertama
+                    fetchCustomers();
+                });
+                paginationCustomer.appendChild(firstLi);
+
+                // Tombol Back
+                const backLi = document.createElement('li');
+                backLi.className = 'page-item';
+                backLi.innerHTML = `<a class="page-link" href="#" aria-label="Back">Back</a>`;
+                backLi.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    if (currentPageCustomer > 1) {
+                        currentPageCustomer--; // Kurangi halaman
+                        fetchCustomers();
+                    }
+                });
+                paginationCustomer.appendChild(backLi);
+
+                // Menentukan halaman yang akan ditampilkan
+                let startPage = Math.max(1, currentPageCustomer - 2);
+                let endPage = Math.min(totalPagesCustomer, currentPageCustomer + 2);
+
+                // Jika total halaman kurang dari 5, sesuaikan
+                if (totalPagesCustomer <= 5) {
+                    startPage = 1;
+                    endPage = totalPagesCustomer;
+                } else {
+                    // Jika halaman saat ini dekat dengan awal
+                    if (currentPageCustomer < 3) {
+                        endPage = 5;
+                    }
+                    // Jika halaman saat ini dekat dengan akhir
+                    if (currentPageCustomer > totalPagesCustomer - 2) {
+                        startPage = totalPagesCustomer - 4;
+                    }
+                }
+
+                // Nomor Halaman
+                for (let i = startPage; i <= endPage; i++) {
+                    const li = document.createElement('li');
+                    li.className = `page-item ${i === currentPageCustomer ? 'active' : ''}`;
+                    li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                    li.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        currentPageCustomer = i; // Update halaman saat ini
+                        fetchProducts(searchInput.value,
+                            currentPageCustomer); // Ambil produk berdasarkan halaman dan query
+                    });
+                    paginationCustomer.appendChild(li);
+                }
+
+                // Tombol Next
+                const nextLi = document.createElement('li');
+                nextLi.className = 'page-item';
+                nextLi.innerHTML = `<a class="page-link" href="#" aria-label="Next">Next</a>`;
+                nextLi.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    if (currentPageCustomer < totalPagesCustomer) {
+                        currentPageCustomer++; // Tambah halaman
+                        fetchCustomers();
+                    }
+                });
+                paginationCustomer.appendChild(nextLi);
+
+                // Tombol Last
+                const lastLi = document.createElement('li');
+                lastLi.className = 'page-item';
+                lastLi.innerHTML = `<a class="page-link" href="#" aria-label="Last">Last</a>`;
+                lastLi.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    currentPageCustomer = totalPagesCustomer; // Set ke halaman terakhir
+                    fetchCustomers();
+                });
+                paginationCustomer.appendChild(lastLi);
             }
 
             // Panggil fungsi untuk mengambil produk saat modal dibuka
@@ -395,10 +521,14 @@
                 fetchProducts(); // Ambil semua produk saat modal dibuka
             });
 
+            $('#customerModal').on('show.bs.modal', function() {
+                fetchCustomers(); // Ambil semua produk saat modal dibuka
+            });
+
             // Event listener untuk input pencarian
             searchInput.addEventListener('input', function() {
-                currentPage = 1; // Reset halaman saat melakukan pencarian
-                fetchProducts(this.value); // Ambil produk berdasarkan query pencarian
+                currentPageCustomer = 1; // Reset halaman saat melakukan pencarian
+                fetchCustomers(this.value); // Ambil produk berdasarkan query pencarian
             });
         });
 
@@ -438,6 +568,42 @@
 
             updateProductTable();
             $('#productModal').modal('hide');
+        }
+
+        function selectCustomer(id, business_name, address, city, province, postcode, country, telephone, fax, pic, mobile,
+            email, terms, business_type) {
+
+            document.getElementById('customer_id').value = id;
+            document.getElementById('customer').value = business_name;
+            document.getElementById('address').value = address;
+            document.getElementById('phone').value = telephone;
+            document.getElementById('contact_person').value = pic;
+
+            // Jika ada terms yang mengindikasikan tipe pembayaran, set payment type
+            const paymentTypeSelect = document.getElementById('payment_type');
+            if (terms.includes("CASH")) {
+                paymentTypeSelect.value = "CASH";
+            } else if (terms.includes("BANK TRANSFER")) {
+                paymentTypeSelect.value = "BANK TRANSFER";
+            } else if (terms.includes("PAY NOW")) {
+                paymentTypeSelect.value = "PAY NOW";
+            } else {
+                paymentTypeSelect.value = ""; // Kosongkan jika tidak ada kecocokan
+            }
+
+            // Atur currency berdasarkan tipe bisnis
+            const currencySelect = document.getElementById('currency');
+            if (business_type.includes("USD")) {
+                currencySelect.value = "USD";
+            } else if (business_type.includes("SGD")) {
+                currencySelect.value = "SGD";
+            } else {
+                currencySelect.value = "IDR"; // Default ke IDR jika tidak cocok
+            }
+
+            // Fokus ke elemen pertama setelah pemilihan
+            document.getElementById('customer').focus();
+
         }
 
 
@@ -562,7 +728,9 @@
                     console.log("id nya");
                     console.log(quotationId);
 
-                    productQuotation.forEach(product => {product.quotation_id = quotationId});
+                    productQuotation.forEach(product => {
+                        product.quotation_id = quotationId
+                    });
 
 
                     return fetch('/api/quotation/detail/batch-store', {
@@ -571,8 +739,8 @@
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                        products: productQuotation
-                    })
+                            products: productQuotation
+                        })
                     });
                 })
                 .then(response => response.json())

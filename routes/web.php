@@ -142,10 +142,15 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('users', UserController::class);
 
     // Rute untuk brand
+
+    Route::get('/quotations/print/{id}', [QuotationController::class, 'printPDF'])->name('quotations.print');
+
+
     Route::resource('brands', BrandController::class);
     Route::resource('products', ProductController::class);
     Route::resource('customers', CustomerController::class);
     Route::resource('quotations', QuotationController::class);
+
 
     // Rute untuk berita
     Route::resource('news', NewsController::class);

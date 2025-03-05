@@ -6,6 +6,7 @@ use App\Models\Quotation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class QuotationController extends Controller
 {
@@ -131,5 +132,18 @@ class QuotationController extends Controller
         $quotation->delete();
 
         return redirect()->route('quotations.index')->with('success', 'Quotation deleted successfully.');
+    }
+
+    public function printPDF($id)
+    {
+        // $quotation = Quotation::with(['detailQuotationProducts.customer', 'detailQuotationProducts.product'])->find($id);
+        $quotation = Quotation::with(['customer','QuotationProduct'])->find($id);
+        // $quotation = Quotation::with(['customer', 'quotationProducts'])->find($id);
+
+        dd($quotation->customers);
+        // Ambil data dari database
+        // $pdf = Pdf::loadView('back.quotations.pdf', compact('quotations'));
+        // return $pdf->download('quotation-list.pdf');
+        return view('back.quotations.pdf', compact('quotation'));
     }
 }
