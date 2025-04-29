@@ -2,35 +2,31 @@
 
 namespace App\Models;
 
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Traits\HasRoles;
-use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'token_firebase',
-        'email_verified_at'
     ];
 
     /**
-     * The attributes that should be hidden for arrays.
+     * The attributes that should be hidden for serialization.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -38,37 +34,11 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * The attributes that should be cast.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
-    public function products()
-    {
-        return $this->hasMany(Product::class);
-    }
-    public function socialAccounts()
-    {
-        return $this->hasMany(SocialAccount::class);
-    }
-
-    public function member()
-    {
-        return $this->belongsTo(Member::class, 'email', 'email');
-    }
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class, 'model_has_roles', 'model_id', 'role_id', 'id', 'id');
-    }
 }
