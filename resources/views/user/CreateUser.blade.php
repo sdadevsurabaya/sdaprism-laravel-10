@@ -8,7 +8,8 @@
         </ol>
     </nav>
     <div class="d-flex justify-content-end flex-wrap text-nowrap mb-2">
-        <button type="button" class="btn btn-outline-primary btn-icon-text me-2 mb-2 mb-md-0">
+        <button type="button" class="btn btn-outline-primary btn-icon-text me-2 mb-2 mb-md-0" data-bs-toggle="modal"
+            data-bs-target="#createUser">
             <i class="btn-icon-prepend" data-feather="plus"></i>
             Create
         </button>
@@ -63,6 +64,79 @@
 
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="createUser" tabindex="-1" aria-labelledby="createUserLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="createUserLabel">Create User</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="col-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <form class="forms-sample">
+                                    <div class="mb-3">
+                                        <label for="exampleInputUsername1" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="exampleInputUsername1"
+                                            autocomplete="off" placeholder="Username">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="exampleInputEmail1" class="form-label">Email address</label>
+                                        <input type="email" class="form-control" id="exampleInputEmail1"
+                                            placeholder="Email">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="exampleInputPassword1" class="form-label">Password</label>
+                                        <input type="password" class="form-control" id="exampleInputPassword1"
+                                            autocomplete="off" placeholder="Password">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Departemen</label>
+                                        <input type="text" class="form-control" id="exampleInputUsername1"
+                                            autocomplete="off" placeholder="Departemen">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Jabatan</label>
+                                        <select class="form-select mb-3">
+                                            <option selected="">Select</option>
+                                            <option value="1">Manager </option>
+                                            <option value="2">Supervisor</option>
+                                            <option value="3">Staff</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Roles</label>
+                                        <select class="form-select mb-3">
+                                            <option selected="">Select</option>
+                                            <option value="1">Admin</option>
+                                            <option value="2">Member</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Status</label>
+                                        <select class="form-select mb-3">
+                                            <option selected="">Select</option>
+                                            <option value="1">Active</option>
+                                            <option value="2">Not Active</option>
+                                        </select>
+                                    </div>
+
+
+
+                                    <button type="submit" class="btn btn-primary me-2">Submit</button>
+                                    <button class="btn btn-secondary">Cancel</button>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
