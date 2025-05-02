@@ -24,6 +24,7 @@ Route::get('pricelist', [PricelistController::class, 'index'])->name('pricelist'
 
 Route::get('createUser', [UserController::class, 'index'])->name('createUser');
 
+Route::get('/pricelist-table', [App\Http\Controllers\Back\PriceListController::class, 'index'])->name('pricelist.table');
 
 // Route::get('/', function () {
 //     return view('welcome');
