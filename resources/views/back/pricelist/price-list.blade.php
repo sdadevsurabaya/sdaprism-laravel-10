@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.bootstrap5.css">
     <style>
-        th {
+        th,
+        td {
             /* width: 10%; */
             text-align: center !important;
         }
@@ -26,6 +27,7 @@
                         <div class="btn-group" role="group" aria-label="Default button group">
                             <button id="addColumn" class="btn btn-outline-info">Tambah Kolom</button>
                             <button id="addRow" class="btn btn-outline-primary">Tambah Baris</button>
+                            <button id="deleteSelected" class="btn btn-outline-danger">Hapus</button>
                             <button id="btnSave" class="btn btn-outline-success">Simpan Data</button>
                         </div>
                     </div>
@@ -67,7 +69,11 @@
             return name.toLowerCase().replace(/\s+/g, '_').replace(/thead\[\]/g, '');
         }
 
-        $(document).ready(function() {  
+        function getIdFromName(name) {
+            return name.replace(/thead\[\]/g, '');
+        }
+
+        $(document).ready(function() {
 
             var tableHead = [{
                     id: 'id',
@@ -94,11 +100,14 @@
 
             function LoadChangeTrigger(dtb) {
                 dtb.forEach(item => {
-                    $('input[name="' + item.id + 'thead[]"][type="checkbox"]').on('change', function() {
-                        console.log('checkbox all checked');
-                        // $('input[name="id[]"]').prop('checked', this.checked);
-                        checkHeader(this);
-                    });
+                    if (item.id !== 'id') {
+                        $('input[name="' + item.id + 'thead[]"][type="checkbox"]').on('change', function() {
+                            console.log('checkbox checked : ' + this.name);
+                            // $('input[name="id[]"]').prop('checked', this.checked);
+                            checkHeader(this);
+                        });
+                    }
+
                 });
             }
 
@@ -118,17 +127,19 @@
             function checkHeader(thishead) {
                 console.log('header checked: ' + thishead.checked);
                 updateDataHeader(thishead.name, null, false, thishead.checked);
-                if (thishead === 'id') {
-                    return true;
-                } else {
-                    return false;
-                }
             }
 
             // Event handler untuk checkbox "check all"
             $('input[name="idthead[]"]').on('change', function() {
-                // console.log('checkbox all checked');
-                $('input[name="id[]"]').prop('checked', this.checked);
+                if (this.checked) {
+                    // Jika checkbox "check all" dicentang, centang semua checkbox di tbody
+                    $('input[name="id[]"]').prop('checked', true);
+                    console.log('checkbox all checked true');
+                } else {
+                    // Jika tidak, hapus centang semua checkbox di tbody
+                    $('input[name="id[]"]').prop('checked', false);
+                    console.log('checkbox all checked false');
+                }
             });
 
             // Tombol tambah kolom
@@ -150,7 +161,7 @@
                     id: colNameID,
                     label: colName,
                     hidden: false,
-                    checkbox: false
+                    checkbox: true
                 });
 
                 let numnew = 0;
@@ -167,25 +178,55 @@
 
             let num = 0;
             let numrow = 0;
+
             $('#addRow').on('click', function() {
-                var colCount = tableHead.length;
-                var newRow = [];
+                const colCount = tableHead.length;
+                const newRow = [];
                 numrow++;
+
                 for (let i = 0; i < colCount; i++) {
-                    console.log(tableHead[i].id);
+                    const colId = tableHead[i].id;
+
                     if (i === 0) {
-                        newRow.push('<input type="checkbox" name="id[]" id="' + tableHead[i].id +
-                            numrow +
-                            '" />');
+                        // Kolom pertama: checkbox + hidden ID
+                        newRow.push(`
+                <input type="checkbox" name="checkid[]" id="${colId}${numrow}" />
+                <input type="hidden" name="id[]" id="hidden${colId}${numrow}" value="${numrow}" />
+            `);
                     } else {
-                        newRow.push('<input name="' + tableHead[i].id + '[]" id="' + tableHead[i].id +
-                            numrow +
-                            '" type="text" class="form-control" value="' + i + '" />');
+                        // Kolom lainnya: input text
+                        newRow.push(`
+                <input name="${colId}[]" id="${colId}${numrow}" type="text" class="form-control" value="${i}" />
+            `);
                     }
                 }
+
                 table.row.add(newRow).draw();
-                console.log('sel baru ditambahkan ke tbody');
+                console.log('Baris baru ditambahkan ke tbody');
             });
+
+            // let numrow = 0;
+            // $('#addRow').on('click', function() {
+            //     var colCount = tableHead.length;
+            //     var newRow = [];
+            //     numrow++;
+            //     for (let i = 0; i < colCount; i++) {
+            //         console.log(tableHead[i].id);
+            //         if (i === 0) {
+            //             newRow.push('<input type="checkbox" name="id[]" id="' + tableHead[i].id +
+            //                 numrow +
+            //                 '" /><input type="hidden" name="id[]" id="hidden' + tableHead[i].id +
+            //                 numrow +
+            //                 '" value="' + numrow + '"/>');
+            //         } else {
+            //             newRow.push('<input name="' + tableHead[i].id + '[]" id="' + tableHead[i].id +
+            //                 numrow +
+            //                 '" type="text" class="form-control" value="' + i + '" />');
+            //         }
+            //     }
+            //     table.row.add(newRow).draw();
+            //     console.log('sel baru ditambahkan ke tbody');
+            // });
 
             $('#btnSave').on('click', function() {
                 var headerCheck = [];
@@ -193,8 +234,6 @@
                 var tbodyInputData = [];
 
                 $('#result').html('');
-                // $('#result').append('<pre>' + JSON.stringify(tableHead, null, 2) + '</pre><br><hr><br>');
-
 
                 console.log('====================================');
                 console.log(numrow);
@@ -225,40 +264,65 @@
                 });
                 headerValues.push(headobjval);
 
+                tbodyInputData.length = 0;
                 // print row
-                for (let numx = 0; numx < numrow; numx++) {
-                    console.log('row ke: ' + numx);
-                    let objHead = {};
-                    tableHead.forEach((keys, index) => {
-                        // let objval = [];
-                        console.log('keys: ' + keys.id);
-                        $('input[name="' + keys.id + '[]"]').each(function() {
-                            // objval.push($(this).val());
-                            objHead[keys.id] = $(this).val();
-                            if ($(this).attr('type') === 'checkbox') {
-                                // Untuk checkbox, simpan status checked (true/false)
-                                objHead[keys.id] = $(this).is(':checked');
-                                // console.log('get header checkbox status: ' + $(this).is(':checked'));
+                table.rows().every(function(rowIdx, tableLoop, rowLoop) {
+                    const row = $(this.node());
+                    const objHead = {};
+
+                    // Ambil nilai id dari hidden input (asumsi di kolom pertama)
+                    const idHiddenInput = row.find('input[type="hidden"][name="id[]"]');
+                    objHead["id"] = idHiddenInput.val();
+
+                    // Loop untuk ambil data dari setiap kolom lain
+                    tableHead.forEach((col) => {
+                        if (col.id === 'id') return; // Sudah ditangani di atas
+
+                        const input = row.find(`[name="${col.id}[]"]`);
+                        if (input.length) {
+                            if (input.attr('type') === 'checkbox') {
+                                objHead[col.id] = input.is(':checked') ? "1" : "0";
                             } else {
-                                // Untuk input teks, simpan nilai
-                                objHead[keys.id] = $(this).val();
-                                // console.log('get header value: ' + $(this).val());
+                                objHead[col.id] = input.val();
                             }
-                        });
+                        }
                     });
 
                     tbodyInputData.push(objHead);
-                }
+                });
 
                 console.log('input data: ' + JSON.stringify(tbodyInputData, null, 2));
 
+                // var tableDataJson = {
+                //     header: tableHead,
+                //     data: tbodyInputData,
+                //     // data: table.rows().data().toArray(),
+                // };
+
+                const visibleColumns = tableHead.filter(col => col.checkbox === true);
+
+                // Buat array `columnsToShow` yang mencakup 'id' dan kolom checkbox
+                const columnsToShow = ['id', ...visibleColumns.map(col => col.id)];
+
+                // Saring header yang hanya berisi kolom checkbox yang true
+                const filteredHeader = tableHead.filter(col => columnsToShow.includes(col.id));
+
+                // Saring data di tbody sesuai dengan kolom yang akan ditampilkan
+                const filteredData = tbodyInputData.map(rowData => {
+                    const filteredRow = {};
+                    columnsToShow.forEach(id => {
+                        filteredRow[id] = rowData[id] || '';
+                    });
+                    return filteredRow;
+                });
+
+                // Gabungkan ke dalam tableDataJson
                 var tableDataJson = {
-                    header: tableHead,
-                    data: tbodyInputData,
-                    // data: table.rows().data().toArray(),
+                    header: filteredHeader,
+                    data: filteredData
                 };
+
                 console.log('====================================');
-                // console.log(tableDataJson);
                 console.log(JSON.stringify(tableDataJson, null, 2));
                 console.log('====================================');
                 $('#result').append('<pre>' + JSON.stringify(tableDataJson, null, 2) + '</pre>');
@@ -274,34 +338,62 @@
                 updateDataHeader(inputName, inputValue, false, false);
             });
 
+            $('#deleteSelected').on('click', function() {
+                // Ambil semua baris di DataTable
+                const rows = table.rows().nodes();
+
+                // Loop dari belakang untuk mencegah index shift saat hapus
+                for (let i = rows.length - 1; i >= 0; i--) {
+                    const row = $(rows[i]);
+
+                    // Checkbox ada di kolom pertama (asumsi kamu menaruhnya di kolom pertama)
+                    const checkbox = row.find('input[type="checkbox"][name="checkid[]"]');
+
+                    if (checkbox.length && checkbox.is(':checked')) {
+                        // Hapus baris dari DataTable
+                        table.row(row).remove();
+                        console.log(`Baris ke-${i + 1} dihapus`);
+                    }
+                }
+
+                // Redraw table setelah semua baris dihapus
+                table.draw();
+
+                // Reset ulang numrow jika perlu
+                // numrow = table.rows().count();
+            });
+
+
             function updateDataHeader(inputName, newLabel, isHidden = false, newCheckbox = false) {
-                // Convert inputName to ID
+                // Tentukan ID berdasarkan inputName atau newLabel
                 var idhead = convertNameToID(inputName);
 
-                // Validate that idhead exists in tableHead
-                const itemExists = tableHead.some(item => item.id === idhead);
-                if (!itemExists) {
+                // Cari index item di tableHead
+                const itemIndex = tableHead.findIndex(item => item.id === idhead);
+                if (itemIndex === -1) {
                     console.warn(`ID ${idhead} tidak ditemukan di tableHead`);
                     return;
                 }
 
-                // Update tableHead dynamically
-                const updatedTableHead = tableHead.map(item => {
-                    if (item.id === idhead) {
-                        return {
-                            id: convertNameToID(newLabel), // Keep ID consistent
-                            label: newLabel, // Update label from input value
-                            hidden: isHidden, // Update hidden from parameter
-                            checkbox: newCheckbox // Update checkbox from parameter
-                        };
-                    }
-                    return item;
-                });
+                const currentItem = tableHead[itemIndex];
 
-                // Assign back to tableHead
-                tableHead = updatedTableHead;
+                // Jika id adalah "id", hanya update checkbox saja
+                if (idhead === "id") {
+                    tableHead[itemIndex] = {
+                        ...currentItem,
+                        checkbox: newCheckbox
+                    };
+                } else {
+                    // Update item secara penuh
+                    tableHead[itemIndex] = {
+                        id: newLabel !== null ? convertNameToID(newLabel) : currentItem.id,
+                        label: newLabel !== null ? newLabel : currentItem.label,
+                        hidden: isHidden,
+                        checkbox: newCheckbox
+                    };
+                }
 
-                // Reload table
+                // Reload table dengan header baru
                 LoadDataTable(tableHead);
             }
         });
