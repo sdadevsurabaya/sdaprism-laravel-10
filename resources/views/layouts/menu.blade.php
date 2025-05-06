@@ -348,9 +348,8 @@
                     </a>
                     <div class="submenu">
                         <ul class="submenu-item">
-                            <li class="nav-item"><a class="nav-link" href="{{ route('pricelist') }}">Pricelist</a></li>
-                            <li class="nav-item"><a class="nav-link"
-                                    href="pages/forms/advanced-elements.html">Quotation</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('pricelist.create') }}">Pricelist</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('quotation.create') }}">Quotation</a></li>
                             <li class="nav-item"><a class="nav-link" href="pages/forms/editors.html">Proforma Invoice</a></li>
                             <li class="nav-item"><a class="nav-link" href="pages/forms/wizard.html">Tax Invoice</a></li>
                         </ul>
@@ -364,11 +363,10 @@
                     </a>
                     <div class="submenu">
                         <ul class="submenu-item">
-                            <li class="nav-item"><a class="nav-link" href="pages/forms/basic-elements.html">Pricelist</a></li>
-                            <li class="nav-item"><a class="nav-link"
-                                    href="pages/forms/advanced-elements.html">Quotation</a></li>
-                            <li class="nav-item"><a class="nav-link" href="pages/forms/editors.html">Proforma Invoice</a></li>
-                            <li class="nav-item"><a class="nav-link" href="pages/forms/wizard.html">Tax Invoice</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('pricelist') }}">Pricelist</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('quotation') }}">Quotation</a></li>
+                            <li class="nav-item"><a class="nav-link" href="">Proforma Invoice</a></li>
+                            <li class="nav-item"><a class="nav-link" href="">Tax Invoice</a></li>
                         </ul>
                     </div>
                 </li>
