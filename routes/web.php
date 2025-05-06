@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PricelistController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\QuotationController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -19,8 +21,16 @@ use App\Http\Controllers\UserController;
 // Route::get('/', [HomeController::class, 'index']);
 Route::get('/', [HomeController::class, 'index'])->name('dashboard');
 
-
+//pricelist
 Route::get('pricelist', [PricelistController::class, 'index'])->name('pricelist');
+Route::get('pricelistCreate', [PricelistController::class, 'create'])->name('pricelist.create');
+Route::get('pricelistPDF', [PricelistController::class, 'template_pdf'])->name('pricelist.template_pdf');
+
+//quotation
+Route::get('quotation', [QuotationController::class, 'index'])->name('quotation');
+Route::get('quotationCreate', [QuotationController::class, 'create'])->name('quotation.create');
+
+
 
 Route::get('createUser', [UserController::class, 'index'])->name('createUser');
 

@@ -11,7 +11,8 @@ class PricelistController extends Controller
      */
     public function index()
     {
-         return view('forms.pricelist');
+         return view('data.view_pricelist');
+
     }
 
     /**
@@ -19,7 +20,12 @@ class PricelistController extends Controller
      */
     public function create()
     {
-        //
+        return view('forms.pricelist');
+    }
+
+    public function template_pdf()
+    {
+        return view('template.pricelist-template');
     }
 
     /**

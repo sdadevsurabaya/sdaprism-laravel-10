@@ -11,7 +11,7 @@ class QuotationController extends Controller
      */
     public function index()
     {
-        //
+        return view('data.view_quotation');
     }
 
     /**
@@ -19,7 +19,7 @@ class QuotationController extends Controller
      */
     public function create()
     {
-        //
+        return view('forms.quotation');
     }
 
     /**
