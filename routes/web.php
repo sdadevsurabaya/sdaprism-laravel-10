@@ -34,6 +34,7 @@ Route::get('quotationCreate', [QuotationController::class, 'create'])->name('quo
 
 Route::get('createUser', [UserController::class, 'index'])->name('createUser');
 
+Route::get('/pricelist-table', [App\Http\Controllers\Back\PriceListController::class, 'index'])->name('pricelist.table');
 
 // Route::get('/', function () {
 //     return view('welcome');
