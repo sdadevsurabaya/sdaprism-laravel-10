@@ -15,8 +15,12 @@ class PriceListController extends Controller
 
     public function printPDF(Request $request)
     {
-        $htmlContent = $request->htmltable;
-        $pdf = Pdf::loadView('back.print.print-price-list', $htmlContent);
+        $htmlContent = $request->htmlcontent;
+        // dd($htmlContent);
+
+        $pdf = Pdf::loadView('back.print.print-price-list', compact('htmlContent'))
+            ->setPaper('a4', 'portrait');
+
         return $pdf->stream('price-list.pdf');
     }
 }

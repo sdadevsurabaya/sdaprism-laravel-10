@@ -62,7 +62,7 @@
                     <div id="element-to-print">
                         <div class="box">
                             <style type="text/css">
-                                .box {
+                                /* .box {
                                     max-width: 800px;
                                     height: 100vh;
                                     margin: auto;
@@ -71,7 +71,7 @@
                                     font-family: Arial, sans-serif;
                                     color: #222;
                                     padding: 10px 0 10px 0;
-                                }
+                                } */
 
                                 #modal-table-header th {
                                     padding: 0 0.2em;
@@ -189,9 +189,10 @@
                                         /* margin: 3cm 2cm 3cm 2cm; */
                                         /* top, right, bottom, left */
                                         /* padding: 2cm 0 2cm 0; */
+                                        margin: 0;
+                                        /* header: page-header;
+                                        footer: page-footer; */
 
-                                        header: page-header;
-                                        footer: page-footer;
                                     }
 
                                     /* body {
@@ -212,7 +213,7 @@
 
                                     main {
                                         margin: 0;
-                                        page-break-inside: auto;
+                                        /* page-break-inside: auto; */
                                     }
 
                                     table {
@@ -226,7 +227,7 @@
                                         top: 0;
                                         left: 0;
                                         right: 0;
-                                        height: 2cm;
+                                        height: 1.5cm;
                                         background: white;
                                         text-align: center;
                                         padding: 10px 0;
@@ -238,17 +239,17 @@
                                         bottom: 0;
                                         left: 0;
                                         right: 0;
-                                        height: 2.3cm;
+                                        height: 1.5cm;
                                         background: white;
                                         text-align: center;
                                         padding: 10px 0;
                                         display: table-footer-group;
                                     }
 
-                                    tr {
+                                    /* tr {
                                         page-break-inside: avoid;
                                         page-break-after: auto;
-                                    }
+                                    } */
                                 }
                             </style>
                             <div id="print-header">
@@ -325,11 +326,13 @@
                     </div>
                 </div>
                 <form id="form-htmlcontent" action="{{ route('pricelist.pdf') }}" method="POST" class="d-none">
+                    @csrf
                     <input type="hidden" id="htmlcontent" name="htmlcontent">
                 </form>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="print-PDF">Print</button>
+                    <button type="button" class="btn btn-primary" id="print-dompPDF">Print dompdf</button>
                 </div>
             </div>
         </div>
@@ -794,27 +797,29 @@
                 let htmlHeader = document.getElementById('print-header').innerHTML;
                 let htmlFooter = document.getElementById('print-footer').innerHTML;
                 let htmlContent = document.getElementById('print-content').innerHTML;
+                // $('#htmlcontent').val(htmlContent);
+                // document.getElementById('form-htmlcontent').submit();
                 const newWin = window.open('', '_blank');
 
                 // Get all styles from the modal
                 const styles = `
-                <style>
-                    ${document.querySelector('#element-to-print style').innerHTML}
-                    /* Additional styles for print */
-                    body { font-family: Arial, sans-serif; margin: 20px; }
-                    table { width: 100%; border-collapse: collapse; }
-                    img { max-width: 100%; height: auto; }
-                    .table { margin-bottom: 1rem; }
-                    .img-fluid { max-width: 100%; height: auto; }
-                    .m-0 { margin: 0; }
-                    .ms-3 { margin-left: 1rem; }
-                    .p-0 { padding: 0; }
-                    .pe-3 { padding-right: 1rem; }
-                    .d-flex { display: flex; }
-                </style>
-                <!-- Include Bootstrap CSS for consistent styling -->
-                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-            `;
+            <style>
+                ${document.querySelector('#element-to-print style').innerHTML}
+                /* Additional styles for print */
+                body { font-family: Arial, sans-serif; }
+                table { width: 100%; border-collapse: collapse; }
+                img { max-width: 100%; height: auto; }
+
+                .img-fluid { max-width: 100%; height: auto; }
+                .m-0 { margin: 0; }
+                .ms-3 { margin-left: 1rem; }
+                .p-0 { padding: 0; }
+                .pe-3 { padding-right: 1rem; }
+                .d-flex { display: flex; }
+            </style>
+            <!-- Include Bootstrap CSS for consistent styling -->
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        `;
 
                 // Convert relative image paths to absolute
                 // let htmlContent = elementToPrint.innerHTML;
@@ -830,24 +835,24 @@
 
                 // Write the new document
                 newWin.document.write(`
-                <html>
-                    <head>
-                        <title>Print Price List</title>
-                        ${styles}
-                    </head>
-                    <body>
-                        <header>
-                            ${htmlHeader}
-                        </header>
-                        <main>
-                            ${htmlContent}
-                        </main>
-                        <footer>
-                            ${htmlFooter}
-                        </footer>
-                    </body>
-                </html>
-            `);
+            <html>
+                <head>
+                    <title>Print Price List</title>
+                    ${styles}
+                </head>
+                <body>
+                    <header>
+                        ${htmlHeader}
+                    </header>
+                    <main>
+                        ${htmlContent}
+                    </main>
+                    <footer>
+                        ${htmlFooter}
+                    </footer>
+                </body>
+            </html>
+        `);
                 newWin.document.close();
 
                 // Wait for images to load before printing
@@ -885,6 +890,13 @@
                         };
                     }
                 }
+            });
+
+            $('#print-dompPDF').on('click', function() {
+                let htmlContent = document.getElementById('print-content').innerHTML;
+                $('#htmlcontent').val(htmlContent);
+                document.getElementById('form-htmlcontent').submit();
+
             });
 
         });
