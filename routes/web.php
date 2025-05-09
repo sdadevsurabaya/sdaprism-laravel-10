@@ -36,7 +36,7 @@ Route::get('quotationCreate', [QuotationController::class, 'create'])->name('quo
 Route::get('createUser', [UserController::class, 'index'])->name('createUser');
 
 Route::get('pricelist-table', [BackPriceListController::class, 'index'])->name('pricelist.table');
-Route::post('pricelist-pdf', [BackPriceListController::class, 'printPDF'])->name('pricelist.pdf');
+Route::post('/pricelist-pdf', [BackPriceListController::class, 'viewPdf'])->name('pricelist.pdf');
 
 // Route::get('/', function () {
 //     return view('welcome');

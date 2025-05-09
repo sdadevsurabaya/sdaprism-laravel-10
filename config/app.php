@@ -196,6 +196,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
+        misterspelik\LaravelPdf\Providers\PdfServiceProvider::class
+
     ],
 
     /*
@@ -213,6 +215,7 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
+        'PDF' => misterspelik\LaravelPdf\Facades\Pdf::class
     ])->toArray(),
 
 ];
