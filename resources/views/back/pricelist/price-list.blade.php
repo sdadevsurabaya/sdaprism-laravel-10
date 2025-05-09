@@ -63,7 +63,7 @@
                     <div id="element-to-print">
                         <div class="box">
                             <style type="text/css">
-                                .box {
+                                /* .box {
                                     max-width: 800px;
                                     height: 100vh;
                                     margin: auto;
@@ -72,7 +72,7 @@
                                     font-family: Arial, sans-serif;
                                     color: #222;
                                     padding: 10px 0 10px 0;
-                                }
+                                } */
 
                                 #modal-table-header th {
                                     padding: 0 0.2em;
@@ -187,35 +187,24 @@
 
                                 @media print {
                                     @page {
-                                        /* margin: 3cm 2cm 3cm 2cm; */
-                                        /* top, right, bottom, left */
-                                        /* padding: 2cm 0 2cm 0; */
-
-                                        header: page-header;
-                                        footer: page-footer;
+                                        margin: 0 1cm;
                                     }
 
-                                    /* body {
-                                        margin: 0;
-                                        padding: 0;
-                                        font-size: 12pt;
-                                    } */
+                                    .page-break {
+                                        page-break-before: always;
+                                        /* margin-top: 1.8cm !important; */
 
-                                    /* header,
-                                    footer {
-                                        display: block;
-                                        width: 100%;
-                                        height: 2cm;
-                                        text-align: center;
-                                        padding: 10px 0;
-                                        background: white;
-                                    } */
+                                    }
+
+                                    .tr-margin-top {
+                                        border: 1px red solid;
+                                        margin-top: 1.8cm !important;
+                                        margin-bottom: 10cm !important;
+                                    }
 
                                     main {
-                                        margin: 0;
-                                        page-break-inside: auto;
-                                        padding-top: 30px;
-                                        padding-bottom: 50px;
+                                        /* margin: 1.8cm 0; */
+                                        /* page-break-inside: auto; */
                                     }
 
                                     table {
@@ -229,11 +218,11 @@
                                         top: 0;
                                         left: 0;
                                         right: 0;
-                                        height: 2cm;
-                                        background: white;
+                                        height: auto;
+                                        background: transparent;
                                         text-align: center;
-                                        padding: 0px 0;
-                                        display: table-header-group;
+                                        padding: 10px 0;
+                                        /* display: table-header-group; */
                                     }
 
                                     footer {
@@ -241,17 +230,17 @@
                                         bottom: 0;
                                         left: 0;
                                         right: 0;
-                                        height: 2.3cm;
-                                        background: white;
+                                        height: auto;
+                                        background: transparent;
                                         text-align: center;
-                                        padding: 10px 0;
-                                        display: table-footer-group;
+                                        /* padding: 10px 0;
+                                        display: table-footer-group; */
                                     }
 
-                                    tr {
-                                        page-break-inside: avoid;
-                                        page-break-after: auto;
+                                    table {
+                                        border: 1px solid red !important;
                                     }
+
                                 }
                             </style>
                             <div id="print-header" style="left: 0; right: 0;">
@@ -272,10 +261,10 @@
                                 </table>
                             </div>
                             <div id="print-content">
-                                <table class="table" border="0">
+                                <table class="table tr-margin-top" border="0">
                                     <thead id="modal-table-header">
                                         <tr>
-                                            <th>Brand</th>
+                                            <th class=" tr-margin-top">Brand</th>
                                             <th>Description</th>
                                             <th>Part NO.</th>
                                             <th>Price</th>
@@ -292,7 +281,7 @@
                                 </table>
                             </div>
                             <div id="print-footer">
-                                <table id="print-footer" class="table" border="0">
+                                    <table id="print-footer" class="table" border="0">
                                     <tr>
                                         <td class="col-notes gradient">
                                             <strong>Note:</strong><br>
@@ -328,11 +317,13 @@
                     </div>
                 </div>
                 <form id="form-htmlcontent" action="{{ route('pricelist.pdf') }}" method="POST" class="d-none">
+                    @csrf
                     <input type="hidden" id="htmlcontent" name="htmlcontent">
                 </form>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="print-PDF">Print</button>
+                    <button type="button" class="btn btn-primary" id="print-dompPDF">Print dompdf</button>
                 </div>
             </div>
         </div>
@@ -341,6 +332,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
         // Define the initial table header structure
         let tableHead = [{
@@ -786,10 +778,19 @@
                 const headerRow = tableHead.map(col => `<th>${col.label}</th>`).join('');
                 modalTableHeader.append(`<tr>${headerRow}</tr>`);
 
-                dataTbd.forEach(item => {
+                // dataTbd.forEach(item => {
+                //     const row = tableHead.map(col => `<td>${item[col.id] ?? ''}</td>`).join('');
+                //     modalTableBody.append(`<tr>${row}</tr>`);
+                // });
+                dataTbd.forEach((item, index) => {
                     const row = tableHead.map(col => `<td>${item[col.id] ?? ''}</td>`).join('');
-                    modalTableBody.append(`<tr>${row}</tr>`);
+                    const extraClass = index % 55 === 0 && index !== 0 ?
+                        'page-break tr-margin-top' : '';
+                    modalTableBody.append(`<tr class="${extraClass}">${row}</tr>`);
                 });
+
+
+
             });
 
             $('#print-PDF').on('click', function() {
@@ -797,6 +798,8 @@
                 let htmlHeader = document.getElementById('print-header').innerHTML;
                 let htmlFooter = document.getElementById('print-footer').innerHTML;
                 let htmlContent = document.getElementById('print-content').innerHTML;
+                // $('#htmlcontent').val(htmlContent);
+                // document.getElementById('form-htmlcontent').submit();
                 const newWin = window.open('', '_blank');
 
                 // Get all styles from the modal
@@ -804,10 +807,9 @@
                 <style>
                     ${document.querySelector('#element-to-print style').innerHTML}
                     /* Additional styles for print */
-                    body { font-family: Arial, sans-serif; margin: 20px; }
-                    table { width: 100%; border-collapse: collapse; }
+                    body { font-family: Arial, sans-serif; }
+                    table { width: 100%; border: 0;}
                     img { max-width: 100%; height: auto; }
-                    .table { margin-bottom: 1rem; }
                     .img-fluid { max-width: 100%; height: auto; }
                     .m-0 { margin: 0; }
                     .ms-3 { margin-left: 1rem; }
@@ -888,6 +890,129 @@
                         };
                     }
                 }
+            });
+
+            // $('#print-PDF').on('click', function() {
+            //     const elementToPrint = document.getElementById('element-to-print').innerHTML;
+            //     let htmlHeader = document.getElementById('print-header').innerHTML;
+            //     let htmlContent = document.getElementById('print-content').innerHTML;
+            //     let htmlFooter = document.getElementById('print-footer').innerHTML;
+
+            //     // Buat elemen sementara untuk PDF
+            //     const tempDiv = document.createElement('div');
+            //     tempDiv.innerHTML = `
+        //         <header>
+        //             ${htmlHeader}
+        //         </header>
+        //         <main>
+        //             ${htmlContent}
+        //         </main>
+        //         <footer>
+        //             ${htmlFooter}
+        //         </footer>
+        //     `;
+            //     document.body.appendChild(tempDiv);
+
+            //     // Styling untuk header dan footer
+            //     const headerStyle = `
+        //         <style>
+        //             .header {
+        //                 position: fixed;
+        //                 top: 0;
+        //                 width: 100%;
+        //                 padding: 10px;
+        //                 text-align: center;
+        //                 font-family: Arial, sans-serif;
+        //                 font-size: 12px;
+        //             }
+        //             .footer {
+        //                 position: fixed;
+        //                 bottom: 0;
+        //                 width: 100%;
+        //                 padding: 10px;
+        //                 text-align: center;
+        //                 font-family: Arial, sans-serif;
+        //                 font-size: 12px;
+        //             }
+        //             main {
+        //                 margin: 30mm 10mm;
+        //                 font-family: Arial, sans-serif;
+        //             }
+        //         </style>
+        //     `;
+
+            //     // Konfigurasi html2pdf
+            //     const opt = {
+            //         margin: [30, 10, 30,
+            //             10
+            //         ], // Margin: [top, right, bottom, left] untuk header dan footer
+            //         filename: 'document.pdf',
+            //         image: {
+            //             type: 'jpeg',
+            //             quality: 0.98
+            //         },
+            //         html2canvas: {
+            //             scale: 2
+            //         },
+            //         jsPDF: {
+            //             unit: 'mm',
+            //             format: 'a4',
+            //             orientation: 'portrait'
+            //         },
+            //         pagebreak: {
+            //             mode: ['avoid-all', 'css', 'legacy']
+            //         }
+            //     };
+
+            //     // Generate PDF
+            //     html2pdf().set(opt).from(tempDiv).toPdf().get('pdf').then(function(pdf) {
+            //         // Dapatkan instance jsPDF
+            //         const totalPages = pdf.internal.getNumberOfPages();
+
+            //         // Tambahkan header dan footer ke setiap halaman
+            //         for (let i = 1; i <= totalPages; i++) {
+            //             pdf.setPage(i);
+
+            //             // Tambahkan header
+            //             pdf.setFontSize(12);
+            //             pdf.setFont('helvetica', 'normal');
+            //             pdf.text(htmlHeader.replace(/<[^>]+>/g, ''), 10,
+            //                 15); // Strip HTML tags untuk teks sederhana
+
+            //             // Tambahkan footer
+            //             pdf.text(htmlFooter.replace(/<[^>]+>/g, ''), 10, pdf.internal.pageSize
+            //                 .height - 15); // Strip HTML tags
+            //         }
+
+            //         // Simpan PDF sebagai blob untuk pratinjau
+            //         const pdfUrl = pdf.output('bloburl');
+            //         const newWin = window.open('', '_blank');
+
+            //         // Tambahkan iframe untuk pratinjau PDF dan tombol cetak
+            //         newWin.document.write(`
+        //             <html>
+        //                 <head><title>PDF Preview</title>${headerStyle}</head>
+        //                 <body>
+        //                     <div style="margin-bottom: 10px;">
+        //                         <button onclick="document.getElementById('pdfFrame').contentWindow.print()">Print PDF</button>
+        //                         <button onclick="window.close()">Close</button>
+        //                     </div>
+        //                     <iframe id="pdfFrame" src="${pdfUrl}" style="width: 100%; height: 90vh;"></iframe>
+        //                 </body>
+        //             </html>
+        //         `);
+            //         newWin.document.close();
+
+            //         // Bersihkan elemen sementara
+            //         document.body.removeChild(tempDiv);
+            //     });
+            // });
+
+            $('#print-dompPDF').on('click', function() {
+                let htmlContent = document.getElementById('print-content').innerHTML;
+                $('#htmlcontent').val(htmlContent);
+                document.getElementById('form-htmlcontent').submit();
+
             });
 
         });
