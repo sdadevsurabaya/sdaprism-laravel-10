@@ -10,43 +10,6 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class ExcelImportController extends Controller
 {
-    // public function import(Request $request)
-    // {
-    //     $request->validate([
-    //         'file' => 'required|file|mimes:xlsx,xls,csv',
-    //     ]);
-
-    //     $file = $request->file('file');
-    //     $data = Excel::toArray([], $file)[0];
-
-    //     // Ambil header dari baris pertama
-    //     $headers = array_map(function ($header) {
-    //         return [
-    //             'id' => Str::slug($header, '_'),
-    //             'label' => $header,
-    //             'hidden' => false,
-    //             'checkbox' => true,
-    //         ];
-    //     }, $data[0]);
-
-    //     // Ambil data (mulai dari baris ke-2)
-    //     $rows = array_slice($data, 1);
-
-    //     // Format data sebagai array of associative array
-    //     $formattedData = array_map(function ($row) use ($headers) {
-    //         $item = [];
-    //         foreach ($headers as $index => $header) {
-    //             $item[$header['id']] = $row[$index] ?? '';
-    //         }
-    //         return $item;
-    //     }, $rows);
-
-    //     return response()->json([
-    //         'header' => $headers,
-    //         'data' => $formattedData
-    //     ]);
-    // }
-
     public function import(Request $request)
     {
         $file = $request->file('file');

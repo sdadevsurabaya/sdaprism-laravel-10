@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Back\PriceListController as BackPriceListController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
@@ -34,7 +35,8 @@ Route::get('quotationCreate', [QuotationController::class, 'create'])->name('quo
 
 Route::get('createUser', [UserController::class, 'index'])->name('createUser');
 
-Route::get('/pricelist-table', [App\Http\Controllers\Back\PriceListController::class, 'index'])->name('pricelist.table');
+Route::get('pricelist-table', [BackPriceListController::class, 'index'])->name('pricelist.table');
+Route::post('/pricelist-pdf', [BackPriceListController::class, 'viewPdf'])->name('pricelist.pdf');
 
 // Route::get('/', function () {
 //     return view('welcome');
