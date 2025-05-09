@@ -178,24 +178,21 @@
             </table>
             <table>
                 <tr>
-                    <td class="col-notes gradient ">
+                    <td width="30%" class="col-notes gradient">
                         <strong>Note:</strong><br>
                         1. Prices are subject to change without prior notice<br>
                         2. FOB Surabaya or Jakarta<br>
                         3. Valid until 30 September 2024
                     </td>
-                    <td class="col-contact p-0 pe-3">
-                        <div class="contact-wrapper">
-                            <div class="contact">☎ Hotline +62 21 9900 8800</div>
-                            <div class="contact">☎ WhatsApp +62 822 0000 8800</div>
-                        </div>
+                    <td width="30%" class="col-contact p-0 pe-3" >
+                        <img src="{{ asset('assets/logo/telpon.png') }}" class="img-fluid"  >
                     </td>
-                    <td class="col-logo p-0 pe-3">
-                        <p class="m-0" style="font-size: 10px;">Online Store</p>
+                    <td width="50%" class="col-logo p-0 pe-3">
+                        <img src="{{ asset('assets/logo/online-store.png') }}" class="img-fluid" style="max-width: 84px;">
                         <img src="https://beta.sda.co.id/assets/img/toko-logo.png" alt="Toko SDA Logo"
                             style="height: 20px;"><br>
                     </td>
-                    <td class="col-branding p-0">
+                    <td width="5%" class="col-branding p-0">
                         <div class="branding">
                             <div class="d-flex" style="font-size: 8px;line-height: 1.5;">
                                 <h1 class="m-0 me-2">SDA</h1>

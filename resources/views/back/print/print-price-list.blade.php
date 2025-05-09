@@ -14,7 +14,7 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: Helvetica, sans-serif;
             font-size: 14px;
             margin: 0;
             padding: 0;
@@ -94,7 +94,12 @@
         }
 
         .gradient {
-            background: linear-gradient(90deg, #e3e3e3 20%, #fff 85%);
+            /* background: linear-gradient(90deg, rgb(227 227 227) 20%, rgb(255 255 255) 85%); */
+            /* background-color: #e3e3e3; */
+            background-image: url('assets/img/bg-gradient.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+            color: #222;
         }
 
         .text-red {
@@ -166,7 +171,7 @@
                     <td width="61%" style="padding-left: 0; text-align: left;">
                         <div class="vl">
                             <div class="pb-2"></div>
-                            <p class=" m-0 ms-3" style="font-weight: bold;"> PRICE LIST </p>
+                            <p class=" m-0 ms-3" style="font-weight: bold; font-size:25px;"> PRICE LIST </p>
                         </div>
                     </td>
                 </tr>
@@ -176,28 +181,60 @@
     <footer name="page-footer">
         <table>
             <tr>
-                <td class="col-notes gradient ">
+                <td width="45%" class="gradient">
+                    <div class="gradient">
+                        <strong>Note:</strong><br>
+                        1. Prices are subject to change without prior notice<br>
+                        2. FOB Surabaya or Jakarta<br>
+                        3. Valid until 30 September 2024
+                    </div>
+                </td>
+                <td width="30%" style="vertical-align: middle;">
+                    <img src="{{ public_path('assets/logo/telpon.png') }}" class="img-fluid" style="max-width:180px;">
+                </td>
+                <td width="23%" style="vertical-align: middle;">
+                    <img src="{{ public_path('assets/logo/online-store.png') }}" class="img-fluid"
+                        style="max-width: 74px;">
+                    <img src="{{ public_path('assets/logo/toko-logo.png') }}" alt="Toko SDA Logo"
+                        style="height: 20px;"><br>
+                </td>
+                <td width="20%" style="vertical-align: middle; text-align:right;">
+                    <table>
+                        <tr>
+                            <td style="vertical-align: middle;">
+                                <h5 class="m-0" style=" font-size: 25px; color:#222;">SDA</h5>
+                            </td>
+                            <td>
+                                <h5 class="m-0 text-red"
+                                    style=" padding-left: 10px; font-size: 20px; border-left: 2px solid #8a2432;">
+                                    YEAR<br><b>2025</b>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+
+            </tr>
+        </table>
+        {{-- <table>
+            <tr>
+                <td width="50%" class="gradient">
                     <strong>Note:</strong><br>
                     1. Prices are subject to change without prior notice<br>
                     2. FOB Surabaya or Jakarta<br>
                     3. Valid until 30 September 2024
                 </td>
-                <td class="col-contact p-0 pe-3" style="vertical-align: center;">
-                    {{-- <div class="contact-wrapper"> --}}
-                        <div class="contact">☎ Hotline +62 21 9900 8800</div>
-                        <div class="pb-2"></div>
-                        <div class="contact">☎ WhatsApp +62 822 0000 8800</div>
-                    {{-- </div> --}}
+                <td width="10%" class="p-0 pe-3" style="vertical-align: center;">
+                    <img src="{{ public_path('assets/logo/telpon.png') }}" class="img-fluid" style="max-width:500px;">
                 </td>
-                <td class="col-logo p-0 pe-3" style="vertical-align: center;">
+                <td width="30%" class="p-0 pe-3" style="vertical-align: center;">
                     <div class="pb-3"></div>
-                    <p class="m-0" style="font-size: 10px;">Online Store</p>
+                    <img src="{{ public_path('assets/logo/online-store.png') }}" class="img-fluid" style="max-width: 84px;">
                     <img src="{{ public_path('assets/logo/toko-logo.png') }}" alt="Toko SDA Logo"
                         style="height: 20px;"><br>
                 </td>
-                <td class="col-branding p-0">
+                <td width="20%" class="p-0">
                     <div class="branding">
-                        <div class="d-flex" style="flex-direction: row; font-size: 8px;line-height: 1.5;">
+                        <div class="d-flex" style="flex-direction: row; font-size: 8px;line-height: 1.5; display:flex;" >
                             <h1 class="m-0">SDA</h1>
                             <div class="vl">
                                 <h5 class="m-0 text-red ms-2" style="font-size: 20px;">
@@ -208,7 +245,7 @@
                     </div>
                 </td>
             </tr>
-        </table>
+        </table> --}}
     </footer>
 
     <div class="content">
