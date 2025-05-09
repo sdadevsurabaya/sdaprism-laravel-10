@@ -44,6 +44,7 @@
 
                     <div id="result"></div>
                 </div>
+            </div>
 
         </section>
 
@@ -213,6 +214,8 @@
                                     main {
                                         margin: 0;
                                         page-break-inside: auto;
+                                        padding-top: 30px;
+                                        padding-bottom: 50px;
                                     }
 
                                     table {
@@ -229,7 +232,7 @@
                                         height: 2cm;
                                         background: white;
                                         text-align: center;
-                                        padding: 10px 0;
+                                        padding: 0px 0;
                                         display: table-header-group;
                                     }
 
@@ -251,7 +254,7 @@
                                     }
                                 }
                             </style>
-                            <div id="print-header">
+                            <div id="print-header" style="left: 0; right: 0;">
                                 <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left">
                                     <tbody>
                                         <tr align="left">
