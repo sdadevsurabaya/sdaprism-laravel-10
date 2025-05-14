@@ -44,6 +44,7 @@
 
                     <div id="result"></div>
                 </div>
+            </div>
 
         </section>
 
@@ -186,7 +187,7 @@
 
                                 @media print {
                                     @page {
-                                        margin: 0 1cm;
+                                        margin: 0cm 1cm;
                                     }
 
                                     .page-break {
@@ -214,7 +215,7 @@
 
                                     header {
                                         position: fixed;
-                                        top: 0;
+                                        top: 0px;
                                         left: 0;
                                         right: 0;
                                         height: auto;
@@ -242,7 +243,7 @@
 
                                 }
                             </style>
-                            <div id="print-header">
+                            <div id="print-header" style="left: 0; right: 0;">
                                 <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left">
                                     <tbody>
                                         <tr align="left">
