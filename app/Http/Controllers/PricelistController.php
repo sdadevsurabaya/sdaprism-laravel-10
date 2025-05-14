@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Currency;
+use App\Models\HeaderLogo;
 use App\Models\PriceList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +19,9 @@ class PricelistController extends Controller
 
     public function create()
     {
-        return view('forms.pricelist');
+        $logo = HeaderLogo::all();
+        $currency = Currency::all();
+        return view('forms.pricelist', compact('logo','currency'));
     }
 
     public function template_pdf()
@@ -99,7 +103,7 @@ class PricelistController extends Controller
             'notes' => 'nullable|string',
             'datatable_data' => 'nullable|json',
         ];
-        
+
         if ($request->has('date')) {
             $date = strtotime($request->date);
             $formattedDate = date('Y-m-d', $date);
