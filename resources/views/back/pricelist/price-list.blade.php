@@ -63,16 +63,6 @@
                     <div id="element-to-print">
                         <div class="box">
                             <style type="text/css">
-                                /* .box {
-                                    max-width: 800px;
-                                    height: 100vh;
-                                    margin: auto;
-                                    font-size: 16px;
-                                    line-height: 24px;
-                                    font-family: Arial, sans-serif;
-                                    color: #222;
-                                    padding: 10px 0 10px 0;
-                                } */
 
                                 #modal-table-header th {
                                     padding: 0 0.2em;
@@ -281,7 +271,7 @@
                                 </table>
                             </div>
                             <div id="print-footer">
-                                    <table id="print-footer" class="table" border="0">
+                                <table id="print-footer" class="table" border="0">
                                     <tr>
                                         <td class="col-notes gradient">
                                             <strong>Note:</strong><br>
@@ -322,8 +312,7 @@
                 </form>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="print-PDF">Print</button>
-                    <button type="button" class="btn btn-primary" id="print-dompPDF">Print dompdf</button>
+                    <button type="button" class="btn btn-primary" id="print-dompPDF">Print</button>
                 </div>
             </div>
         </div>
@@ -504,6 +493,21 @@
             table.row.add(newRow).draw(true);
         }
 
+        function filterTableData(header, data, columnsToShow) {
+            const filteredHeader = header.filter(col => columnsToShow.includes(col.id));
+
+            return {
+                header: filteredHeader,
+                data: data.map(row => {
+                    const filtered = {};
+                    columnsToShow.forEach(colId => {
+                        filtered[colId] = row[colId] ?? '';
+                    });
+                    return filtered;
+                })
+            };
+        }
+
 
         // ===== Event Bindings =====
 
@@ -555,9 +559,6 @@
                                         }
                                     });
                                 }
-
-                            } else {
-
                             }
 
                             // Tambahkan data baru ke dataTbd
@@ -630,56 +631,12 @@
             });
 
             $('#btnSave').on('click', function() {
-                const tbodyInputData = [];
+                // const tbodyInputData = [];
+                // const filteredHeader = tableHead.filter(col => columnsToShow.includes(col.id));
                 const visibleCols = tableHead.filter(col => col.checkbox === true);
                 const columnsToShow = ['id', ...visibleCols.map(col => col.id)];
-                const filteredHeader = tableHead.filter(col => columnsToShow.includes(col.id));
 
-                // table.rows().every(function(index) {
-                //     console.log(index);
-
-                //     if (index >= dataTbd.length) return;
-
-                //     const rowNode = $(this.node());
-                //     const rowData = {};
-
-                //     const idInput = rowNode.find('input[type="hidden"][name="id[]"]');
-                //     rowData['id'] = idInput.length ? idInput.val() : (dataTbd[index]?.id || index +
-                //         1);
-
-                //     tableHead.forEach(col => {
-                //         if (col.id === 'id') return;
-
-                //         const input = rowNode.find(`[name="${col.id}[]"]`);
-                //         if (input.length && input.is(':visible')) {
-                //             rowData[col.id] = input.attr('type') === 'checkbox' ? (input.is(
-                //                 ':checked') ? "1" : "0") : input.val();
-                //             dataTbd[index][col.id] = rowData[col.id];
-                //         } else {
-                //             rowData[col.id] = dataTbd[index][col.id] || '';
-                //         }
-                //     });
-
-                //     tbodyInputData.push(rowData);
-                // });
-
-                const result = {
-                    header: filteredHeader,
-                    data: dataTbd.map(row => {
-                        const filtered = {};
-                        columnsToShow.forEach(colId => {
-                            filtered[colId] = row[colId] ?? '';
-                        });
-                        return filtered;
-                    }),
-                    // data: tbodyInputData.map(row => {
-                    //     const filtered = {};
-                    //     columnsToShow.forEach(colId => {
-                    //         filtered[colId] = row[colId] ?? '';
-                    //     });
-                    //     return filtered;
-                    // })
-                };
+                var result = filterTableData(tableHead, dataTbd, columnsToShow);
 
                 $('#result').html('<pre>' + JSON.stringify(result, null, 2) + '</pre>');
                 // console.log('Saved data:', result);
@@ -768,29 +725,36 @@
                 modalTableHeader.empty();
                 modalTableBody.empty();
 
-                // Ensure tableHead and dataTbd are defined
-                if (typeof tableHead === 'undefined' || typeof dataTbd === 'undefined') {
+                // Validate inputs
+                if (!tableHead || !dataTbd) {
                     console.error('tableHead or dataTbd is not defined');
                     return;
                 }
 
-                // Generate new header and body for the modal
-                const headerRow = tableHead.map(col => `<th>${col.label}</th>`).join('');
+                // Get visible columns
+                const visibleCols = tableHead.filter(col => col.checkbox === true);
+                const columnsToShow = ['id', ...visibleCols.map(col => col.id)];
+
+                // Filter data using the provided function
+                const result = filterTableData(tableHead, dataTbd, columnsToShow);
+
+                // Validate result
+                if (!result?.header || !result?.data) {
+                    console.error('Invalid result from filterTableData');
+                    return;
+                }
+
+                // Generate header row
+                const headerRow = result.header.map(col => `<th>${col.label ?? col.id}</th>`).join('');
                 modalTableHeader.append(`<tr>${headerRow}</tr>`);
 
-                // dataTbd.forEach(item => {
-                //     const row = tableHead.map(col => `<td>${item[col.id] ?? ''}</td>`).join('');
-                //     modalTableBody.append(`<tr>${row}</tr>`);
-                // });
-                dataTbd.forEach((item, index) => {
-                    const row = tableHead.map(col => `<td>${item[col.id] ?? ''}</td>`).join('');
-                    const extraClass = index % 55 === 0 && index !== 0 ?
-                        'page-break tr-margin-top' : '';
-                    modalTableBody.append(`<tr class="${extraClass}">${row}</tr>`);
+                // Generate body rows
+                result.data.forEach(item => {
+                    const row = result.header.map(col => `<td>${item[col.id] ?? ''}</td>`).join('');
+                    modalTableBody.append(`<tr>${row}</tr>`);
                 });
 
-
-
+                // console.log('Generated table with headers:', result.header);
             });
 
             $('#print-PDF').on('click', function() {
@@ -798,6 +762,7 @@
                 let htmlHeader = document.getElementById('print-header').innerHTML;
                 let htmlFooter = document.getElementById('print-footer').innerHTML;
                 let htmlContent = document.getElementById('print-content').innerHTML;
+
                 // $('#htmlcontent').val(htmlContent);
                 // document.getElementById('form-htmlcontent').submit();
                 const newWin = window.open('', '_blank');
@@ -891,122 +856,6 @@
                     }
                 }
             });
-
-            // $('#print-PDF').on('click', function() {
-            //     const elementToPrint = document.getElementById('element-to-print').innerHTML;
-            //     let htmlHeader = document.getElementById('print-header').innerHTML;
-            //     let htmlContent = document.getElementById('print-content').innerHTML;
-            //     let htmlFooter = document.getElementById('print-footer').innerHTML;
-
-            //     // Buat elemen sementara untuk PDF
-            //     const tempDiv = document.createElement('div');
-            //     tempDiv.innerHTML = `
-        //         <header>
-        //             ${htmlHeader}
-        //         </header>
-        //         <main>
-        //             ${htmlContent}
-        //         </main>
-        //         <footer>
-        //             ${htmlFooter}
-        //         </footer>
-        //     `;
-            //     document.body.appendChild(tempDiv);
-
-            //     // Styling untuk header dan footer
-            //     const headerStyle = `
-        //         <style>
-        //             .header {
-        //                 position: fixed;
-        //                 top: 0;
-        //                 width: 100%;
-        //                 padding: 10px;
-        //                 text-align: center;
-        //                 font-family: Arial, sans-serif;
-        //                 font-size: 12px;
-        //             }
-        //             .footer {
-        //                 position: fixed;
-        //                 bottom: 0;
-        //                 width: 100%;
-        //                 padding: 10px;
-        //                 text-align: center;
-        //                 font-family: Arial, sans-serif;
-        //                 font-size: 12px;
-        //             }
-        //             main {
-        //                 margin: 30mm 10mm;
-        //                 font-family: Arial, sans-serif;
-        //             }
-        //         </style>
-        //     `;
-
-            //     // Konfigurasi html2pdf
-            //     const opt = {
-            //         margin: [30, 10, 30,
-            //             10
-            //         ], // Margin: [top, right, bottom, left] untuk header dan footer
-            //         filename: 'document.pdf',
-            //         image: {
-            //             type: 'jpeg',
-            //             quality: 0.98
-            //         },
-            //         html2canvas: {
-            //             scale: 2
-            //         },
-            //         jsPDF: {
-            //             unit: 'mm',
-            //             format: 'a4',
-            //             orientation: 'portrait'
-            //         },
-            //         pagebreak: {
-            //             mode: ['avoid-all', 'css', 'legacy']
-            //         }
-            //     };
-
-            //     // Generate PDF
-            //     html2pdf().set(opt).from(tempDiv).toPdf().get('pdf').then(function(pdf) {
-            //         // Dapatkan instance jsPDF
-            //         const totalPages = pdf.internal.getNumberOfPages();
-
-            //         // Tambahkan header dan footer ke setiap halaman
-            //         for (let i = 1; i <= totalPages; i++) {
-            //             pdf.setPage(i);
-
-            //             // Tambahkan header
-            //             pdf.setFontSize(12);
-            //             pdf.setFont('helvetica', 'normal');
-            //             pdf.text(htmlHeader.replace(/<[^>]+>/g, ''), 10,
-            //                 15); // Strip HTML tags untuk teks sederhana
-
-            //             // Tambahkan footer
-            //             pdf.text(htmlFooter.replace(/<[^>]+>/g, ''), 10, pdf.internal.pageSize
-            //                 .height - 15); // Strip HTML tags
-            //         }
-
-            //         // Simpan PDF sebagai blob untuk pratinjau
-            //         const pdfUrl = pdf.output('bloburl');
-            //         const newWin = window.open('', '_blank');
-
-            //         // Tambahkan iframe untuk pratinjau PDF dan tombol cetak
-            //         newWin.document.write(`
-        //             <html>
-        //                 <head><title>PDF Preview</title>${headerStyle}</head>
-        //                 <body>
-        //                     <div style="margin-bottom: 10px;">
-        //                         <button onclick="document.getElementById('pdfFrame').contentWindow.print()">Print PDF</button>
-        //                         <button onclick="window.close()">Close</button>
-        //                     </div>
-        //                     <iframe id="pdfFrame" src="${pdfUrl}" style="width: 100%; height: 90vh;"></iframe>
-        //                 </body>
-        //             </html>
-        //         `);
-            //         newWin.document.close();
-
-            //         // Bersihkan elemen sementara
-            //         document.body.removeChild(tempDiv);
-            //     });
-            // });
 
             $('#print-dompPDF').on('click', function() {
                 let htmlContent = document.getElementById('print-content').innerHTML;
