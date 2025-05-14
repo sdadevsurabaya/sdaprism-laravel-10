@@ -348,7 +348,7 @@
                     </a>
                     <div class="submenu">
                         <ul class="submenu-item">
-                            <li class="nav-item"><a class="nav-link" href="{{ route('pricelist.create') }}">Pricelist</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('pricelists.create') }}">Pricelist</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ route('quotation.create') }}">Quotation</a></li>
                             <li class="nav-item"><a class="nav-link" href="pages/forms/editors.html">Proforma Invoice</a></li>
                             <li class="nav-item"><a class="nav-link" href="pages/forms/wizard.html">Tax Invoice</a></li>
@@ -363,8 +363,8 @@
                     </a>
                     <div class="submenu">
                         <ul class="submenu-item">
-                            <li class="nav-item"><a class="nav-link" href="{{ route('pricelist') }}">Pricelist</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ route('quotation') }}">Quotation</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('pricelists.index') }}">Pricelist</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('quotation.index') }}">Quotation</a></li>
                             <li class="nav-item"><a class="nav-link" href="">Proforma Invoice</a></li>
                             <li class="nav-item"><a class="nav-link" href="">Tax Invoice</a></li>
                         </ul>
@@ -378,7 +378,7 @@
                     </a>
                     <div class="submenu">
                         <ul class="submenu-item">
-                            <li class="nav-item"><a class="nav-link" href="pages/icons/feather-icons.html">Brand
+                            <li class="nav-item"><a class="nav-link" href="{{ route('brand.index') }}">Brand
                                     </a></li>
                             <li class="nav-item"><a class="nav-link" href="pages/icons/flag-icons.html">Product
                                     </a></li>
