@@ -2,22 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PriceList;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class PricelistController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-         return view('data.view_pricelist');
-
+        $data = PriceList::all();
+        return view('data.view_pricelist', compact('data'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('forms.pricelist');
@@ -28,43 +25,126 @@ class PricelistController extends Controller
         return view('template.pricelist-template');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'header_logo_id' => 'nullable|string|max:255',
+            'title' => 'nullable|string|max:255',
+            'footer_text' => 'nullable|string|max:255',
+            'date' => 'nullable|date',
+            'currency_id' => 'nullable|string|max:255',
+            'show_payment_method' => 'required',
+            'payment_method' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
+            'datatable_data' => 'nullable|json',
+        ];
+
+        if ($request->has('date')) {
+            $date = strtotime($request->date);
+            $formattedDate = date('Y-m-d', $date);
+            $request['date'] = $formattedDate;
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            $data = PriceList::create([
+                'user_id' => Auth::id(),
+                'header_logo_id' => $request->header_logo_id,
+                'title' => $request->title,
+                'footer_text' => $request->footer_text,
+                'date' => $request->date,
+                'currency_id' => $request->currency_id,
+                'show_payment_method' => $request->show_payment_method,
+                'payment_method' => $request->payment_method,
+                'notes' => $request->notes,
+                'datatable_data' => $request->datatable_data,
+            ]);
+
+            return redirect()->route('pricelists.edit', $data)
+                ->with('success', 'Data successfully created');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to create data: ' . $e->getMessage());
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(PriceList $pricelist)
     {
-        //
+        // return view('data.view_pricelist_single', compact('pricelist'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(PriceList $pricelist)
     {
-        //
+        return view('forms.pricelist', compact('pricelist'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, PriceList $pricelist)
     {
-        //
+        $rules = [
+            'header_logo_id' => 'nullable|string|max:255',
+            'title' => 'nullable|string|max:255',
+            'footer_text' => 'nullable|string|max:255',
+            'date' => 'nullable|date',
+            'currency_id' => 'nullable|string|max:255',
+            'show_payment_method' => 'required',
+            'payment_method' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
+            'datatable_data' => 'nullable|json',
+        ];
+        
+        if ($request->has('date')) {
+            $date = strtotime($request->date);
+            $formattedDate = date('Y-m-d', $date);
+            $request['date'] = $formattedDate;
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            $pricelist->update([
+                'header_logo_id' => $request->header_logo_id,
+                'title' => $request->title,
+                'footer_text' => $request->footer_text,
+                'date' => $request->date,
+                'currency_id' => $request->currency_id,
+                'show_payment_method' => $request->show_payment_method,
+                'payment_method' => $request->payment_method,
+                'notes' => $request->notes,
+                'datatable_data' => $request->datatable_data,
+            ]);
+
+            return redirect()->route('pricelists.edit', $pricelist)
+                ->with('success', 'Data successfully updated');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to update data: ' . $e->getMessage());
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(PriceList $pricelist)
     {
-        //
+        try {
+            $pricelist->delete();
+            return redirect()->route('pricelists.index')
+                ->with('success', 'Data successfully deleted');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to delete data: ' . $e->getMessage());
+        }
     }
 }

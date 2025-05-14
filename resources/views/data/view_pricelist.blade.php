@@ -1,7 +1,10 @@
 @extends('layouts.layout')
 
 <style>
-    table.dataTable th.dt-type-numeric, table.dataTable th.dt-type-date, table.dataTable td.dt-type-numeric, table.dataTable td.dt-type-date{
+    table.dataTable th.dt-type-numeric,
+    table.dataTable th.dt-type-date,
+    table.dataTable td.dt-type-numeric,
+    table.dataTable td.dt-type-date {
         text-align: left !important;
     }
 </style>
@@ -17,53 +20,49 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
+                <div class="d-flex w-100 justify-content-end">
+
+                    <a href="{{ route('pricelists.create') }}" type="button"
+                        class="btn btn-outline-primary btn-icon-text me-2 mb-2 mb-md-0">
+                        <i class="btn-icon-prepend" data-feather="plus"></i>
+                        Add New
+                    </a>
+                </div>
                 <div class="table-responsive">
                     <table id="pricelist" class="table table-responsive">
                         <thead style="text-align: left;">
                             <tr>
                                 <th>No</th>
                                 <th>Date</th>
-                                <th>ID</th>
                                 <th>Title</th>
-                                <th>Create</th>
+                                <th>Create By</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
+                        @php
+                            $no = 1;
+                        @endphp
                         <tbody style="text-align: left;">
-                            <tr>
-                                <td>Tiger Nixon</td>
-                                <td>System Architect</td>
-                                <td>Edinburgh</td>
-                                <td>61</td>
-                                <td>2011-04-25</td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-primary btn-icon-text">
-                                        <i class="btn-icon-prepend" data-feather="edit"></i>
-                                       Edit
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-primary btn-icon-text">
-                                        <i class="btn-icon-prepend" data-feather="file"></i>
-                                        PDF
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Tiger Nixon</td>
-                                <td>System Architect</td>
-                                <td>Edinburgh</td>
-                                <td>61</td>
-                                <td>2011-04-25</td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-primary btn-icon-text">
-                                        <i class="btn-icon-prepend" data-feather="edit"></i>
-                                       Edit
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-primary btn-icon-text">
-                                        <i class="btn-icon-prepend" data-feather="file"></i>
-                                        PDF
-                                    </button>
-                                </td>
-                            </tr>
+
+                            @foreach ($data as $item)
+                                <tr>
+                                    <td>{{ $no++ }}</td>
+                                    <td>{{ $item->date }}</td>
+                                    <td>{{ $item->title }}</td>
+                                    <td>{{ $item->user_id }}</td>
+                                    <td>
+                                        <a href="{{ route('pricelists.edit', $item->id) }}"
+                                            class="btn btn-sm btn-primary btn-icon-text">
+                                            <i class="btn-icon-prepend" data-feather="edit"></i>
+                                            Edit
+                                        </a>
+                                        <a href="{{ route('pricelist.pdf', $item->id) }}" class="btn btn-sm btn-primary btn-icon-text" target="_blank">
+                                            <i class="btn-icon-prepend" data-feather="file"></i>
+                                            PDF
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -75,5 +74,5 @@
 @push('scripts')
     <script>
         new DataTable('#pricelist');
-    </script>  
+    </script>
 @endpush

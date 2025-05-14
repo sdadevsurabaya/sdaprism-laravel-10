@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
+    <title>Print Preview</title>
     {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
     <style>
         @page {
@@ -183,10 +183,12 @@
             <tr>
                 <td width="45%" class="gradient">
                     <div class="gradient">
-                        <strong>Note:</strong><br>
-                        1. Prices are subject to change without prior notice<br>
+                        <strong>Note:</strong>
+                        <br>
+                        {{ $footer }}
+                        {{-- 1. Prices are subject to change without prior notice<br>
                         2. FOB Surabaya or Jakarta<br>
-                        3. Valid until 30 September 2024
+                        3. Valid until 30 September 2024 --}}
                     </div>
                 </td>
                 <td width="30%" style="vertical-align: middle;">
@@ -215,40 +217,20 @@
 
             </tr>
         </table>
-        {{-- <table>
-            <tr>
-                <td width="50%" class="gradient">
-                    <strong>Note:</strong><br>
-                    1. Prices are subject to change without prior notice<br>
-                    2. FOB Surabaya or Jakarta<br>
-                    3. Valid until 30 September 2024
-                </td>
-                <td width="10%" class="p-0 pe-3" style="vertical-align: center;">
-                    <img src="{{ public_path('assets/logo/telpon.png') }}" class="img-fluid" style="max-width:500px;">
-                </td>
-                <td width="30%" class="p-0 pe-3" style="vertical-align: center;">
-                    <div class="pb-3"></div>
-                    <img src="{{ public_path('assets/logo/online-store.png') }}" class="img-fluid" style="max-width: 84px;">
-                    <img src="{{ public_path('assets/logo/toko-logo.png') }}" alt="Toko SDA Logo"
-                        style="height: 20px;"><br>
-                </td>
-                <td width="20%" class="p-0">
-                    <div class="branding">
-                        <div class="d-flex" style="flex-direction: row; font-size: 8px;line-height: 1.5; display:flex;" >
-                            <h1 class="m-0">SDA</h1>
-                            <div class="vl">
-                                <h5 class="m-0 text-red ms-2" style="font-size: 20px;">
-                                    YEAR<br><b>2025</b>
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        </table> --}}
     </footer>
 
     <div class="content">
+        <table width="100%" align="center">
+            <tbody>
+                <tr align="center">
+                    <td>
+                        <img src="{{ public_path('assets/logo/ALFAGOMA.png') }}"
+                            width="70%">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
         {!! $htmlContent !!}
     </div>
 </body>
