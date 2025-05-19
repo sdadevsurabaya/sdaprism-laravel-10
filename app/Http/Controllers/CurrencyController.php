@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Currency;
 use Illuminate\Http\Request;
 
 class CurrencyController extends Controller
@@ -11,7 +12,8 @@ class CurrencyController extends Controller
      */
     public function index()
     {
-        //
+        $data = Currency::all();
+        return view('master.list-currency', compact('data'));
     }
 
     /**
@@ -19,7 +21,7 @@ class CurrencyController extends Controller
      */
     public function create()
     {
-        //
+        return view('forms.form-currency');
     }
 
     /**
@@ -27,7 +29,22 @@ class CurrencyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'code' => 'required|string|max:10|unique:currencies,code',
+            'symbol' => 'nullable|string|max:10',
+            'name' => 'required|string|max:255',
+            'is_active' => 'boolean',
+        ]);
+
+        Currency::create([
+            'code' => $request->code,
+            'symbol' => $request->symbol,
+            'name' => $request->name,
+            'is_active' => $request->is_active ?? 0,
+        ]);
+
+        return redirect()->route('currency.index')
+            ->with('success', 'Currency created successfully.');
     }
 
     /**
@@ -35,7 +52,7 @@ class CurrencyController extends Controller
      */
     public function show(string $id)
     {
-        //
+        // 
     }
 
     /**
@@ -43,7 +60,8 @@ class CurrencyController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $currency = Currency::findOrFail($id);
+        return view('forms.form-currency', compact('currency'));
     }
 
     /**
@@ -51,7 +69,24 @@ class CurrencyController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'code' => 'required|string|max:10|unique:currencies,code,' . $id,
+            'symbol' => 'nullable|string|max:10',
+            'name' => 'required|string|max:255',
+            'is_active' => 'boolean',
+        ]);
+
+        $currency = Currency::findOrFail($id);
+
+        $currency->update([
+            'code' => $request->code,
+            'symbol' => $request->symbol,
+            'name' => $request->name,
+            'is_active' => $request->is_active ?? 0,
+        ]);
+
+        return redirect()->route('currency.index')
+            ->with('success', 'Currency updated successfully.');
     }
 
     /**
@@ -59,6 +94,10 @@ class CurrencyController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $currency = Currency::findOrFail($id);
+        $currency->delete();
+
+        return redirect()->route('currency.index')
+            ->with('success', 'Currency deleted successfully.');
     }
 }
