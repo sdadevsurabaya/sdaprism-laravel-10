@@ -384,6 +384,8 @@
                                     </a></li>
                             <li class="nav-item"><a class="nav-link" href="pages/icons/mdi-icons.html">Customer</a>
                             </li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('currency.index') }}">Currency</a>
+                            </li>
                         </ul>
                     </div>
                 </li>

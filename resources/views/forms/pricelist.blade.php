@@ -58,17 +58,11 @@
                 <div class="row mb-3">
                     <div class="col">
                         <label class="form-label">Header Logo</label>
-                        <select class="form-select" name="header_logo_id" id="header_logo_id">
-                            {{-- <option selected="" disabled="">Select</option> --}}
-                            <option value="1"
-                                {{ old('header_logo_id', $pricelist->header_logo_id ?? '') == '1' ? 'selected' : '' }}>
-                                SACHIO</option>
-                            <option value="2"
-                                {{ old('header_logo_id', $pricelist->header_logo_id ?? '') == '2' ? 'selected' : '' }}>
-                                ALFAGOMMA</option>
-                            <option value="3"
-                                {{ old('header_logo_id', $pricelist->header_logo_id ?? '') == '3' ? 'selected' : '' }}>
-                                HANGCHA</option>
+                        <select class="form-select text-capitalize" name="header_logo_id" id="header_logo_id">
+                            @foreach ($logo as $l)
+                                <option value="1"
+                                    {{ old('header_logo_id', $pricelist->header_logo_id ?? '') == $l->id ? 'selected' : '' }}>{{ $l->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-6">
@@ -96,23 +90,17 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Currency</label>
-                        <select class="form-select" name="currency_id" id="currency_id">
-                            {{-- <option selected="" disabled="">Select</option> --}}
+                        <select class="form-select text-capitalize" name="currency_id" id="currency_id">
+                            @foreach ($currency as $c)
                             <option value="1"
-                                {{ old('currency_id', $pricelist->currency_id ?? '') == '1' ? 'selected' : '' }}>IDR
+                                {{ old('currency_id', $pricelist->currency_id ?? '') == $c->id ? 'selected' : '' }}>{{ $c->code }}
                             </option>
-                            <option value="2"
-                                {{ old('currency_id', $pricelist->currency_id ?? '') == '2' ? 'selected' : '' }}>USD
-                            </option>
-                            <option value="3"
-                                {{ old('currency_id', $pricelist->currency_id ?? '') == '3' ? 'selected' : '' }}>SGD
-                            </option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Show Payment Method</label>
                         <select class="form-select" name="show_payment_method" id="show_payment_method">
-                            {{-- <option selected="" disabled="">Select</option> --}}
                             <option value="2"
                                 {{ old('show_payment_method', $pricelist->show_payment_method ?? '') == '2' ? 'selected' : '' }}>
                                 Tidak</option>

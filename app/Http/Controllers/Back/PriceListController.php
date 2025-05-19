@@ -47,51 +47,29 @@ class PriceListController extends Controller
             return response()->json(['error' => 'Invalid table structure.'], 422);
         }
 
-        $dataTableHeader = $dataTable->header;
-        $dataTableData = $dataTable->data;
-        $arrayHeader = [];
+        // Filter header yang hanya checkbox & id
+        $headers = collect($dataTable->header)
+            ->filter(fn($header) => $header->id !== 'id' || ($header->checkbox ?? false))
+            ->values();
 
-        $table = '<table class="table" border="0">';
-        $table .= '<thead id="modal-table-header">';
-        $table .= '<tr>';
-        foreach ($dataTableHeader as $header) {
-            if ($header->id === 'id') {
-                $table .= "<th>No</th>";
-            } elseif ($header->checkbox) {
-                $arrayHeader[] = $header->id;
-                $table .= "<th>{$header->label}</th>";
+        // Ambil hanya kolom id dari header yang akan ditampilkan
+        $displayColumnIds = $headers->pluck('id')->all();
+
+        // Siapkan data body yang sudah difilter hanya kolom yang ditampilkan
+        $body = array_map(function ($row) use ($displayColumnIds) {
+            $filtered = [];
+            foreach ($displayColumnIds as $colId) {
+                $filtered[$colId] = $row->$colId ?? '';
             }
-        }
-        $table .= '</tr>';
-        $table .= '</thead>';
-
-        $table .= '<tbody id="modal-table-body">';
-        $no = 1;
-        foreach ($dataTableData as $dtbody) {
-            $table .= '<tr>';
-            $table .= "<td>{$no}</td>";
-            foreach ($arrayHeader as $colId) {
-                $value = $dtbody->$colId ?? '';
-                $table .= "<td>{$value}</td>";
-            }
-            $table .= '</tr>';
-            $no++;
-        }
-        $table .= '</tbody>';
-        $table .= '</table>';
-
-        // If you want to inspect during development:
-        // dump($arrayHeader);
-        // dump($table);
-        // dd($dataTable);
+            return $filtered;
+        }, $dataTable->data);
 
         $pdf = Pdf::loadView('back.print.print-price-list', [
-            'htmlContent' => $table,
+            'header' => $headers,
+            'body' => $body,
             'footer' => $pricelist->footer_text,
         ]);
 
-        $title = $pricelist->title . '.pdf';
-
-        return $pdf->stream($title);
+        return $pdf->stream($pricelist->title . '.pdf');
     }
 }

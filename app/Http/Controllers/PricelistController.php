@@ -21,7 +21,7 @@ class PricelistController extends Controller
     {
         $logo = HeaderLogo::all();
         $currency = Currency::all();
-        return view('forms.pricelist', compact('logo','currency'));
+        return view('forms.pricelist', compact('logo', 'currency'));
     }
 
     public function template_pdf()
@@ -87,7 +87,9 @@ class PricelistController extends Controller
 
     public function edit(PriceList $pricelist)
     {
-        return view('forms.pricelist', compact('pricelist'));
+        $logo = HeaderLogo::all();
+        $currency = Currency::all();
+        return view('forms.pricelist', compact('logo', 'currency', 'pricelist'));
     }
 
     public function update(Request $request, PriceList $pricelist)
