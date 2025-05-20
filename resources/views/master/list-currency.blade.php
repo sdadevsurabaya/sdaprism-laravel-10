@@ -22,15 +22,15 @@
             <div class="card-body">
                 <div class="d-flex w-100 justify-content-end">
 
-                    <a href="{{ route('brand.create') }}" type="button"
+                    <a href="{{ route('currency.create') }}" type="button"
                         class="btn btn-outline-primary btn-icon-text me-2 mb-2 mb-md-0">
                         <i class="btn-icon-prepend" data-feather="plus"></i>
                         Add New
                     </a>
                 </div>
                 <div class="table-responsive">
-                    <table id="pricelist" class="table table-responsive">
-                        <thead style="text-align: left;">
+                    <table id="currency-table" class="table table-responsive" style="text-align: center;">
+                        <thead style="text-align: center;">
                             <tr>
                                 <th>No</th>
                                 <th>Code</th>
@@ -43,7 +43,7 @@
                         @php
                             $no = 1;
                         @endphp
-                        <tbody style="text-align: left;">
+                        <tbody>
 
                             @foreach ($data as $item)
                                 <tr>
@@ -51,14 +51,14 @@
                                     <td>{{ $item->code }}</td>
                                     <td>{{ $item->symbol }}</td>
                                     <td>{{ $item->name }}</td>
-                                    <td>{{ $item->status }}</td>
+                                    <td>{{ $item->is_active ? 'Yes' : 'No' }}</td>
                                     <td>
-                                        <a href="{{ route('brand.edit', $item->id) }}"
+                                        <a href="{{ route('currency.edit', $item->id) }}"
                                             class="btn btn-sm btn-primary btn-icon-text">
                                             <i class="btn-icon-prepend" data-feather="edit"></i>
                                             Edit
                                         </a>
-                                        <a href="{{ route('brand.destroy', $item->id) }}"
+                                        <a href="{{ route('currency.destroy', $item->id) }}"
                                             class="btn btn-sm btn-primary btn-icon-text" target="_blank">
                                             <i class="btn-icon-prepend" data-feather="trash"></i>
                                             Delete
@@ -76,6 +76,11 @@
 
 @push('scripts')
     <script>
-        new DataTable('#pricelist');
+        new DataTable('#currency-table', {
+            columnDefs: [{
+                targets: '_all', // or use [0, 1, 2] for specific columns
+                className: 'text-center'
+            }]
+        });
     </script>
 @endpush
