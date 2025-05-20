@@ -9,4 +9,9 @@ class Currency extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
+
+    public function pricelists()
+    {
+        return $this->hasMany(Pricelist::class);
+    }
 }
