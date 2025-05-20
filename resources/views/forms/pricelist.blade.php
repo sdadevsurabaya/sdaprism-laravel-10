@@ -60,8 +60,9 @@
                         <label class="form-label">Header Logo</label>
                         <select class="form-select text-capitalize" name="header_logo_id" id="header_logo_id">
                             @foreach ($logo as $l)
-                                <option value="1"
-                                    {{ old('header_logo_id', $pricelist->header_logo_id ?? '') == $l->id ? 'selected' : '' }}>{{ $l->name }}</option>
+                                <option value="{{ $l->id }}"
+                                    {{ old('header_logo_id', $pricelist->header_logo_id ?? '') == $l->id ? 'selected' : '' }}>
+                                    {{ $l->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -92,9 +93,10 @@
                         <label class="form-label">Currency</label>
                         <select class="form-select text-capitalize" name="currency_id" id="currency_id">
                             @foreach ($currency as $c)
-                            <option value="1"
-                                {{ old('currency_id', $pricelist->currency_id ?? '') == $c->id ? 'selected' : '' }}>{{ $c->code }}
-                            </option>
+                                <option value="{{ $c->id }}"
+                                    {{ old('currency_id', $pricelist->currency_id ?? '') == $c->id ? 'selected' : '' }}>
+                                    {{ $c->code }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
