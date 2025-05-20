@@ -202,7 +202,7 @@
 
     <main>
         <div style="text-align: center; margin-bottom: 10px;">
-            <img src="{{ public_path('assets/logo/ALFAGOMA.png') }}" width="60%">
+            <img src="{{ public_path($logo) }}" width="50%">
         </div>
 
         <table class="table" border="0">
@@ -220,7 +220,7 @@
                         <td>{{ $loop->iteration }}</td>
                         @foreach ($header as $col)
                             @if ($col->id === 'price')
-                                <td align="right">{{ $row[$col->id] ?? '' }}</td>
+                                <td align="right">{{ $currency }}{{ $row[$col->id] ?? '' }}</td>
                             @else
                                 <td>{{ $row[$col->id] ?? '' }}</td>
                             @endif
