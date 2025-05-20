@@ -10,11 +10,19 @@
     <div class="col-md-12 grid-margin">
         <div class="card">
             <div class="card-body">
+
                 <!-- Tampilkan pesan sukses -->
                 @if (session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
                     </div>
+                @endif
+                <!-- redirect ke halaman pdf -->
+                @if (session('open_pdf'))
+                    {{-- @dump(session()->all()) --}}
+                    <script>
+                        window.open("{{ session('open_pdf') }}", "_blank");
+                    </script>
                 @endif
 
                 <!-- Tampilkan semua error -->
@@ -34,7 +42,8 @@
 
                         @if (isset($pricelist))
                             <button id="btnSave" class="btn btn-outline-success"><i class="btn-icon-prepend"
-                                    data-feather="save"></i> Update Data</button>
+                                    data-feather="save"></i> Update Data & Print <i class="btn-icon-prepend"
+                                    data-feather="printer"></i></button>
                             {{-- <button id="btnPrint" class="btn btn-outline-primary" data-bs-toggle="modal"
                                 data-bs-target="#staticBackdrop"><i class="btn-icon-prepend" data-feather="printer"></i>
                                 Print</button> --}}

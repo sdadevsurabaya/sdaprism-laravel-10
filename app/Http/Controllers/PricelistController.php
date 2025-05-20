@@ -121,7 +121,8 @@ class PricelistController extends Controller
         }
 
         try {
-            $pricelist->update([
+            // Ambil hanya field yang bisa di-update
+            $dataToUpdate = [
                 'header_logo_id' => $request->header_logo_id,
                 'title' => $request->title,
                 'footer_text' => $request->footer_text,
@@ -131,15 +132,54 @@ class PricelistController extends Controller
                 'payment_method' => $request->payment_method,
                 'notes' => $request->notes,
                 'datatable_data' => $request->datatable_data,
-            ]);
+            ];
 
-            return redirect()->route('pricelists.edit', $pricelist)
-                ->with('success', 'Data successfully updated');
+            // Cek apakah ada perubahan data
+            $changes = collect($dataToUpdate)->filter(function ($value, $key) use ($pricelist) {
+                return $pricelist->$key != $value;
+            });
+
+            if ($changes->isNotEmpty()) {
+                // Ada perubahan, update dulu
+                $pricelist->update($dataToUpdate);
+
+                return redirect()->route('pricelists.edit', $pricelist)
+                    ->with('success', 'Data successfully updated')
+                    ->with('open_pdf', route('pricelist.pdf', $pricelist->id));
+            } else {
+                // Tidak ada perubahan, langsung buka PDF
+                return redirect()->route('pricelists.edit', $pricelist)
+                    ->with('success', 'No changes made, opened latest PDF')
+                    ->with('open_pdf', route('pricelist.pdf', $pricelist->id));
+            }
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Failed to update data: ' . $e->getMessage());
         }
+
+
+        // try {
+        //     $pricelist->update([
+        //         'header_logo_id' => $request->header_logo_id,
+        //         'title' => $request->title,
+        //         'footer_text' => $request->footer_text,
+        //         'date' => $request->date,
+        //         'currency_id' => $request->currency_id,
+        //         'show_payment_method' => $request->show_payment_method,
+        //         'payment_method' => $request->payment_method,
+        //         'notes' => $request->notes,
+        //         'datatable_data' => $request->datatable_data,
+        //     ]);
+
+        //     return redirect()->route('pricelists.edit', $pricelist)
+        //         ->with('success', 'Data successfully updated')
+        //         ->with('open_pdf', route('pricelist.pdf', $pricelist->id));
+        // } catch (\Exception $e) {
+        //     return redirect()->back()
+        //         ->withInput()
+        //         ->with('error', 'Failed to update data: ' . $e->getMessage());
+        // }
     }
 
     public function destroy(PriceList $pricelist)
