@@ -49,11 +49,17 @@ class PriceListController extends Controller
 
         // Filter header yang hanya checkbox & id
         $headers = collect($dataTable->header)
-            ->filter(fn($header) => $header->id !== 'id' || ($header->checkbox ?? false))
+            ->filter(fn($header) => $header->id !== 'id' && $header->checkbox)
             ->values();
 
         // Ambil hanya kolom id dari header yang akan ditampilkan
         $displayColumnIds = $headers->pluck('id')->all();
+
+        // Path Image Logo
+        $logoPath = $pricelist->headerLogo->logo_path;
+
+        // Get Currency
+        $currency = $pricelist->currency->symbol;
 
         // Siapkan data body yang sudah difilter hanya kolom yang ditampilkan
         $body = array_map(function ($row) use ($displayColumnIds) {
@@ -66,7 +72,9 @@ class PriceListController extends Controller
 
         $pdf = Pdf::loadView('back.print.print-price-list', [
             'header' => $headers,
-            'body' => $body,
+            'logo'   => $logoPath,
+            'currency'   => $currency,
+            'body'   => $body,
             'footer' => $pricelist->footer_text,
         ]);
 
