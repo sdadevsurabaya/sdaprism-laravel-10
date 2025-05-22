@@ -10,4 +10,13 @@ class PriceList extends Model
     use HasFactory;
     protected $guarded = ['id'];
 
+    public function headerLogo()
+    {
+        return $this->belongsTo(HeaderLogo::class);
+    }
+
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class);
+    }
 }

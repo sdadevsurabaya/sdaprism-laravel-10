@@ -10,11 +10,19 @@
     <div class="col-md-12 grid-margin">
         <div class="card">
             <div class="card-body">
+
                 <!-- Tampilkan pesan sukses -->
                 @if (session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
                     </div>
+                @endif
+                <!-- redirect ke halaman pdf -->
+                @if (session('open_pdf'))
+                    {{-- @dump(session()->all()) --}}
+                    <script>
+                        window.open("{{ session('open_pdf') }}", "_blank");
+                    </script>
                 @endif
 
                 <!-- Tampilkan semua error -->
@@ -34,7 +42,8 @@
 
                         @if (isset($pricelist))
                             <button id="btnSave" class="btn btn-outline-success"><i class="btn-icon-prepend"
-                                    data-feather="save"></i> Update Data</button>
+                                    data-feather="save"></i> Update Data & Print <i class="btn-icon-prepend"
+                                    data-feather="printer"></i></button>
                             {{-- <button id="btnPrint" class="btn btn-outline-primary" data-bs-toggle="modal"
                                 data-bs-target="#staticBackdrop"><i class="btn-icon-prepend" data-feather="printer"></i>
                                 Print</button> --}}
@@ -58,17 +67,12 @@
                 <div class="row mb-3">
                     <div class="col">
                         <label class="form-label">Header Logo</label>
-                        <select class="form-select" name="header_logo_id" id="header_logo_id">
-                            {{-- <option selected="" disabled="">Select</option> --}}
-                            <option value="1"
-                                {{ old('header_logo_id', $pricelist->header_logo_id ?? '') == '1' ? 'selected' : '' }}>
-                                SACHIO</option>
-                            <option value="2"
-                                {{ old('header_logo_id', $pricelist->header_logo_id ?? '') == '2' ? 'selected' : '' }}>
-                                ALFAGOMMA</option>
-                            <option value="3"
-                                {{ old('header_logo_id', $pricelist->header_logo_id ?? '') == '3' ? 'selected' : '' }}>
-                                HANGCHA</option>
+                        <select class="form-select text-capitalize" name="header_logo_id" id="header_logo_id">
+                            @foreach ($logo as $l)
+                                <option value="{{ $l->id }}"
+                                    {{ old('header_logo_id', $pricelist->header_logo_id ?? '') == $l->id ? 'selected' : '' }}>
+                                    {{ $l->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-6">
@@ -96,23 +100,18 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Currency</label>
-                        <select class="form-select" name="currency_id" id="currency_id">
-                            {{-- <option selected="" disabled="">Select</option> --}}
-                            <option value="1"
-                                {{ old('currency_id', $pricelist->currency_id ?? '') == '1' ? 'selected' : '' }}>IDR
-                            </option>
-                            <option value="2"
-                                {{ old('currency_id', $pricelist->currency_id ?? '') == '2' ? 'selected' : '' }}>USD
-                            </option>
-                            <option value="3"
-                                {{ old('currency_id', $pricelist->currency_id ?? '') == '3' ? 'selected' : '' }}>SGD
-                            </option>
+                        <select class="form-select text-capitalize" name="currency_id" id="currency_id">
+                            @foreach ($currency as $c)
+                                <option value="{{ $c->id }}"
+                                    {{ old('currency_id', $pricelist->currency_id ?? '') == $c->id ? 'selected' : '' }}>
+                                    {{ $c->code }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Show Payment Method</label>
                         <select class="form-select" name="show_payment_method" id="show_payment_method">
-                            {{-- <option selected="" disabled="">Select</option> --}}
                             <option value="2"
                                 {{ old('show_payment_method', $pricelist->show_payment_method ?? '') == '2' ? 'selected' : '' }}>
                                 Tidak</option>

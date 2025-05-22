@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Back\PriceListController as BackPriceListController;
+use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\HeaderLogoController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,6 +39,9 @@ Route::resource('quotation', QuotationController::class);
 
 // BRAND
 Route::resource('brand', HeaderLogoController::class);
+
+// CURRENCY
+Route::resource('currency', CurrencyController::class);
 
 Route::get('createUser', [UserController::class, 'index'])->name('createUser');
 

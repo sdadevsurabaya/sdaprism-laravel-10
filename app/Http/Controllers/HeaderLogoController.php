@@ -44,7 +44,7 @@ class HeaderLogoController extends Controller
 
         // Generate a unique filename to avoid conflicts
         $fileName = time() . '_' . $request->file('logo')->getClientOriginalName();
-        $logoPath = $path . $fileName;
+        $logoPath = $path . '/' . $fileName;
 
         // Move the file to public/logos
         $request->file('logo')->move($directory, $fileName);
@@ -63,8 +63,7 @@ class HeaderLogoController extends Controller
      */
     public function show(string $id)
     {
-        // $logo = HeaderLogo::findOrFail($id);
-        // return view('master.show-brand-logo', compact('logo'));
+        //
     }
 
     /**
@@ -72,8 +71,8 @@ class HeaderLogoController extends Controller
      */
     public function edit(string $id)
     {
-        $logo = HeaderLogo::findOrFail($id);
-        return view('forms.form-brand-logo', compact('logo'));
+        $brand = HeaderLogo::findOrFail($id);
+        return view('forms.form-brand-logo', compact('brand'));
     }
 
     /**
@@ -96,15 +95,16 @@ class HeaderLogoController extends Controller
                 File::delete(public_path($logo->logo_path));
             }
 
+            $path = 'assets/img/brand';
             // Ensure the public/logos directory exists
-            $directory = public_path('logos');
+            $directory = public_path($path);
             if (!File::exists($directory)) {
                 File::makeDirectory($directory, 0755, true);
             }
 
             // Generate a unique filename
             $fileName = time() . '_' . $request->file('logo')->getClientOriginalName();
-            $data['logo_path'] = 'logos/' . $fileName;
+            $data['logo_path'] = $path . '/' . $fileName;
 
             // Move the file to public/logos
             $request->file('logo')->move($directory, $fileName);

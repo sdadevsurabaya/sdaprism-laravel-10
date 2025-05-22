@@ -3,57 +3,44 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Print Preview</title>
-    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
     <style>
         @page {
             margin: 100px 30px 100px 30px;
-            /* header: page-header;
-            footer: page-footer; */
         }
 
         body {
             font-family: Helvetica, sans-serif;
-            font-size: 14px;
+            font-size: 12px;
             margin: 0;
             padding: 0;
         }
 
-        header {
+        header,
+        footer {
             position: fixed;
-            top: -80px;
             left: 0;
             right: 0;
-            height: 60px;
             text-align: center;
+        }
+
+        header {
+            top: -80px;
+            height: 60px;
             line-height: 20px;
         }
 
         footer {
-            position: fixed;
             bottom: -60px;
-            left: 0;
-            right: 0;
             height: 50px;
-            text-align: center;
             font-size: 12px;
             color: #888;
-        }
-
-        /* .content {
-            font-family: sans-serif;
-            font-size: 14px;
-        } */
-
-        .page-number:after {
-            content: counter(page);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            page-break-inside: auto;
+            /* page-break-inside: auto; */
         }
 
         th,
@@ -73,7 +60,7 @@
 
         #modal-table-body td {
             border: 1px solid #ccc;
-            background-color: #ebebeb;
+            background-color: #ffffff00;
             font-size: 12px;
             white-space: nowrap;
         }
@@ -87,16 +74,11 @@
         }
 
         .contact-wrapper {
-            /* display: flex;
-            flex-direction: column;
-            gap: 5px; */
             vertical-align: justify;
         }
 
         .gradient {
-            /* background: linear-gradient(90deg, rgb(227 227 227) 20%, rgb(255 255 255) 85%); */
-            /* background-color: #e3e3e3; */
-            background-image: url('assets/img/bg-gradient.png');
+            background-image: url('{{ public_path('assets/img/bg-gradient.png') }}');
             background-repeat: no-repeat;
             background-size: cover;
             color: #222;
@@ -119,7 +101,6 @@
             height: auto;
         }
 
-        /* Utility classes */
         .m-0 {
             margin: 0;
         }
@@ -179,7 +160,7 @@
         </table>
     </header>
     <footer name="page-footer">
-        <table>
+        <table border="0">
             <tr>
                 <td width="45%" class="gradient">
                     <div class="gradient">
@@ -219,20 +200,37 @@
         </table>
     </footer>
 
-    <div class="content">
-        <table width="100%" align="center">
-            <tbody>
-                <tr align="center">
-                    <td>
-                        <img src="{{ public_path('assets/logo/ALFAGOMA.png') }}"
-                            width="70%">
-                    </td>
+    <main>
+        <div style="text-align: center; margin-bottom: 10px;">
+            <img src="{{ public_path($logo) }}" width="50%">
+        </div>
+
+        <table class="table" border="0">
+            <thead id="modal-table-header">
+                <tr>
+                    <th>No</th>
+                    @foreach ($header as $h)
+                        <th>{{ $h->label }}</th>
+                    @endforeach
                 </tr>
+            </thead>
+            <tbody id="modal-table-body">
+                @foreach ($body as $row)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        @foreach ($header as $col)
+                            @if ($col->id === 'price')
+                                <td align="right">{{ $currency }}{{ $row[$col->id] ?? '' }}</td>
+                            @else
+                                <td>{{ $row[$col->id] ?? '' }}</td>
+                            @endif
+                        @endforeach
+                    </tr>
+                @endforeach
             </tbody>
         </table>
-        <br>
-        {!! $htmlContent !!}
-    </div>
+    </main>
+
 </body>
 
 </html>

@@ -118,8 +118,8 @@
                             <div class="p-1">
                                 <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
                                     <div class="me-3">
-                                        <img class="w-30px h-30px rounded-circle"
-                                            src="../assets/images/faces/face2.jpg" alt="userr">
+                                        {{-- <img class="w-30px h-30px rounded-circle"
+                                            src="./assets/images/faces/face2.jpg" alt="userr"> --}}
                                     </div>
                                     <div class="d-flex justify-content-between flex-grow-1">
                                         <div class="me-4">
@@ -131,8 +131,8 @@
                                 </a>
                                 <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
                                     <div class="me-3">
-                                        <img class="w-30px h-30px rounded-circle"
-                                            src="../assets/images/faces/face3.jpg" alt="userr">
+                                        {{-- <img class="w-30px h-30px rounded-circle"
+                                            src="../assets/images/faces/face3.jpg" alt="userr"> --}}
                                     </div>
                                     <div class="d-flex justify-content-between flex-grow-1">
                                         <div class="me-4">
@@ -144,8 +144,8 @@
                                 </a>
                                 <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
                                     <div class="me-3">
-                                        <img class="w-30px h-30px rounded-circle"
-                                            src="../assets/images/faces/face4.jpg" alt="userr">
+                                        {{-- <img class="w-30px h-30px rounded-circle"
+                                            src="../assets/images/faces/face4.jpg" alt="userr"> --}}
                                     </div>
                                     <div class="d-flex justify-content-between flex-grow-1">
                                         <div class="me-4">
@@ -157,8 +157,8 @@
                                 </a>
                                 <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
                                     <div class="me-3">
-                                        <img class="w-30px h-30px rounded-circle"
-                                            src="../assets/images/faces/face5.jpg" alt="userr">
+                                        {{-- <img class="w-30px h-30px rounded-circle"
+                                            src="../assets/images/faces/face5.jpg" alt="userr"> --}}
                                     </div>
                                     <div class="d-flex justify-content-between flex-grow-1">
                                         <div class="me-4">
@@ -170,8 +170,8 @@
                                 </a>
                                 <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
                                     <div class="me-3">
-                                        <img class="w-30px h-30px rounded-circle"
-                                            src="../assets/images/faces/face6.jpg" alt="userr">
+                                        {{-- <img class="w-30px h-30px rounded-circle"
+                                            src="../assets/images/faces/face6.jpg" alt="userr"> --}}
                                     </div>
                                     <div class="d-flex justify-content-between flex-grow-1">
                                         <div class="me-4">
@@ -224,8 +224,8 @@
                                 <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
                                     <div
                                         class="w-30px h-30px d-flex align-items-center justify-content-center bg-primary rounded-circle me-3">
-                                        <img class="w-30px h-30px rounded-circle"
-                                            src="../assets/images/faces/face6.jpg" alt="userr">
+                                        {{-- <img class="w-30px h-30px rounded-circle"
+                                            src="../assets/images/faces/face6.jpg" alt="userr"> --}}
                                     </div>
                                     <div class="flex-grow-1 me-2">
                                         <p>New customer registered</p>
@@ -383,6 +383,8 @@
                             <li class="nav-item"><a class="nav-link" href="pages/icons/flag-icons.html">Product
                                     </a></li>
                             <li class="nav-item"><a class="nav-link" href="pages/icons/mdi-icons.html">Customer</a>
+                            </li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('currency.index') }}">Currency</a>
                             </li>
                         </ul>
                     </div>
