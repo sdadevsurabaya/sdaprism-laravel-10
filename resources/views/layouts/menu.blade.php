@@ -60,7 +60,7 @@
                                 <span class="ms-2"> Spanish </span></a>
                         </div>
                     </li> --}}
-                    <li class="nav-item dropdown">
+                    {{-- <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="appsDropdown" role="button"
                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i data-feather="grid"></i>
@@ -104,8 +104,8 @@
                                 <a href="javascript:;">View all</a>
                             </div>
                         </div>
-                    </li>
-                    <li class="nav-item dropdown">
+                    </li> --}}
+                    {{-- <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="messageDropdown" role="button"
                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i data-feather="mail"></i>
@@ -118,8 +118,8 @@
                             <div class="p-1">
                                 <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
                                     <div class="me-3">
-                                        {{-- <img class="w-30px h-30px rounded-circle"
-                                            src="./assets/images/faces/face2.jpg" alt="userr"> --}}
+                                        <img class="w-30px h-30px rounded-circle"
+                                            src="./assets/images/faces/face2.jpg" alt="userr">
                                     </div>
                                     <div class="d-flex justify-content-between flex-grow-1">
                                         <div class="me-4">
@@ -131,8 +131,8 @@
                                 </a>
                                 <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
                                     <div class="me-3">
-                                        {{-- <img class="w-30px h-30px rounded-circle"
-                                            src="../assets/images/faces/face3.jpg" alt="userr"> --}}
+                                        <img class="w-30px h-30px rounded-circle"
+                                            src="../assets/images/faces/face3.jpg" alt="userr">
                                     </div>
                                     <div class="d-flex justify-content-between flex-grow-1">
                                         <div class="me-4">
@@ -144,8 +144,8 @@
                                 </a>
                                 <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
                                     <div class="me-3">
-                                        {{-- <img class="w-30px h-30px rounded-circle"
-                                            src="../assets/images/faces/face4.jpg" alt="userr"> --}}
+                                        <img class="w-30px h-30px rounded-circle"
+                                            src="../assets/images/faces/face4.jpg" alt="userr">
                                     </div>
                                     <div class="d-flex justify-content-between flex-grow-1">
                                         <div class="me-4">
@@ -157,8 +157,8 @@
                                 </a>
                                 <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
                                     <div class="me-3">
-                                        {{-- <img class="w-30px h-30px rounded-circle"
-                                            src="../assets/images/faces/face5.jpg" alt="userr"> --}}
+                                        <img class="w-30px h-30px rounded-circle"
+                                            src="../assets/images/faces/face5.jpg" alt="userr">
                                     </div>
                                     <div class="d-flex justify-content-between flex-grow-1">
                                         <div class="me-4">
@@ -170,8 +170,8 @@
                                 </a>
                                 <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
                                     <div class="me-3">
-                                        {{-- <img class="w-30px h-30px rounded-circle"
-                                            src="../assets/images/faces/face6.jpg" alt="userr"> --}}
+                                        <img class="w-30px h-30px rounded-circle"
+                                            src="../assets/images/faces/face6.jpg" alt="userr">
                                     </div>
                                     <div class="d-flex justify-content-between flex-grow-1">
                                         <div class="me-4">
@@ -186,8 +186,8 @@
                                 <a href="javascript:;">View all</a>
                             </div>
                         </div>
-                    </li>
-                    <li class="nav-item dropdown">
+                    </li> --}}
+                    {{-- <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button"
                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i data-feather="bell"></i>
@@ -224,8 +224,8 @@
                                 <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
                                     <div
                                         class="w-30px h-30px d-flex align-items-center justify-content-center bg-primary rounded-circle me-3">
-                                        {{-- <img class="w-30px h-30px rounded-circle"
-                                            src="../assets/images/faces/face6.jpg" alt="userr"> --}}
+                                        <img class="w-30px h-30px rounded-circle"
+                                            src="../assets/images/faces/face6.jpg" alt="userr">
                                     </div>
                                     <div class="flex-grow-1 me-2">
                                         <p>New customer registered</p>
@@ -257,7 +257,7 @@
                                 <a href="javascript:;">View all</a>
                             </div>
                         </div>
-                    </li>
+                    </li> --}}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -276,24 +276,24 @@
                                 </div>
                             </div>
                             <ul class="list-unstyled p-1">
-                                <li class="dropdown-item py-2">
+                                {{-- <li class="dropdown-item py-2">
                                     <a href="pages/general/profile.html" class="text-body ms-0">
                                         <i class="me-2 icon-md" data-feather="user"></i>
                                         <span>Profile</span>
                                     </a>
-                                </li>
-                                <li class="dropdown-item py-2">
+                                </li> --}}
+                                {{-- <li class="dropdown-item py-2">
                                     <a href="javascript:;" class="text-body ms-0">
                                         <i class="me-2 icon-md" data-feather="edit"></i>
                                         <span>Edit Profile</span>
                                     </a>
-                                </li>
-                                <li class="dropdown-item py-2">
+                                </li> --}}
+                                {{-- <li class="dropdown-item py-2">
                                     <a href="javascript:;" class="text-body ms-0">
                                         <i class="me-2 icon-md" data-feather="repeat"></i>
                                         <span>Switch User</span>
                                     </a>
-                                </li>
+                                </li> --}}
                                 <li class="dropdown-item py-2">
                                     <a href="javascript:;" class="text-body ms-0">
                                         <i class="me-2 icon-md" data-feather="log-out"></i>
@@ -333,14 +333,14 @@
                     </a>
                     <div class="submenu">
                         <ul class="submenu-item">
-                            <li class="category-heading">Setting User</li>
+                            {{-- <li class="category-heading">Setting User</li> --}}
                             <li class="nav-item"><a class="nav-link" href="{{ route('createUser') }}">User</a></li>
                             <li class="nav-item"><a class="nav-link" href="">Roles</a></li>
                             <li class="nav-item"><a class="nav-link" href="">Permission</a></li>
                         </ul>
                     </div>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item d-none">
                     <a href="#" class="nav-link">
                         <i class="link-icon" data-feather="inbox"></i>
                         <span class="menu-title">Forms</span>
@@ -364,9 +364,9 @@
                     <div class="submenu">
                         <ul class="submenu-item">
                             <li class="nav-item"><a class="nav-link" href="{{ route('pricelists.index') }}">Pricelist</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ route('quotation.index') }}">Quotation</a></li>
+                            {{-- <li class="nav-item"><a class="nav-link" href="{{ route('quotation.index') }}">Quotation</a></li>
                             <li class="nav-item"><a class="nav-link" href="">Proforma Invoice</a></li>
-                            <li class="nav-item"><a class="nav-link" href="">Tax Invoice</a></li>
+                            <li class="nav-item"><a class="nav-link" href="">Tax Invoice</a></li> --}}
                         </ul>
                     </div>
                 </li>
@@ -378,12 +378,12 @@
                     </a>
                     <div class="submenu">
                         <ul class="submenu-item">
-                            <li class="nav-item"><a class="nav-link" href="{{ route('brand.index') }}">Brand
+                            <li class="nav-item"><a class="nav-link" href="{{ route('brand.index') }}">Brand (Logo)
                                     </a></li>
-                            <li class="nav-item"><a class="nav-link" href="pages/icons/flag-icons.html">Product
+                            {{-- <li class="nav-item"><a class="nav-link" href="pages/icons/flag-icons.html">Product
                                     </a></li>
                             <li class="nav-item"><a class="nav-link" href="pages/icons/mdi-icons.html">Customer</a>
-                            </li>
+                            </li> --}}
                             <li class="nav-item"><a class="nav-link" href="{{ route('currency.index') }}">Currency</a>
                             </li>
                         </ul>
