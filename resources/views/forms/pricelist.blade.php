@@ -178,6 +178,23 @@
         let table; // DataTable instance
         let numrow = 0; // Counter for rows
         let dataTbd = []; // Array to store table data
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
 
         // ===== Utility Functions =====
 
@@ -369,8 +386,8 @@
 
         // Load DataTable with specified columns
         function LoadDataTable(columns) {
-            console.log('Columns passed to DataTable:', JSON.stringify(columns, null, 2));
-            console.log('Generated columns:', JSON.stringify(generateTableHead(columns), null, 2));
+            // console.log('Columns passed to DataTable:', JSON.stringify(columns, null, 2));
+            // console.log('Generated columns:', JSON.stringify(generateTableHead(columns), null, 2));
 
             if ($.fn.DataTable.isDataTable('#example')) {
                 table.destroy();
@@ -392,7 +409,7 @@
                     targets: 0,
                     orderable: false,
                     searchable: false,
-                    className: 'dt-control'
+                    // className: 'dt-control'
                 }]
             });
 
@@ -409,7 +426,9 @@
                     });
                     // Bind delete column event
                     $(`button[id="hapusKolom${item.id}"]`).off('click').on('click', function() {
-                        deleteColumn(item.id);
+                        if (confirm('Are you sure you want to delete this column? (' + item.label + ')')) {
+                            deleteColumn(item.id);
+                        }
                         // toastr.success(`Column "${item.label}" deleted successfully`);
                     });
                 }
@@ -654,43 +673,48 @@
             });
 
             $('#deleteSelected').on('click', function() {
-                const rowsToRemove = [];
+                if (confirm('Are you sure you want to delete selected rows?')) {
+                    const rowsToRemove = [];
 
-                console.log('checked all :', $('input[type="checkbox"][name="idthead[]"]').is(':checked'));
+                    console.log('checked all :', $('input[type="checkbox"][name="idthead[]"]').is(
+                        ':checked'));
 
-                if ($('input[type="checkbox"][name="idthead[]"]').is(':checked')) {
-                    table.clear().draw(); // Clear table
-                    dataTbd = []; // Clear dataTbd
-                    toastr.success('All rows deleted successfully');
-                } else {
-                    table.rows().every(function(index) {
-                        if (index >= dataTbd.length) return;
-                        const rowNode = $(this.node());
-                        const checkbox = rowNode.find('input[type="checkbox"][name="checkid[]"]');
-                        const idInput = rowNode.find('input[type="hidden"][name="id[]"]');
-                        const rowId = idInput.val();
+                    if ($('input[type="checkbox"][name="idthead[]"]').is(':checked')) {
+                        table.clear().draw(); // Clear table
+                        dataTbd = []; // Clear dataTbd
+                        toastr.success('All rows deleted successfully');
+                    } else {
+                        table.rows().every(function(index) {
+                            if (index >= dataTbd.length) return;
+                            const rowNode = $(this.node());
+                            const checkbox = rowNode.find(
+                                'input[type="checkbox"][name="checkid[]"]');
+                            const idInput = rowNode.find('input[type="hidden"][name="id[]"]');
+                            const rowId = idInput.val();
 
-                        if (checkbox.is(':checked')) {
-                            rowsToRemove.push(rowId);
-                            table.row(rowNode).remove(); // Hapus dari tampilan
+                            if (checkbox.is(':checked')) {
+                                rowsToRemove.push(rowId);
+                                table.row(rowNode).remove(); // Hapus dari tampilan
+                            }
+                        });
+
+                        if (rowsToRemove.length === 0) {
+                            // alert('No rows selected for deletion.');
+                            toastr.warning('No rows selected for deletion');
+                            return;
                         }
-                    });
 
-                    if (rowsToRemove.length === 0) {
-                        // alert('No rows selected for deletion.');
-                        toastr.warning('No rows selected for deletion');
-                        return;
+                        // Hapus dari sumber data utama
+                        dataTbd = dataTbd.filter(item => !rowsToRemove.includes(String(item.id)));
+                        numrow = dataTbd.length;
+                        toastr.success('Selected rows deleted successfully');
                     }
 
-                    // Hapus dari sumber data utama
-                    dataTbd = dataTbd.filter(item => !rowsToRemove.includes(String(item.id)));
-                    numrow = dataTbd.length;
-                    toastr.success('Selected rows deleted successfully');
+                    table.draw(); // Refresh DataTable
+                    console.log('Rows deleted', rowsToRemove);
+                    console.log('dataTbd updated:', dataTbd);
                 }
 
-                table.draw(); // Refresh DataTable
-                console.log('Rows deleted', rowsToRemove);
-                console.log('dataTbd updated:', dataTbd);
             });
 
             $('#clearCurrency').on('click', function() {
