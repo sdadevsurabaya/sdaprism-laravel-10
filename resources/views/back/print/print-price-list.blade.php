@@ -201,8 +201,11 @@
     </footer>
 
     <main>
-        <div style="text-align: center; margin-bottom: 10px;">
+        {{-- <div style="text-align: center; margin-bottom: 10px;">
             <img src="{{ public_path($logo) }}" width="50%">
+        </div> --}}
+        <div style="text-align: center; margin-bottom: 10px;">
+            <img src="{{ public_path($logo) }}" style="height: 35px!important;">
         </div>
 
         <table class="table" border="0">
@@ -210,17 +213,52 @@
                 <tr>
                     <th>No</th>
                     @foreach ($header as $h)
-                        <th>{{ $h->label }}</th>
+                        @if ($h->id === 'price')
+                            <th>{{ $h->label }} ({{ $currency }})</th>
+                        @else
+                            <th>{{ $h->label }}</th>
+                        @endif
                     @endforeach
                 </tr>
             </thead>
             <tbody id="modal-table-body">
+                @php
+                    function formatCurrency($amount, $curr = 'Rp')
+                    {
+                        $amount = $amount ?? 0;
+                        $decimals = $curr === 'Rp' ? 0 : 2;
+                        $formatted =
+                            $curr === 'Rp'
+                                ? number_format($amount, $decimals, ',', '.')
+                                : number_format($amount, $decimals, '.', ',');
+
+                        return [
+                            'symbol' => $curr,
+                            'value' => $formatted,
+                        ];
+                    }
+                @endphp
                 @foreach ($body as $row)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         @foreach ($header as $col)
                             @if ($col->id === 'price')
-                                <td align="right">{{ $currency }}{{ $row[$col->id] ?? '' }}</td>
+                                @php
+                                    $formatted = formatCurrency($row[$col->id] ?? 0, $currency);
+                                @endphp
+                                <td>
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                                        style="border: none !important;">
+                                        <tr>
+                                            <td
+                                                style="text-align: left; width: 30%;border: none !important;margin: 0;padding: 0;">
+                                                {{ $formatted['symbol'] }}</td>
+                                            <td
+                                                style="text-align: right; width: 70%;border: none !important;margin: 0;padding: 0;">
+                                                {{ $formatted['value'] }}</td>
+                                        </tr>
+                                    </table>
+                                </td>
                             @else
                                 <td>{{ $row[$col->id] ?? '' }}</td>
                             @endif
