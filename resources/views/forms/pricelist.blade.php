@@ -54,7 +54,7 @@
 
                     </div>
                 </div>
-                <h6 class="card-title mt-3">Input Form Pricelist</h6>
+                <h6 class="mt-3 card-title">Input Form Pricelist</h6>
                 @if (isset($pricelist))
                     <form id="form-pricelist" class="forms-sample" action="{{ route('pricelists.update', $pricelist->id) }}"
                         method="POST" enctype="multipart/form-data">
@@ -64,7 +64,7 @@
                             method="POST" enctype="multipart/form-data">
                 @endif
                 @csrf
-                <div class="row mb-3">
+                <div class="mb-3 row">
                     <div class="col">
                         <label class="form-label">Header Logo</label>
                         <select class="form-select text-capitalize" name="header_logo_id" id="header_logo_id">
@@ -81,7 +81,7 @@
                             value="{{ old('title', $pricelist->title ?? '') }}">
                     </div>
                 </div>
-                <div class="row mb-3">
+                <div class="mb-3 row">
                     <div class="col-md-6">
                         <label class="form-label">Footer Text</label>
                         <input type="text" class="form-control" id="footer_text" name="footer_text"
@@ -89,15 +89,15 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Date</label>
-                        <div class="input-group flatpickr  me-2 mb-2 mb-md-0" id="dashboardDate">
-                            <span class="input-group-text input-group-addon bg-transparent" data-toggle><i
+                        <div class="mb-2 input-group flatpickr me-2 mb-md-0" id="dashboardDate">
+                            <span class="bg-transparent input-group-text input-group-addon" data-toggle><i
                                     data-feather="calendar" class="text-primary"></i></span>
-                            <input type="text" class="form-control bg-transparent" placeholder="Select date" data-input
+                            <input type="text" class="bg-transparent form-control" placeholder="Select date" data-input
                                 id="date" name="date" value="{{ old('date', $pricelist->date ?? '') }}">
                         </div>
                     </div>
                 </div>
-                <div class="row mb-3">
+                <div class="mb-3 row">
                     <div class="col-md-6">
                         <label class="form-label">Currency</label>
                         <select class="form-select text-capitalize" name="currency_id" id="currency_id">
@@ -121,7 +121,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="row mb-3">
+                <div class="mb-3 row">
                     <div class="col-md-12">
                         <label class="form-label">Notes</label>
                         <textarea id="notes" name="notes" class="form-control" maxlength="100" rows="8"
@@ -134,7 +134,7 @@
                     value="{{ old('datatable_data', $pricelist->datatable_data ?? '') }}">
 
                 </form>
-                <div class="row mt-3 mb-3">
+                <div class="mt-3 mb-3 row">
                     <div class="col d-flex justify-content-end">
                         <div class="btn-group" role="group" aria-label="Default button group">
                             <button id="uploadBtn" class="btn btn-outline-success"><i class="btn-icon-prepend"
@@ -266,14 +266,14 @@
         // Create column title with checkbox and input field
         function createColumnTitle(name, label, hidden = false, withChecked = false) {
             const checked = withChecked ? 'checked' : '';
-            const trashHead = `<div class="d-flex justify-content-center w-100"><button id="hapusKolom${name}" class="btn btn-outline-danger text-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+            const trashHead = `<div class="d-flex justify-content-center w-100"><button id="hapusKolom${name}" class="text-center btn btn-outline-danger"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
                                 <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/>
                                 </svg></button></div>`;
             const checkbox =
                 `<div class="d-flex justify-content-center w-100"><input type="checkbox" name="${name}thead[]" ${checked}></div>`;
             const input =
                 `<input name="${name}thead[]" type="text" class="form-control theader-change fw-medium border-0 border-bottom text-center ${hidden ? 'd-none' : ''}" value="${label}" />`;
-            return hidden ? checkbox + input : `${trashHead}<hr class="m-1 p-1">${checkbox}<hr class="m-1 p-1">` +
+            return hidden ? checkbox + input : `${trashHead}<hr class="p-1 m-1">${checkbox}<hr class="p-1 m-1">` +
                 input;
         }
 
@@ -519,7 +519,9 @@
                     addRow(item);
                 });
             }
-            toastr.info('DataTable loaded successfully');
+            @if (isset($pricelist))
+                toastr.info('DataTable loaded successfully');
+            @endif
 
         }
 
