@@ -49,7 +49,7 @@ Route::resource('brand', HeaderLogoController::class);
 // CURRENCY
 Route::resource('currency', CurrencyController::class);
 
-Route::get('createUser', [UserController::class, 'index'])->name('createUser');
+Route::resource('user', UserController::class);
 
 Route::get('pricelist-table', [BackPriceListController::class, 'index'])->name('pricelist.table');
 Route::get('pricelist-pdf/{pricelist}', [BackPriceListController::class, 'viewPdf'])->name('pricelist.pdf');
