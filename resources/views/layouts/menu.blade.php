@@ -28,10 +28,10 @@
                             <div class="box">
                                 <div class="ball"></div>
                                 <div class="icons">
-                                     {{-- <i data-feather="icon-sun"></i> --}}
-                                     <i class='bx bxs-sun'></i>
-                                     <i class='bx bxs-moon' ></i>
-                                     {{-- <i data-feather="icon-moon"></i> --}}
+                                    {{-- <i data-feather="icon-sun"></i> --}}
+                                    <i class='bx bxs-sun'></i>
+                                    <i class='bx bxs-moon'></i>
+                                    {{-- <i data-feather="icon-moon"></i> --}}
                                 </div>
                             </div>
                         </label>
@@ -319,27 +319,13 @@
     <nav class="bottom-navbar">
         <div class="container">
             <ul class="nav page-navigation">
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link" href="{{ route('dashboard') }}">
                         <i class="link-icon" data-feather="box"></i>
                         <span class="menu-title">Dashboard</span>
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="link-icon" data-feather="users"></i>
-                        <span class="menu-title">User Management</span>
-                        {{-- <i class="link-arrow"></i> --}}
-                    </a>
-                    <div class="submenu">
-                        <ul class="submenu-item">
-                            {{-- <li class="category-heading">Setting User</li> --}}
-                            <li class="nav-item"><a class="nav-link" href="{{ route('createUser') }}">User</a></li>
-                            <li class="nav-item"><a class="nav-link" href="">Roles</a></li>
-                            <li class="nav-item"><a class="nav-link" href="">Permission</a></li>
-                        </ul>
-                    </div>
-                </li>
+                </li> --}}
+
                 <li class="nav-item d-none">
                     <a href="#" class="nav-link">
                         <i class="link-icon" data-feather="inbox"></i>
@@ -348,9 +334,12 @@
                     </a>
                     <div class="submenu">
                         <ul class="submenu-item">
-                            <li class="nav-item"><a class="nav-link" href="{{ route('pricelists.create') }}">Pricelist</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ route('quotation.create') }}">Quotation</a></li>
-                            <li class="nav-item"><a class="nav-link" href="pages/forms/editors.html">Proforma Invoice</a></li>
+                            <li class="nav-item"><a class="nav-link"
+                                    href="{{ route('pricelists.create') }}">Pricelist</a></li>
+                            <li class="nav-item"><a class="nav-link"
+                                    href="{{ route('quotation.create') }}">Quotation</a></li>
+                            <li class="nav-item"><a class="nav-link" href="pages/forms/editors.html">Proforma
+                                    Invoice</a></li>
                             <li class="nav-item"><a class="nav-link" href="pages/forms/wizard.html">Tax Invoice</a></li>
                         </ul>
                     </div>
@@ -363,7 +352,8 @@
                     </a>
                     <div class="submenu">
                         <ul class="submenu-item">
-                            <li class="nav-item"><a class="nav-link" href="{{ route('pricelists.index') }}">Pricelist</a></li>
+                            <li class="nav-item"><a class="nav-link"
+                                    href="{{ route('pricelists.index') }}">Pricelist</a></li>
                             {{-- <li class="nav-item"><a class="nav-link" href="{{ route('quotation.index') }}">Quotation</a></li>
                             <li class="nav-item"><a class="nav-link" href="">Proforma Invoice</a></li>
                             <li class="nav-item"><a class="nav-link" href="">Tax Invoice</a></li> --}}
@@ -379,7 +369,7 @@
                     <div class="submenu">
                         <ul class="submenu-item">
                             <li class="nav-item"><a class="nav-link" href="{{ route('brand.index') }}">Brand (Logo)
-                                    </a></li>
+                                </a></li>
                             {{-- <li class="nav-item"><a class="nav-link" href="pages/icons/flag-icons.html">Product
                                     </a></li>
                             <li class="nav-item"><a class="nav-link" href="pages/icons/mdi-icons.html">Customer</a>
@@ -388,7 +378,23 @@
                             </li>
                         </ul>
                     </div>
+                </li>   
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="link-icon" data-feather="users"></i>
+                        <span class="menu-title">User Management</span>
+                        {{-- <i class="link-arrow"></i> --}}
+                    </a>
+                    <div class="submenu">
+                        <ul class="submenu-item">
+                            {{-- <li class="category-heading">Setting User</li> --}}
+                            <li class="nav-item"><a class="nav-link" href="{{ route('createUser') }}">User</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('roles.index') }}">Roles</a></li>
+                            <li class="nav-item"><a class="nav-link" href="">Permission</a></li>
+                        </ul>
+                    </div>
                 </li>
+
             </ul>
         </div>
     </nav>
