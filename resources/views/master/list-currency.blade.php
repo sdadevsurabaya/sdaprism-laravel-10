@@ -1,5 +1,5 @@
 @extends('layouts.layout')
-
+@section('content')
 <style>
     table.dataTable th.dt-type-numeric,
     table.dataTable th.dt-type-date,
@@ -8,8 +8,6 @@
         text-align: left !important;
     }
 </style>
-
-@section('content')
     <nav class="page-breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#">Master</a></li>
