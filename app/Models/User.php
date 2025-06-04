@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -41,6 +40,17 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function roles()
+    {
+        return $this->belongsToMany(Roles::class, 'roles_users','users_id','roles_id');
+    }
+
+    public function hasRole($role)
+    {
+        return $this->roles()->whereRaw('LOWER(name) = ?', [strtolower($role)])
+            ->exists();
+    }
 
     public function rolesUsers()
     {
