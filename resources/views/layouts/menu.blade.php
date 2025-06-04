@@ -39,18 +39,20 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <img class="w-30px h-30px ms-1 rounded-circle" src="./assets/faces/face1.webp"
+                            <img class="w-30px h-30px ms-1 rounded-circle" src="{{ asset('assets/imagenotavailable.jpg') }}"
                                 alt="profile">
                         </a>
                         <div class="p-0 dropdown-menu" aria-labelledby="profileDropdown">
                             <div class="px-5 py-3 d-flex flex-column align-items-center border-bottom">
                                 <div class="mb-3">
-                                    <img class="w-80px h-80px rounded-circle" src="./assets/faces/face1.webp"
+                                    <img class="w-80px h-80px rounded-circle" src="{{ asset('assets/imagenotavailable.jpg') }}"
                                         alt="">
                                 </div>
                                 <div class="text-center">
-                                    <p class="fs-16px fw-bolder">Amiah Burton</p>
-                                    <p class="fs-12px text-secondary">amiahburton@gmail.com</p>
+                                    @auth
+                                    <p class="fs-16px fw-bolder text-capitalize">{{ Auth::user()->name }}</p>
+                                    <p class="fs-12px text-secondary">{{ Auth::user()->email }}</p>
+                                    @endauth
                                 </div>
                             </div>
                             <ul class="p-1 list-unstyled">
