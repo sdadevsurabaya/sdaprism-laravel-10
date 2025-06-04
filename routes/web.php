@@ -9,6 +9,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PricelistController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\AuthController;
+
 
 
 /*
@@ -22,7 +24,7 @@ use App\Http\Controllers\QuotationController;
 |
 */
 // Route::get('/', [HomeController::class, 'index']);
-Route::get('/', [HomeController::class, 'index'])->name('dashboard');
+Route::get('dashboard', [HomeController::class, 'index'])->name('dashboard');
 
 //pricelist
 Route::get('pricelists', [PricelistController::class, 'index'])->name('pricelists.index');
@@ -48,6 +50,5 @@ Route::get('createUser', [UserController::class, 'index'])->name('createUser');
 Route::get('pricelist-table', [BackPriceListController::class, 'index'])->name('pricelist.table');
 Route::get('pricelist-pdf/{pricelist}', [BackPriceListController::class, 'viewPdf'])->name('pricelist.pdf');
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+// Route::get('/', function () {return view('login');});
+Route::get('/', [AuthController::class, 'index'])->name('login');
