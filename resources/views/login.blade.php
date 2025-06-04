@@ -3,20 +3,20 @@
 <div class="main-wrapper">
     <div class="page-wrapper full-page">
         <div class="page-content container-xxl d-flex align-items-center justify-content-center">
-            <div class="row w-100 mx-0 auth-page">
-                <div class="col-md-10 col-lg-8 col-xl-4 mx-auto">
+            <div class="mx-0 row w-100 auth-page">
+                <div class="mx-auto col-md-10 col-lg-8 col-xl-4">
                     <div class="card">
                         {{-- <div class="row"> --}}
                             {{-- <div class="col-md-4 pe-md-0">
                                 <div class="auth-side-wrapper"></div>
                             </div> --}}
                             <div class="ps-md-0">
-                                <div class="auth-form-wrapper px-4 py-5">
-                                    <a href="#" class="nobleui-logo text-center d-block mb-2">PRISM <span>SDA</span></a>
-                                    <h5 class="text-secondary text-center fw-normal mb-4">Selamat Datang! Silahkan login
+                                <div class="px-4 py-5 auth-form-wrapper">
+                                    <a href="#" class="mb-2 text-center nobleui-logo d-block">PRISM <span>SDA</span></a>
+                                    <h5 class="mb-4 text-center text-secondary fw-normal">Selamat Datang! Silahkan login
                                         terlebih dahulu.
                                     </h5>
-                                    <form method="POST" action="{{ route('login') }}">
+                                    <form method="POST" action="{{ route('login.submit') }}">
                                         @csrf
                                         <div class="mb-3">
                                             <label for="userEmail" class="form-label">Email address</label>
@@ -41,10 +41,10 @@
                                             @enderror
                                         </div>
                                         <div>
-                                            <button class="btn btn-primary me-2 mb-2 mb-md-0 text-white"
+                                            <button class="mb-2 text-white btn btn-primary me-2 mb-md-0"
                                                 type="submit">Login</a>
                                                 <button type="submit"
-                                                    class="btn d-none btn-outline-light btn-icon-text mb-2 mb-md-0">
+                                                    class="mb-2 btn d-none btn-outline-light btn-icon-text mb-md-0">
                                                     <svg class='btn-icon-prepend' fill='currentColor'
                                                         viewBox="-3 0 262 262" xmlns="http://www.w3.org/2000/svg"
                                                         preserveAspectRatio="xMidYMid">
