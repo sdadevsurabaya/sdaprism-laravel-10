@@ -10,8 +10,7 @@ use App\Http\Controllers\PricelistController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\AuthController;
-
-
+use App\Http\Controllers\RoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +22,8 @@ use App\Http\Controllers\AuthController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::get('/', [AuthController::class, 'index'])->name('login');
+
 // Route::get('/', [HomeController::class, 'index']);
 Route::get('dashboard', [HomeController::class, 'index'])->name('dashboard');
 
@@ -39,6 +40,9 @@ Route::get('pricelistPDF', [PricelistController::class, 'template_pdf'])->name('
 Route::resource('quotation', QuotationController::class);
 // Route::get('quotationCreate', [QuotationController::class, 'create'])->name('quotation.create');
 
+// Roles
+Route::resource('roles', RoleController::class);
+
 // BRAND
 Route::resource('brand', HeaderLogoController::class);
 
@@ -51,4 +55,3 @@ Route::get('pricelist-table', [BackPriceListController::class, 'index'])->name('
 Route::get('pricelist-pdf/{pricelist}', [BackPriceListController::class, 'viewPdf'])->name('pricelist.pdf');
 
 // Route::get('/', function () {return view('login');});
-Route::get('/', [AuthController::class, 'index'])->name('login');
