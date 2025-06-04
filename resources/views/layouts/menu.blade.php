@@ -378,7 +378,7 @@
                             </li>
                         </ul>
                     </div>
-                </li>   
+                </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="link-icon" data-feather="users"></i>
@@ -388,9 +388,9 @@
                     <div class="submenu">
                         <ul class="submenu-item">
                             {{-- <li class="category-heading">Setting User</li> --}}
-                            <li class="nav-item"><a class="nav-link" href="{{ route('createUser') }}">User</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('user.index') }}">User</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ route('roles.index') }}">Roles</a></li>
-                            <li class="nav-item"><a class="nav-link" href="">Permission</a></li>
+                            {{-- <li class="nav-item"><a class="nav-link" href="">Permission</a></li> --}}
                         </ul>
                     </div>
                 </li>
