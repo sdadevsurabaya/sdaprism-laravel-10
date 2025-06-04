@@ -22,7 +22,7 @@
             <div class="card-body">
                 <div class="d-flex w-100 justify-content-end">
 
-                    <button type="button" class="btn btn-outline-primary btn-icon-text me-2 mb-2 mb-md-0"
+                    <button type="button" class="mb-2 btn btn-outline-primary btn-icon-text me-2 mb-md-0"
                         data-bs-toggle="modal" data-bs-target="#modalCreateBrand">
                         <i class="btn-icon-prepend" data-feather="plus"></i>
                         Add New
@@ -142,6 +142,7 @@
 @endsection
 
 @push('scripts')
+    @include('components.toast')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             new DataTable('#pricelist');

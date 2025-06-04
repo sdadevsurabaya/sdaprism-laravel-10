@@ -1,13 +1,13 @@
 @extends('layouts.layout')
 @section('content')
-<style>
-    table.dataTable th.dt-type-numeric,
-    table.dataTable th.dt-type-date,
-    table.dataTable td.dt-type-numeric,
-    table.dataTable td.dt-type-date {
-        text-align: left !important;
-    }
-</style>
+    <style>
+        table.dataTable th.dt-type-numeric,
+        table.dataTable th.dt-type-date,
+        table.dataTable td.dt-type-numeric,
+        table.dataTable td.dt-type-date {
+            text-align: left !important;
+        }
+    </style>
     <nav class="page-breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#">Master</a></li>
@@ -21,12 +21,12 @@
                 <div class="d-flex w-100 justify-content-end">
 
                     {{-- <a href="{{ route('currency.create') }}" type="button"
-                        class="btn btn-outline-primary btn-icon-text me-2 mb-2 mb-md-0">
+                        class="mb-2 btn btn-outline-primary btn-icon-text me-2 mb-md-0">
                         <i class="btn-icon-prepend" data-feather="plus"></i>
                         Add New
                     </a> --}}
 
-                    <button type="button" class="btn btn-outline-primary btn-icon-text me-2 mb-2 mb-md-0"
+                    <button type="button" class="mb-2 btn btn-outline-primary btn-icon-text me-2 mb-md-0"
                         data-bs-toggle="modal" data-bs-target="#modalCreateCurrency">
                         <i class="btn-icon-prepend" data-feather="plus"></i>
                         Add New
@@ -176,6 +176,7 @@
 @endsection
 
 @push('scripts')
+    @include('components.toast')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize DataTable

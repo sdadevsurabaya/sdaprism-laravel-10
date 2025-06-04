@@ -15,8 +15,8 @@
             <li class="breadcrumb-item active" aria-current="page">User</li>
         </ol>
     </nav>
-    <div class="d-flex justify-content-end flex-wrap text-nowrap mb-2">
-        <button type="button" class="btn btn-outline-primary btn-icon-text me-2 mb-2 mb-md-0" data-bs-toggle="modal"
+    <div class="flex-wrap mb-2 d-flex justify-content-end text-nowrap">
+        <button type="button" class="mb-2 btn btn-outline-primary btn-icon-text me-2 mb-md-0" data-bs-toggle="modal"
             data-bs-target="#modalCreateUser">
             <i class="btn-icon-prepend" data-feather="plus"></i>
             Create
@@ -51,8 +51,7 @@
                                 <td>
                                     <a href="javascript:void(0);"
                                         class="btn btn-sm btn-primary btn-icon-text btn-edit-roles"
-                                        data-id="{{ $item->id }}"
-                                        data-name="{{ $item->name }}"
+                                        data-id="{{ $item->id }}" data-name="{{ $item->name }}"
                                         data-email="{{ $item->email }}"
                                         data-roleid="{{ $item->rolesUsers->first()?->roles->id }}"
                                         data-userroleid="{{ $item->rolesUsers->first()->id }}"
@@ -60,14 +59,19 @@
                                         <i class="btn-icon-prepend" data-feather="edit"></i>
                                         Edit
                                     </a>
-                                    <a href="{{ route('user.destroy', $item->id) }}"
-                                        class="btn btn-sm btn-primary btn-icon-text" target="_blank">
-                                        <i class="btn-icon-prepend" data-feather="trash"></i>
-                                        Delete
-                                    </a>
+                                    <form action="{{ route('user.destroy', $item->id) }}" method="POST"
+                                        style="display: inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-primary btn-icon-text"
+                                            onclick="return confirm('Are you sure you want to delete this user?')">
+                                            <i class="btn-icon-prepend" data-feather="trash"></i>
+                                            Delete
+                                        </button>
+                                    </form>
+
                                 </td>
                             </tr>
-
                         @endforeach
                     </tbody>
                 </table>
@@ -176,7 +180,7 @@
 @endsection
 
 @push('scripts')
-    <script></script>
+    @include('components.toast')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize DataTable

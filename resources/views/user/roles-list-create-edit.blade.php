@@ -22,7 +22,7 @@
             <div class="card-body">
                 <div class="d-flex w-100 justify-content-end">
 
-                    <button type="button" class="btn btn-outline-primary btn-icon-text me-2 mb-2 mb-md-0"
+                    <button type="button" class="mb-2 btn btn-outline-primary btn-icon-text me-2 mb-md-0"
                         data-bs-toggle="modal" data-bs-target="#modalCreateRoles">
                         <i class="btn-icon-prepend" data-feather="plus"></i>
                         Add New
@@ -70,8 +70,7 @@
     </div>
 
     <!-- Modal Create roles -->
-    <div class="modal fade" id="modalCreateRoles" tabindex="-1" aria-labelledby="modalCreateRolesLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="modalCreateRoles" tabindex="-1" aria-labelledby="modalCreateRolesLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form id="form-create-roles" action="{{ route('roles.store') }}" method="POST"
@@ -98,8 +97,7 @@
 
 
     <!-- Modal Edit roles -->
-    <div class="modal fade" id="modalEditRoles" tabindex="-1" aria-labelledby="modalEditRolesLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="modalEditRoles" tabindex="-1" aria-labelledby="modalEditRolesLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form id="form-edit-roles" method="POST" enctype="multipart/form-data">
@@ -127,6 +125,7 @@
 @endsection
 
 @push('scripts')
+    @include('components.toast')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize DataTable
