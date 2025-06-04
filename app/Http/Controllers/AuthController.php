@@ -1,8 +1,10 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -61,4 +63,30 @@ class AuthController extends Controller
     {
         //
     }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+        // dump($credentials);
+
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+            return back()->withErrors(['email' => 'Login failed']);
+        }
+
+        Auth::login($user);
+
+        return redirect()->route('pricelists.index');
+    }
+
+    public function logout()
+    {
+        Auth::guard('web')->logout();            // atau 'admin', 'user', dll
+        request()->session()->invalidate();      // optional, recommended
+        request()->session()->regenerateToken(); // optional, recommended
+
+        return redirect()->route('login');
+    }
+
 }
