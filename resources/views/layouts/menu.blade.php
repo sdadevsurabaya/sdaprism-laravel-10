@@ -39,19 +39,19 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <img class="w-30px h-30px ms-1 rounded-circle" src="{{ asset('assets/imagenotavailable.jpg') }}"
-                                alt="profile">
+                            <img class="w-30px h-30px ms-1 rounded-circle"
+                                src="{{ asset('assets/imagenotavailable.jpg') }}" alt="profile">
                         </a>
                         <div class="p-0 dropdown-menu" aria-labelledby="profileDropdown">
                             <div class="px-5 py-3 d-flex flex-column align-items-center border-bottom">
                                 <div class="mb-3">
-                                    <img class="w-80px h-80px rounded-circle" src="{{ asset('assets/imagenotavailable.jpg') }}"
-                                        alt="">
+                                    <img class="w-80px h-80px rounded-circle"
+                                        src="{{ asset('assets/imagenotavailable.jpg') }}" alt="">
                                 </div>
                                 <div class="text-center">
                                     @auth
-                                    <p class="fs-16px fw-bolder text-capitalize">{{ Auth::user()->name }}</p>
-                                    <p class="fs-12px text-secondary">{{ Auth::user()->email }}</p>
+                                        <p class="fs-16px fw-bolder text-capitalize">{{ Auth::user()->name }}</p>
+                                        <p class="fs-12px text-secondary">{{ Auth::user()->email }}</p>
                                     @endauth
                                 </div>
                             </div>
@@ -132,7 +132,8 @@
                             <div class="submenu">
                                 <ul class="submenu-item">
                                     {{-- <li class="category-heading">Setting User</li> --}}
-                                    <li class="nav-item"><a class="nav-link" href="{{ route('user.index') }}">User Login</a>
+                                    <li class="nav-item"><a class="nav-link" href="{{ route('user.index') }}">User
+                                            Login</a>
                                     </li>
                                     <li class="nav-item"><a class="nav-link" href="{{ route('roles.index') }}">Roles</a>
                                     </li>
@@ -140,8 +141,21 @@
                                 </ul>
                             </div>
                         </li>
+
                     @endif
+                    <li class="nav-item">
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+
+                            <a href="#" class="nav-link"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="link-icon" data-feather="log-out"></i>
+                                <span class="menu-title">Log Out</span>
+                            </a>
+                        </li>
                 @endauth
+
             </ul>
         </div>
     </nav>
