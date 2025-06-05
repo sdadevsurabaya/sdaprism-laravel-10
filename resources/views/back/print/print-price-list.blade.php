@@ -205,7 +205,7 @@
             <img src="{{ public_path($logo) }}" width="50%">
         </div> --}}
         <div style="text-align: center; margin-bottom: 10px;">
-            <img src="{{ public_path($logo) }}" style="height: 35px!important;">
+            <img src="{{ public_path($logo) }}" class="img-fluid">
         </div>
 
         <table class="table" border="0">
