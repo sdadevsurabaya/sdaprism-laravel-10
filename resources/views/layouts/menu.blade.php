@@ -2,7 +2,7 @@
     <nav class="navbar top-navbar">
         <div class="container">
             <div class="navbar-content">
-                <a href="{{ route('dashboard') }}" class="navbar-brand d-none d-lg-flex">
+                <a href="{{ route('pricelists.index') }}" class="navbar-brand d-none d-lg-flex">
                     <img src="{{ asset('assets/logo/logo-sda-global-24.svg') }}" alt="Logo" height="30">
                 </a>
 
@@ -40,13 +40,13 @@
                         <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img class="w-30px h-30px ms-1 rounded-circle"
-                                src="{{ asset('assets/imagenotavailable.jpg') }}" alt="profile">
+                                src="{{ asset('assets/faces/300-15.jpg') }}" alt="profile">
                         </a>
                         <div class="p-0 dropdown-menu" aria-labelledby="profileDropdown">
                             <div class="px-5 py-3 d-flex flex-column align-items-center border-bottom">
                                 <div class="mb-3">
                                     <img class="w-80px h-80px rounded-circle"
-                                        src="{{ asset('assets/imagenotavailable.jpg') }}" alt="">
+                                        src="{{ asset('assets/faces/300-15.jpg') }}" alt="">
                                 </div>
                                 <div class="text-center">
                                     @auth
