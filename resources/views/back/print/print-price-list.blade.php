@@ -179,17 +179,21 @@
                     </div>
                 </td>
                 <td width="30%" style="vertical-align: middle;">
-                    <img src="{{ public_path('assets/logo/telpon.png') }}" class="img-fluid" style="max-width:180px;">
+                    <img src="{{ public_path('assets/logo/telpon.png') }}" class="img-fluid" style="max-width:150px;">
                 </td>
-                <td width="23%" style="vertical-align: middle;">
+                <td width="23%" style="vertical-align: middle; text-align:left;">
                     <img src="{{ public_path('assets/logo/online-store.png') }}" class="img-fluid"
                         style="max-width: 74px;">
                     <img src="{{ public_path('assets/logo/toko-logo.png') }}" alt="Toko SDA Logo"
                         style="height: 20px;"><br>
                 </td>
-                <td width="20%" style="vertical-align: middle; text-align:right;">
+                <td width="30%" style="vertical-align: middle; text-align:right;">
                     <table>
                         <tr>
+                            <td style="vertical-align: middle;">
+                            </td>
+                            <td style="vertical-align: middle;">
+                            </td>
                             <td style="vertical-align: middle;">
                                 <h5 class="m-0" style=" font-size: 25px; color:#222;">SDA</h5>
                             </td>
