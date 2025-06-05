@@ -137,6 +137,11 @@
             display: flex !important;
             /* align-items: center; */
         }
+
+        p {
+            margin: 0;
+            padding: 0;
+        }
     </style>
 </head>
 
@@ -166,7 +171,8 @@
                     <div class="gradient">
                         <strong>Note:</strong>
                         <br>
-                        {{ $footer }}
+                        {!! $footer !!}
+
                         {{-- 1. Prices are subject to change without prior notice<br>
                         2. FOB Surabaya or Jakarta<br>
                         3. Valid until 30 September 2024 --}}
