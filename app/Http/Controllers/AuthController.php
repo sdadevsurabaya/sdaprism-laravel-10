@@ -77,19 +77,19 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('pricelists.index');
+        return redirect()->route('pricelists.index')->with('login', 'Login Successfully.');
     }
 
     public function loginas(Request $request)
     {
 
         $id = $request->id;
-        Auth::guard('web')->logout(); 
+        Auth::guard('web')->logout();
         $user = User::find($id);
 
         if ($user) {
             Auth::login($user);
-            return redirect()->route('pricelists.index');
+            return redirect()->route('pricelists.index')->with('login', "Login As {$user->name} Successfully.");
         } else {
             return back()->withErrors([
                 'id' => 'The provided credentials do not match our records.',

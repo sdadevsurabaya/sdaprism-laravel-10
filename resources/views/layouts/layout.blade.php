@@ -29,6 +29,11 @@
 
     @include('layouts.footer')
     @stack('scripts')
+    <script>
+        @if (session('login'))
+            toastr.success("{{ session('login') }}", "Success");
+        @endif
+    </script>
 </body>
 
 </html>

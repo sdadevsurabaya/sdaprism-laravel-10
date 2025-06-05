@@ -45,7 +45,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 // ========== UNTUK SEMUA ROLE YANG LOGIN ==========
-Route::middleware(['auth', 'role:admin,staff'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     // Pricelists
     Route::get('pricelists', [PricelistController::class, 'index'])->name('pricelists.index');
     Route::get('pricelists/create', [PricelistController::class, 'create'])->name('pricelists.create');
