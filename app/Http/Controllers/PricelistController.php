@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Currency;
 use App\Models\HeaderLogo;
 use App\Models\PriceList;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -13,7 +14,10 @@ class PricelistController extends Controller
 {
     public function index()
     {
-        $data = PriceList::all();
+        $data = PriceList::where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('data.view_pricelist', compact('data'));
     }
 
@@ -123,6 +127,7 @@ class PricelistController extends Controller
         try {
             // Ambil hanya field yang bisa di-update
             $dataToUpdate = [
+                'user_id' => Auth::id(),
                 'header_logo_id' => $request->header_logo_id,
                 'title' => $request->title,
                 'footer_text' => $request->footer_text,

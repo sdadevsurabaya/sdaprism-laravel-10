@@ -82,11 +82,7 @@
                     </div>
                 </div>
                 <div class="mb-3 row">
-                    <div class="col-md-6">
-                        <label class="form-label">Footer Text</label>
-                        <input type="text" class="form-control" id="footer_text" name="footer_text"
-                            value="{{ old('footer_text', $pricelist->footer_text ?? '') }}">
-                    </div>
+
                     <div class="col-md-6">
                         <label class="form-label">Date</label>
                         <div class="mb-2 input-group flatpickr me-2 mb-md-0" id="dashboardDate">
@@ -96,8 +92,7 @@
                                 id="date" name="date" value="{{ old('date', $pricelist->date ?? '') }}">
                         </div>
                     </div>
-                </div>
-                <div class="mb-3 row">
+
                     <div class="col-md-6">
                         <label class="form-label">Currency</label>
                         <select class="form-select text-capitalize" name="currency_id" id="currency_id">
@@ -108,6 +103,13 @@
                                 </option>
                             @endforeach
                         </select>
+                    </div>
+                </div>
+                <div class="mb-3 row d-none">
+                    <div class="col-md-6">
+                        <label class="form-label">Footer Text</label>
+                        <input type="text" class="form-control" id="footer_text" name="footer_text"
+                            value="{{ old('footer_text', $pricelist->footer_text ?? '') }}">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Show Payment Method</label>
@@ -124,9 +126,9 @@
                 <div class="mb-3 row">
                     <div class="col-md-12">
                         <label class="form-label">Notes</label>
-                        <textarea id="notes" name="notes" class="form-control" maxlength="100" rows="8"
-                            placeholder="This textarea has a limit of 100 chars.">{{ old('notes', $pricelist->notes ?? '') }}</textarea>
-
+                        <textarea id="notes" name="notes" class="form-control">
+                            {{ old('notes', $pricelist->notes ?? '') }}
+                        </textarea>
                     </div>
                 </div>
 
@@ -167,6 +169,7 @@
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script>
         // Define the initial table header structure
         let tableHead = [{
@@ -195,6 +198,12 @@
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         };
+
+        ClassicEditor
+        .create(document.querySelector('#notes'))
+        .catch(error => {
+            console.error(error);
+        });
 
         // ===== Utility Functions =====
 
