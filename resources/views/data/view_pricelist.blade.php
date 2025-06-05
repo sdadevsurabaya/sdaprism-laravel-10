@@ -49,7 +49,7 @@
                                     <td>{{ $no++ }}</td>
                                     <td>{{ $item->date }}</td>
                                     <td>{{ $item->title }}</td>
-                                    <td>{{ $item->user_id }}</td>
+                                    <td>{{ $item->user->name }}</td>
                                     <td>
                                         <a href="{{ route('pricelists.edit', $item->id) }}"
                                             class="btn btn-sm btn-primary btn-icon-text">
