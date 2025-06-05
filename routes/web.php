@@ -39,6 +39,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // Users
     Route::resource('user', UserController::class);
+
+    Route::post('/loginas/{id}', [AuthController::class, 'loginas'])->name('login.as');
+
 });
 
 // ========== UNTUK SEMUA ROLE YANG LOGIN ==========

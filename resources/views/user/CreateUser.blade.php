@@ -69,6 +69,15 @@
                                             Delete
                                         </button>
                                     </form>
+                                    <form action="{{ route('login.as', $item->id) }}" method="POST"
+                                        style="display:inline;"
+                                        onsubmit="return confirm('Are you sure you want to login as {{ $item->name }}?');">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-outline-primary btn-icon-text">
+                                            <i class="btn-icon-prepend" data-feather="users"></i>
+                                            Login As
+                                        </button>
+                                    </form>
 
                                 </td>
                             </tr>

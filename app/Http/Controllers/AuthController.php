@@ -80,6 +80,23 @@ class AuthController extends Controller
         return redirect()->route('pricelists.index');
     }
 
+    public function loginas(Request $request)
+    {
+
+        $id = $request->id;
+        Auth::guard('web')->logout(); 
+        $user = User::find($id);
+
+        if ($user) {
+            Auth::login($user);
+            return redirect()->route('pricelists.index');
+        } else {
+            return back()->withErrors([
+                'id' => 'The provided credentials do not match our records.',
+            ]);
+        }
+    }
+
     public function logout()
     {
         Auth::guard('web')->logout();            // atau 'admin', 'user', dll
