@@ -56,4 +56,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(RolesUser::class, 'users_id');
     }
+
+    public function priceLists(){
+        return $this->hasMany(PriceList::class, 'user_id');
+    }
 }
