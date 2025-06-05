@@ -3823,12 +3823,12 @@ div.tox .tox-button:not(.tox-button--naked):not(.tox-button--secondary) {
     --bs-btn-bg: #8a2432;
     --bs-btn-border-color: #8a2432;
     --bs-btn-hover-color: #fff;
-    --bs-btn-hover-bg: #5660d9;
-    --bs-btn-hover-border-color: #515acc;
+    --bs-btn-hover-bg: #aa5963;
+    --bs-btn-hover-border-color: #8a2432;
     --bs-btn-focus-shadow-rgb: 124, 134, 255;
     --bs-btn-active-color: #fff;
-    --bs-btn-active-bg: #515acc;
-    --bs-btn-active-border-color: #4c55bf;
+    --bs-btn-active-bg: #8a2432;
+    --bs-btn-active-border-color: #8a2432;
     --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
     --bs-btn-disabled-color: #fff;
     --bs-btn-disabled-bg: #8a2432;
@@ -19408,7 +19408,7 @@ body {
 .nobleui-logo {
     font-weight: 700;
     font-size: 25px;
-    color: #000865
+    color: #8a2432
 }
 
 .nobleui-logo span {
@@ -19417,7 +19417,7 @@ body {
 }
 
 .nobleui-logo:hover {
-    color: #000865
+    color: #8a2432
 }
 
 [data-bs-theme=dark] .nobleui-logo {
@@ -22237,7 +22237,7 @@ div.tox .btn-icon-text.btn-lg.tox-button .btn-icon-prepend {
 .auth-page .auth-side-wrapper {
     width: 100%;
     height: 100%;
-    background-image: url(../../images/photos/img6.jpg);
+    background-image: url(../images/photos/img6.jpg);
     background-size: cover
 }
 

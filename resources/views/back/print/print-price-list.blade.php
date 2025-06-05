@@ -137,6 +137,11 @@
             display: flex !important;
             /* align-items: center; */
         }
+
+        p {
+            margin: 0;
+            padding: 0;
+        }
     </style>
 </head>
 
@@ -166,24 +171,29 @@
                     <div class="gradient">
                         <strong>Note:</strong>
                         <br>
-                        {{ $footer }}
+                        {!! $footer !!}
+
                         {{-- 1. Prices are subject to change without prior notice<br>
                         2. FOB Surabaya or Jakarta<br>
                         3. Valid until 30 September 2024 --}}
                     </div>
                 </td>
                 <td width="30%" style="vertical-align: middle;">
-                    <img src="{{ public_path('assets/logo/telpon.png') }}" class="img-fluid" style="max-width:180px;">
+                    <img src="{{ public_path('assets/logo/telpon.png') }}" class="img-fluid" style="max-width:150px;">
                 </td>
-                <td width="23%" style="vertical-align: middle;">
+                <td width="23%" style="vertical-align: middle; text-align:left;">
                     <img src="{{ public_path('assets/logo/online-store.png') }}" class="img-fluid"
                         style="max-width: 74px;">
                     <img src="{{ public_path('assets/logo/toko-logo.png') }}" alt="Toko SDA Logo"
                         style="height: 20px;"><br>
                 </td>
-                <td width="20%" style="vertical-align: middle; text-align:right;">
+                <td width="30%" style="vertical-align: middle; text-align:right;">
                     <table>
                         <tr>
+                            <td style="vertical-align: middle;">
+                            </td>
+                            <td style="vertical-align: middle;">
+                            </td>
                             <td style="vertical-align: middle;">
                                 <h5 class="m-0" style=" font-size: 25px; color:#222;">SDA</h5>
                             </td>
@@ -201,8 +211,11 @@
     </footer>
 
     <main>
-        <div style="text-align: center; margin-bottom: 10px;">
+        {{-- <div style="text-align: center; margin-bottom: 10px;">
             <img src="{{ public_path($logo) }}" width="50%">
+        </div> --}}
+        <div style="text-align: center; margin-bottom: 10px;">
+            <img src="{{ public_path($logo) }}" class="img-fluid">
         </div>
 
         <table class="table" border="0">
@@ -210,17 +223,52 @@
                 <tr>
                     <th>No</th>
                     @foreach ($header as $h)
-                        <th>{{ $h->label }}</th>
+                        @if ($h->id === 'price')
+                            <th>{{ $h->label }} ({{ $currency }})</th>
+                        @else
+                            <th>{{ $h->label }}</th>
+                        @endif
                     @endforeach
                 </tr>
             </thead>
             <tbody id="modal-table-body">
+                @php
+                    function formatCurrency($amount, $curr = 'Rp')
+                    {
+                        $amount = $amount ?? 0;
+                        $decimals = $curr === 'Rp' ? 0 : 2;
+                        $formatted =
+                            $curr === 'Rp'
+                                ? number_format($amount, $decimals, ',', '.')
+                                : number_format($amount, $decimals, '.', ',');
+
+                        return [
+                            'symbol' => $curr,
+                            'value' => $formatted,
+                        ];
+                    }
+                @endphp
                 @foreach ($body as $row)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         @foreach ($header as $col)
                             @if ($col->id === 'price')
-                                <td align="right">{{ $currency }}{{ $row[$col->id] ?? '' }}</td>
+                                @php
+                                    $formatted = formatCurrency($row[$col->id] ?? 0, $currency);
+                                @endphp
+                                <td>
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                                        style="border: none !important;">
+                                        <tr>
+                                            <td
+                                                style="text-align: left; width: 30%;border: none !important;margin: 0;padding: 0;">
+                                                {{ $formatted['symbol'] }}</td>
+                                            <td
+                                                style="text-align: right; width: 70%;border: none !important;margin: 0;padding: 0;">
+                                                {{ $formatted['value'] }}</td>
+                                        </tr>
+                                    </table>
+                                </td>
                             @else
                                 <td>{{ $row[$col->id] ?? '' }}</td>
                             @endif

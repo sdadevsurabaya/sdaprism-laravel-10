@@ -37,4 +37,5 @@
     <!-- End layout styles -->
     <link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap5.css') }}">
     <link rel="shortcut icon" href="{{ asset('assets/logo/icon-new-24.ico') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 </head>

@@ -71,11 +71,11 @@ class PriceListController extends Controller
         }, $dataTable->data);
 
         $pdf = Pdf::loadView('back.print.print-price-list', [
-            'header' => $headers,
-            'logo'   => $logoPath,
-            'currency'   => $currency,
-            'body'   => $body,
-            'footer' => $pricelist->footer_text,
+            'header'    => $headers,
+            'logo'      => $logoPath,
+            'currency'  => $currency,
+            'body'      => $body,
+            'footer'    => $pricelist->notes,
         ]);
 
         return $pdf->stream($pricelist->title . '.pdf');
