@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Currency;
@@ -87,7 +88,16 @@ class PricelistController extends Controller
 
     public function show(PriceList $pricelist)
     {
-        // return view('data.view_pricelist_single', compact('pricelist'));
+        $pl = PriceList::where('user_id', Auth::id())
+            ->where('id', $pricelist->id)
+            ->firstOrFail();
+
+        // kalau Anda ubah view untuk menerima $pl langsung:
+        // return view('data.view_pricelist_single', compact('pl'));
+
+        // atau tetap kompatibel dengan view di atas (pakai $data collection):
+        $data = collect([$pl]);
+        return view('data.view_pricelist_single', compact('data'));
     }
 
     public function edit(PriceList $pricelist)
