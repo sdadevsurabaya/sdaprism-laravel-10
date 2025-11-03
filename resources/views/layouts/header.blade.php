@@ -36,6 +36,9 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <!-- End layout styles -->
     <link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap5.css') }}">
-    <link rel="shortcut icon" href="{{ asset('assets/logo/icon-new-24.ico') }}">
+    {{-- <link rel="shortcut icon" href="{{ asset('assets/logo/icon-new-24.ico') }}"> --}}
+    {{-- Favicon / PWA (sesuaikan asetmu) --}}
+    <link rel="icon" type="image/png" href="https://sda.co.id/assets/img/logo/favicon.png">
+    <link rel="shortcut icon" href="https://sda.co.id/assets/img/icon-sda.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 </head>
