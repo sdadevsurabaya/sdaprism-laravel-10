@@ -48,8 +48,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     // Pricelists
     Route::get('pricelists', [PricelistController::class, 'index'])->name('pricelists.index');
-    Route::get('pricelists/{pricelist}', [PricelistController::class, 'show'])->name('pricelists.show');
     Route::get('pricelists/create', [PricelistController::class, 'create'])->name('pricelists.create');
+    Route::get('pricelists/{pricelist}', [PricelistController::class, 'show'])->name('pricelists.show');
+
     Route::post('pricelists', [PricelistController::class, 'store'])->name('pricelists.store');
     Route::get('pricelists/{pricelist}/edit', [PricelistController::class, 'edit'])->name('pricelists.edit');
     Route::put('pricelists/{pricelist}', [PricelistController::class, 'update'])->name('pricelists.update');

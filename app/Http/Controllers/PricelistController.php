@@ -25,6 +25,7 @@ class PricelistController extends Controller
 
     public function create()
     {
+
         $logo     = HeaderLogo::all();
         $currency = Currency::all();
         return view('forms.pricelist', compact('logo', 'currency'));

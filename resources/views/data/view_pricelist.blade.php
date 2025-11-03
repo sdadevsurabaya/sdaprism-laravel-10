@@ -51,6 +51,11 @@
                                     <td>{{ $item->title }}</td>
                                     <td>{{ $item->user->name }}</td>
                                     <td>
+                                         <a href="{{ route('pricelists.show', $item->id) }}"
+                                            class="btn btn-sm btn-primary btn-icon-text">
+                                            <i class="btn-icon-prepend" data-feather="list"></i>
+                                            List
+                                        </a>
                                         <a href="{{ route('pricelists.edit', $item->id) }}"
                                             class="btn btn-sm btn-primary btn-icon-text">
                                             <i class="btn-icon-prepend" data-feather="edit"></i>
