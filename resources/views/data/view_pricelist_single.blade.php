@@ -68,7 +68,7 @@
           <table id="priceTable" class="table table-bordered dt-responsive w-100">
             <thead class="table-light">
               <tr>
-                <th></th> kolom tombol +
+                <th></th> {{-- kolom tombol + --}}
                 @foreach($cols as $col)
                   <th data-id="{{ $col['id'] }}" @if(!empty($col['hidden'])) data-hidden="1" @endif>
                     {{ $col['label'] }}
@@ -87,7 +87,7 @@
               </tr>
             </thead>
 
-            <tbody>
+            <tbody style="word-wrap:break-word;">
               @foreach($rows as $r)
                 <tr>
                   <td></td> {{-- tempat tombol + --}}
