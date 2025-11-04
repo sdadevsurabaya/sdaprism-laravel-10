@@ -1,23 +1,25 @@
 @extends('layouts.layout')
 
-@section('title','Price List')
+@section('title', 'Price List')
 
 @section('css')
-<link href="{{ URL::asset('/assets/libs/datatables/datatables.min.css') }}" rel="stylesheet" />
-<style>
-  /* Bebaskan text table supaya tidak overflow */
-  table.dataTable td, table.dataTable th { white-space: normal; word-break: break-word; }
-  /* Kartu mobile */
-  .card-price{font-weight:700}
-  .card-title{font-size:1rem;margin-bottom:.25rem}
-  .card-subtle{color:#6c757d;font-size:.85rem}
-  .sticky-actions{position:sticky;top:.5rem;z-index:3}
-</style>
+  {{-- DataTables + Responsive (jQuery) --}}
+  <link href="{{ URL::asset('/assets/libs/datatables/datatables.min.css') }}" rel="stylesheet" />
+  {{-- Jika punya theme responsive css terpisah, aktifkan baris di bawah --}}
+  {{-- <link href="{{ URL::asset('/assets/libs/datatables/responsive.bootstrap5.min.css') }}" rel="stylesheet" /> --}}
+
+  <style>
+    table.dataTable td, table.dataTable th { white-space: normal; word-break: break-word; }
+    .card-price{font-weight:700}
+    .card-title{font-size:1rem;margin-bottom:.25rem}
+    .card-subtle{color:#0a81e9;font-size:.85rem}
+    .sticky-actions{position:sticky;top:.5rem;z-index:3}
+  </style>
 @endsection
 
 @section('content')
 <div class="container-fluid">
-  @if($data->isEmpty())
+  @if ($data->isEmpty())
     <div class="alert alert-warning mb-0">Price list tidak ditemukan atau akses ditolak.</div>
   @else
     @php
@@ -25,7 +27,8 @@
       $json = json_decode($pl->datatable_data, true) ?: ['header'=>[], 'data'=>[]];
       $cols = collect($json['header'] ?? []);
       $rows = $json['data']   ?? [];
-      $mobilePrimary = ['brand','description','part_no.','price'];
+      // untuk prioritas responsive (yang penting ditampilkan duluan)
+      $priorityOrder = ['brand','description','part_no.','price'];
     @endphp
 
     <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
@@ -43,7 +46,7 @@
       </div>
     </div>
 
-    @if(!empty($pl->notes))
+    @if (!empty($pl->notes))
       <div class="alert alert-info py-2">{!! $pl->notes !!}</div>
     @endif
 
@@ -58,38 +61,14 @@
       </div>
     </div>
 
-    {{-- ===== MOBILE: Card List (hanya tampil di < md) ===== --}}
-    <div id="mobileCards" class="d-block d-md-none">
-      <div id="cardsContainer" class="row g-2"></div>
-      @if(!empty($pl->footer_text))
-        <div class="mt-2">{!! $pl->footer_text !!}</div>
-      @endif
-    </div>
-
-    {{-- Panel filter per kolom (mobile – collapse) --}}
-    <div class="collapse mt-2 d-md-none" id="mobileFilters">
-      <div class="card card-body">
-        <div class="row g-2">
-          @foreach($cols as $i => $col)
-            @if(empty($col['hidden']))
-              <div class="col-12">
-                <label class="form-label small mb-1">{{ $col['label'] }}</label>
-                <input type="text" class="form-control form-control-sm mobile-col-filter"
-                       data-col-index="{{ $i }}" placeholder="Filter {{ $col['label'] }}">
-              </div>
-            @endif
-          @endforeach
-        </div>
-      </div>
-    </div>
-
-    {{-- ===== DESKTOP: DataTable (hanya tampil di ≥ md) ===== --}}
-    <div class="card d-none d-md-block">
+    {{-- ===== Tabel Responsive (+) di kolom pertama ===== --}}
+    <div class="card">
       <div class="card-body">
         <div class="table-responsive">
-          <table id="priceTable" class="table table-striped table-bordered align-middle w-100">
-            <thead>
+          <table id="priceTable" class="table table-bordered dt-responsive nowrap w-100">
+            <thead class="table-light">
               <tr>
+                <th></th> {{-- kolom tombol + --}}
                 @foreach($cols as $col)
                   <th data-id="{{ $col['id'] }}" @if(!empty($col['hidden'])) data-hidden="1" @endif>
                     {{ $col['label'] }}
@@ -97,22 +76,26 @@
                 @endforeach
               </tr>
               <tr class="filters d-none">
+                <th></th> {{-- empty filter untuk kolom tombol + --}}
                 @foreach($cols as $col)
                   <th>
-                    <input type="text" class="form-control form-control-sm column-search @if(!empty($col['hidden'])) d-none @endif"
-                           placeholder="Cari {{ $col['label'] }}">
+                    <input type="text"
+                      class="form-control form-control-sm column-search @if(!empty($col['hidden'])) d-none @endif"
+                      placeholder="Cari {{ $col['label'] }}">
                   </th>
                 @endforeach
               </tr>
             </thead>
+
             <tbody>
               @foreach($rows as $r)
                 <tr>
+                  <td></td> {{-- tempat tombol + --}}
                   @foreach($cols as $col)
-                    @php $key=$col['id']; $val=$r[$key]??''; @endphp
+                    @php $key = $col['id']; $val = $r[$key] ?? ''; @endphp
                     <td>
-                      @if($key==='price')
-                        {{ number_format((float)$val,0,',','.') }}
+                      @if($key === 'price')
+                        {{ is_numeric($val) ? number_format((float)$val,0,',','.') : $val }}
                       @else
                         {{ $val }}
                       @endif
@@ -121,9 +104,10 @@
                 </tr>
               @endforeach
             </tbody>
+
             <tfoot>
               @if(!empty($pl->footer_text))
-                <tr><td colspan="{{ $cols->count() }}">{!! $pl->footer_text !!}</td></tr>
+                <tr><td colspan="{{ $cols->count() + 1 }}">{!! $pl->footer_text !!}</td></tr>
               @endif
             </tfoot>
           </table>
@@ -135,184 +119,68 @@
 @endsection
 
 @push('scripts')
-<script src="{{ URL::asset('/assets/libs/datatables/datatables.min.js') }}"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  // data dari server
-  const rowsData = @json($rows);
-  const headers  = @json($cols->values());
-  const mobilePrimary = @json($mobilePrimary);
+  {{-- Pastikan jQuery sudah di-load di layout sebelum baris ini --}}
+  <script src="{{ URL::asset('/assets/libs/datatables/datatables.min.js') }}"></script>
+  {{-- Jika responsive JS terpisah, aktifkan baris di bawah --}}
+  {{-- <script src="{{ URL::asset('/assets/libs/datatables/dataTables.responsive.min.js') }}"></script> --}}
 
-  const tableEl   = document.getElementById('priceTable');
-  const globalEl  = document.getElementById('globalSearch');
-  const filterRow = tableEl ? tableEl.querySelector('thead tr.filters') : null;
-  const btnToggle = document.getElementById('btnToggleFilters');
+  <script>
+  $(function () {
+    const $table = $('#priceTable');
+    const $global = $('#globalSearch');
+    const $filterRow = $table.find('thead tr.filters');
+    const $btnToggle = $('#btnToggleFilters');
 
-  // === breakpoint: mobile < md
-  const isMobile = window.matchMedia('(max-width: 767.98px)').matches;
+    // siapkan columnDefs dari data-hidden & responsive priority
+    const ths = $table.find('thead tr:first th').toArray();
+    const columnDefs = [];
 
-  /* =======================
-   *  MOBILE: CARD LIST
-   * ======================= */
-  (function wireMobileCards(){
-    const wrap = document.getElementById('cardsContainer');
-    if (!wrap) return;
+    // kolom 0 adalah tombol detail
+    columnDefs.push({ className: 'dtr-control', orderable: false, targets: 0 });
 
-    function render(list){
-      wrap.innerHTML = '';
-      list.forEach(row => {
-        const brand = row['brand'] ?? '-';
-        const desc  = row['description'] ?? '-';
-        const part  = row['part_no.'] ?? row['part_no'] ?? '-';
-        const price = row['price'] ?? '';
-        const priceFmt = (price!=='' && !isNaN(price)) ? new Intl.NumberFormat('id-ID').format(Number(price)) : price;
+    // atur visibility dan priority untuk kolom data (mulai index 1)
+    const priorityOrder = @json($priorityOrder);
+    const idByIndex = ths.map((th, i) => $(th).data('id') || null); // [null, 'id', 'brand', ...]
+    for (let i = 1; i < ths.length; i++) {
+      const $th = $(ths[i]);
+      const hidden = $th.data('hidden') === 1 || $th.data('hidden') === '1';
+      const colId = idByIndex[i];
 
-        const el = document.createElement('div');
-        el.className = 'col-12';
-        el.innerHTML = `
-          <div class="card shadow-sm">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-start">
-                <div class="me-3">
-                  <div class="card-title mb-0">${brand}</div>
-                  <div class="card-subtle mb-1">${part}</div>
-                </div>
-                <div class="card-price">Rp ${priceFmt}</div>
-              </div>
-              <div class="mt-1">${desc}</div>
-              <div class="mt-2 small text-muted">
-                ${
-                  headers.filter(h => !mobilePrimary.includes(h.id) && !h.hidden)
-                         .map(h => `<div><strong>${h.label}:</strong> ${row[h.id] ?? '-'}</div>`).join('')
-                }
-              </div>
-            </div>
-          </div>`;
-        wrap.appendChild(el);
-      });
-    }
-
-    function apply(){
-      const q = (globalEl?.value || '').toLowerCase();
-      const colFilters = {};
-      document.querySelectorAll('.mobile-col-filter').forEach(i => {
-        colFilters[i.dataset.colIndex] = (i.value || '').toLowerCase();
-      });
-
-      const out = rowsData.filter(row => {
-        const hay = [row['brand']||'', row['description']||'',
-                     row['part_no.']||row['part_no']||'', String(row['price']||'')].join(' ').toLowerCase();
-        if (q && !hay.includes(q)) return false;
-        for (const [idx,val] of Object.entries(colFilters)) {
-          if (!val) continue;
-          const key = headers[idx].id;
-          const cell = String(row[key] ?? '').toLowerCase();
-          if (!cell.includes(val)) return false;
-        }
-        return true;
-      });
-
-      render(out);
-    }
-
-    // initial & listeners
-    render(rowsData);
-    if (globalEl) globalEl.addEventListener('keyup', apply);
-    document.querySelectorAll('.mobile-col-filter').forEach(inp => {
-      ['keyup','change'].forEach(ev => inp.addEventListener(ev, apply));
-    });
-  })();
-
-  /* =======================
-   *  MOBILE: ONLY collapse
-   * ======================= */
-  if (isMobile) {
-    if (btnToggle) {
-      btnToggle.addEventListener('click', function () {
-        const mobileCollapse = document.getElementById('mobileFilters');
-        if (mobileCollapse && typeof bootstrap !== 'undefined') {
-          const c = bootstrap.Collapse.getOrCreateInstance(mobileCollapse);
-          c.toggle();
-        }
-      });
-    }
-    return; // penting: JANGAN init DataTables di mobile
-  }
-
-  /* =======================
-   *  DESKTOP: DATATABLES
-   * ======================= */
-  function buildColumnDefs() {
-    const ths = tableEl.querySelectorAll('thead tr:first-child th');
-    return Array.from(ths).map((th, idx) => ({
-      targets: idx, visible: th.dataset.hidden !== '1'
-    }));
-  }
-
-  const isV2 = (typeof window.DataTable === 'function') && !window.jQuery;
-  const columnDefs = buildColumnDefs();
-
-  if (isV2) {
-    const dt = new DataTable(tableEl, {
-      pageLength: 25,
-      orderCellsTop: true,
-      fixedHeader: true,
-      columnDefs,
-      initComplete: function () {
-        const api = this.api();
-        tableEl.api = api;
-
-        // filter per kolom (desktop)
-        api.columns().every(function () {
-          const colIdx = this.index();
-          const inp = tableEl.querySelector('thead tr.filters th:nth-child('+(colIdx+1)+') input');
-          if (!inp) return;
-          ['keyup','change'].forEach(ev => inp.addEventListener(ev, () => {
-            this.search(inp.value).draw();
-          }));
-        });
-
-        // global (desktop)
-        if (globalEl) globalEl.addEventListener('keyup', () => api.search(globalEl.value).draw());
+      const def = { targets: i, visible: !hidden };
+      // beri prioritas tinggi utk kolom penting agar tampil duluan saat viewport sempit
+      if (colId && priorityOrder.includes(colId)) {
+        def.responsivePriority = 1; // kecil = lebih prioritas; biar dibuka duluan
       }
-    });
-  } else if (window.jQuery && typeof jQuery.fn.DataTable === 'function') {
-    const $ = window.jQuery;
-    const dt = $(tableEl).DataTable({
-      pageLength: 25,
-      orderCellsTop: true,
-      fixedHeader: true,
-      columnDefs,
-      initComplete: function () {
-        const api = this.api();
-        tableEl.api = api;
-
-        // per kolom
-        api.columns().every(function () {
-          const col = this;
-          const inp = $(tableEl).find('thead tr.filters th').eq(col.index()).find('input');
-          if (!inp.length) return;
-          inp.on('keyup change', function () { col.search(this.value).draw(); });
-        });
-
-        // global
-        if (globalEl) $(globalEl).on('keyup change', function () {
-          api.search(this.value).draw();
-        });
-      }
-    });
-  }
-
-  // Toggle filters (desktop)
-  function toggleFiltersRow() {
-    if (!filterRow) return;
-    filterRow.classList.toggle('d-none');
-    if (tableEl && tableEl.api) {
-      try { tableEl.api.columns.adjust().draw(false); }
-      catch(e) { try { tableEl.api.draw(false); } catch(_) {} }
+      columnDefs.push(def);
     }
-  }
-  if (btnToggle) btnToggle.addEventListener('click', toggleFiltersRow);
-});
-</script>
+
+    const dt = $table.DataTable({
+      responsive: { details: { type: 'column', target: 0 } },
+      columnDefs,
+      order: [[1, 'asc']],      // urut berdasarkan kolom pertama data (bukan tombol)
+      pageLength: 25,
+      orderCellsTop: true
+    });
+
+    // Global search
+    $global.on('keyup change', function(){
+      dt.search(this.value).draw();
+    });
+
+    // Per-kolom search
+    dt.columns().every(function (idx) {
+      // idx==0 adalah kolom tombol +, lewati
+      if (idx === 0) return;
+      const $inp = $filterRow.find('th').eq(idx).find('input');
+      if (!$inp.length) return;
+      $inp.on('keyup change', () => this.search($inp.val()).draw());
+    });
+
+    // Toggle baris filter
+    $btnToggle.on('click', function(){
+      $filterRow.toggleClass('d-none');
+      dt.columns.adjust().draw(false);
+    });
+  });
+  </script>
 @endpush
