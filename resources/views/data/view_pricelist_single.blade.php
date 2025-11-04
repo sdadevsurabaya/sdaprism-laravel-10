@@ -4,39 +4,33 @@
 
 @section('css')
 
-    {{-- <link href="{{ URL::asset('/assets/libs/datatables/datatables.min.css') }}" rel="stylesheet" /> --}}
-    <style>
-        /* Bebaskan text table supaya tidak overflow */
-        table.dataTable td,
-        table.dataTable th {
-            white-space: normal;
-            word-break: break-word;
-        }
-
-        /* Kartu mobile */
-        .card-price {
-            font-weight: 700
-        }
-
-        .card-title {
-            font-size: 1rem;
-            margin-bottom: .25rem
-        }
-
-        .card-subtle {
-            color: #0a81e9;
-            font-size: .85rem
-        }
-
-        .sticky-actions {
-            position: sticky;
-            top: .5rem;
-            z-index: 3
-        }
-    </style>
 @endsection
 
 @section('content')
+    <style>
+        /* Full width & wrap yang rapi */
+        #priceTable {
+            table-layout: fixed;
+            /* kunci lebar kolom agar wrapping konsisten */
+            width: 100% !important;
+        }
+
+        /* Header: single-line + ellipsis, tidak ikut wrap */
+        #priceTable thead th {
+            white-space: nowrap !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Body: bebas wrap, termasuk kata panjang/URL/part number */
+        #priceTable tbody td {
+            white-space: normal !important;
+            word-break: break-word;
+            /* fallback */
+            overflow-wrap: anywhere;
+            /* modern */
+        }
+    </style>
     <div class="container-fluid">
         @if ($data->isEmpty())
             <div class="alert alert-warning mb-0">Price list tidak ditemukan atau akses ditolak.</div>
@@ -44,9 +38,21 @@
             @php
                 $pl = $data->first();
                 $json = json_decode($pl->datatable_data, true) ?: ['header' => [], 'data' => []];
-                $cols = collect($json['header'] ?? []);
+
+                // Normalisasi header: dukung format array atau string polos
+                $headers = collect($json['header'] ?? [])
+                    ->map(function ($h) {
+                        if (is_array($h)) {
+                            return [
+                                'label' => $h['label'] ?? ($h['name'] ?? ($h['title'] ?? '')),
+                                'hidden' => (int) !!($h['hidden'] ?? ($h['is_hidden'] ?? false)),
+                            ];
+                        }
+                        return ['label' => (string) $h, 'hidden' => 0];
+                    })
+                    ->values();
+
                 $rows = $json['data'] ?? [];
-                $mobilePrimary = ['brand', 'description', 'part_no.', 'price'];
             @endphp
 
             <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
@@ -75,141 +81,36 @@
                 <div class="col-12 col-md-6">
                     <div class="input-group sticky-actions">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input id="globalSearch" type="text" class="form-control"
-                            placeholder="Cari apa saja (brand, description, part no., price)">
+                        <input id="globalSearch" type="text" class="form-control" placeholder="Cari apa saja">
                         <button id="btnToggleFilters" class="btn btn-outline-secondary">Filters</button>
                     </div>
                 </div>
             </div>
 
-            {{-- ===== MOBILE: Card List (hanya tampil di < md) ===== --}}
-            {{-- <div id="mobileCards" class="d-block d-md-none">
-                <div id="cardsContainer" class="row g-2"></div>
-                @if (!empty($pl->footer_text))
-                    <div class="mt-2">{!! $pl->footer_text !!}</div>
-                @endif
-            </div> --}}
-
-            {{-- Panel filter per kolom (mobile – collapse) --}}
-            {{-- <div class="collapse mt-2 d-md-none" id="mobileFilters">
-                <div class="card card-body">
-                    <div class="row g-2">
-                        @foreach ($cols as $i => $col)
-                            @if (empty($col['hidden']))
-                                <div class="col-12">
-                                    <label class="form-label small mb-1">{{ $col['label'] }}</label>
-                                    <input type="text" class="form-control form-control-sm mobile-col-filter"
-                                        data-col-index="{{ $i }}" placeholder="Filter {{ $col['label'] }}">
-                                </div>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
-            </div> --}}
-
-            {{-- ===== DESKTOP: DataTable (hanya tampil di ≥ md) ===== --}}
-            {{-- <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="priceTable" class="table table-bordered dt-responsive nowrap w-100">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    @foreach ($cols as $col)
-                                        <th data-id="{{ $col['id'] }}"
-                                            @if (!empty($col['hidden'])) data-hidden="1" @endif>
-                                            {{ $col['label'] }}
-                                        </th>
-                                    @endforeach
-                                </tr>
-                                <tr class="filters d-none">
-                                    @foreach ($cols as $col)
-                                        <th>
-                                            <input type="text"
-                                                class="form-control form-control-sm column-search @if (!empty($col['hidden'])) d-none @endif"
-                                                placeholder="Cari {{ $col['label'] }}">
-                                        </th>
-                                    @endforeach
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($rows as $r)
-                                    <tr>
-                                        <td></td>
-                                        @foreach ($cols as $col)
-                                            @php
-                                                $key = $col['id'];
-                                                $val = $r[$key] ?? '';
-                                            @endphp
-                                            <td>
-                                                @if ($key === 'price')
-                                                    {{ number_format((float) $val, 0, ',', '.') }}
-                                                @else
-                                                    {{ $val }}
-                                                @endif
-                                            </td>
-                                        @endforeach
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                            <tfoot>
-                                @if (!empty($pl->footer_text))
-                                    <tr>
-                                        <td colspan="{{ $cols->count() }}">{!! $pl->footer_text !!}</td>
-                                    </tr>
-                                @endif
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-            </div> --}}
+            {{-- Tabel: tanpa dt-responsive & tanpa nowrap (tidak collapse di mobile) --}}
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title mb-3">Daftar Pelanggan</h4>
+                            <h4 class="card-title mb-3">Daftar Item Price List</h4>
                             <div class="table-responsive">
-                                <table id="priceTable" class="table table-bordered dt-responsive nowrap w-100">
+                                <table id="priceTable" class="table table-bordered w-100">
                                     <thead class="table-light">
                                         <tr>
-                                            <th></th> <!-- tombol + -->
-                                            <th>ID</th>
-                                            <th>Nama</th>
-                                            <th>Email</th>
-                                            <th>Kota</th>
-                                            <th>Telepon</th>
-                                            <th>Aksi</th>
+                                            @foreach ($headers as $h)
+                                                <th data-hidden="{{ $h['hidden'] ? 1 : 0 }}">{{ $h['label'] }}</th>
+                                            @endforeach
+                                        </tr>
+                                        <tr class="filters d-none">
+                                            @foreach ($headers as $h)
+                                                <th>
+                                                    <input type="text" class="form-control form-control-sm"
+                                                        placeholder="Filter {{ $h['label'] }}">
+                                                </th>
+                                            @endforeach
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td></td>
-                                            <td>1</td>
-                                            <td>Andi Saputra</td>
-                                            <td>andi@example.com</td>
-                                            <td>Jakarta</td>
-                                            <td>08123456789</td>
-                                            <td><button class="btn btn-sm btn-primary">Edit</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td>2</td>
-                                            <td>Siti Aminah</td>
-                                            <td>siti@example.com</td>
-                                            <td>Bandung</td>
-                                            <td>08987654321</td>
-                                            <td><button class="btn btn-sm btn-danger">Hapus</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td>3</td>
-                                            <td>Rizal Fadilah</td>
-                                            <td>rizal@example.com</td>
-                                            <td>Surabaya</td>
-                                            <td>08122334455</td>
-                                            <td><button class="btn btn-sm btn-info">Detail</button></td>
-                                        </tr>
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                             </div>
                         </div>
@@ -222,214 +123,137 @@
 
 @push('scripts')
     <script>
-        $(document).ready(function() {
-            $('#priceTable').DataTable({
-                responsive: {
-                    details: {
-                        type: 'column', // tombol di kolom pertama
-                        target: 0
+        $(function() {
+            /** ====== DATA & KONVERSI ====== */
+            const rowsData = @json($rows ?? []);
+            const headersObj = @json($headers ?? []);
+            const currency = @json($pl->currency->code ?? 'IDR');
+
+            const headerLabels = headersObj.map(h => h.label || '');
+            const hiddenFlags = headersObj.map(h => !!(h.hidden));
+
+            function toKey(label) {
+                return String(label || '')
+                    .trim().toLowerCase()
+                    .replace(/\s+/g, ' ')
+                    .replace(/[^\w]+/g, '_')
+                    .replace(/^_+|_+$/g, '');
+            }
+
+            function convertRows(rows, headers) {
+                const keys = headers.map(toKey);
+                return (rows || []).map(row => {
+                    if (Array.isArray(row)) {
+                        const o = {};
+                        for (let i = 0; i < keys.length; i++) o[keys[i]] = row[i] ?? '';
+                        return o;
                     }
-                },
-                columnDefs: [{
-                    className: 'dtr-control', // tambahkan kontrol
-                    orderable: false,
-                    targets: 0
-                }],
-                order: [1, 'asc']
+                    const o = {};
+                    for (let i = 0; i < headers.length; i++) {
+                        const label = headers[i];
+                        const k = keys[i];
+                        o[k] = row[label] ?? row[k] ?? '';
+                    }
+                    return o;
+                });
+            }
+
+            function renderCurrency(val) {
+                const num = Number((val ?? '').toString().replace(/[^\d.-]/g, ''));
+                if (!isFinite(num)) return val ?? '';
+                try {
+                    return new Intl.NumberFormat('id-ID', {
+                        style: 'currency',
+                        currency: currency || 'IDR',
+                        maximumFractionDigits: 0
+                    }).format(num);
+                } catch (_) {
+                    return num.toLocaleString('id-ID');
+                }
+            }
+
+            const dataConverted = convertRows(rowsData, headerLabels);
+
+            /** ====== DATATABLES: non-responsive (tidak collapse) + performa ====== */
+            const priceTable = $('#priceTable');
+
+            const dtColumns = headerLabels.map(lbl => {
+                const key = toKey(lbl);
+                const isPrice = /(^|[^a-z])(price|harga)([^a-z]|$)/i.test(lbl);
+                return isPrice ? {
+                    data: key,
+                    render: d => renderCurrency(d),
+                    defaultContent: ''
+                } : {
+                    data: key,
+                    defaultContent: ''
+                };
             });
-        });
-    </script>
-    {{-- <script src="{{ URL::asset('/assets/libs/datatables/datatables.min.js') }}"></script> --}}
-    {{-- <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // data dari server
-            const rowsData = @json($rows);
-            const headers = @json($cols->values());
-            const mobilePrimary = @json($mobilePrimary);
 
-            const tableEl = document.getElementById('priceTable');
-            const globalEl = document.getElementById('globalSearch');
-            const filterRow = tableEl ? tableEl.querySelector('thead tr.filters') : null;
-            const btnToggle = document.getElementById('btnToggleFilters');
+            // Kolom hidden langsung by index (tanpa offset kolom kontrol)
+            const hiddenTargets = [];
+            hiddenFlags.forEach((flag, i) => {
+                if (flag) hiddenTargets.push(i);
+            });
 
-            // === breakpoint: mobile < md
-            const isMobile = window.matchMedia('(max-width: 767.98px)').matches;
-
-            /* =======================
-             *  MOBILE: CARD LIST
-             * ======================= */
-            (function wireMobileCards() {
-                const wrap = document.getElementById('cardsContainer');
-                if (!wrap) return;
-
-                function render(list) {
-                    wrap.innerHTML = '';
-                    list.forEach(row => {
-                        const brand = row['brand'] ?? '-';
-                        const desc = row['description'] ?? '-';
-                        const part = row['part_no.'] ?? row['part_no'] ?? '-';
-                        const price = row['price'] ?? '';
-                        const priceFmt = (price !== '' && !isNaN(price)) ? new Intl.NumberFormat(
-                            'id-ID').format(Number(price)) : price;
-
-                        const el = document.createElement('div');
-                        el.className = 'col-12';
-                        el.innerHTML = `
-          <div class="card shadow-sm">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-start">
-                <div class="me-3">
-                  <div class="card-title mb-0">${brand}</div>
-                  <div class="card-subtle mb-1">${part}</div>
-                </div>
-                <div class="card-price">Rp ${priceFmt}</div>
-              </div>
-              <div class="mt-1">${desc}</div>
-              <div class="mt-2 small text-muted">
-                ${
-                  headers.filter(h => !mobilePrimary.includes(h.id) && !h.hidden)
-                         .map(h => `<div><strong>${h.label}:</strong> ${row[h.id] ?? '-'}</div>`).join('')
+            let firstVisibleCol = 0;
+            for (let i = 0; i < hiddenFlags.length; i++) {
+                if (!hiddenFlags[i]) {
+                    firstVisibleCol = i;
+                    break;
                 }
-              </div>
-            </div>
-          </div>`;
-                        wrap.appendChild(el);
-                    });
-                }
-
-                function apply() {
-                    const q = (globalEl?.value || '').toLowerCase();
-                    const colFilters = {};
-                    document.querySelectorAll('.mobile-col-filter').forEach(i => {
-                        colFilters[i.dataset.colIndex] = (i.value || '').toLowerCase();
-                    });
-
-                    const out = rowsData.filter(row => {
-                        const hay = [row['brand'] || '', row['description'] || '',
-                            row['part_no.'] || row['part_no'] || '', String(row['price'] || '')
-                        ].join(' ').toLowerCase();
-                        if (q && !hay.includes(q)) return false;
-                        for (const [idx, val] of Object.entries(colFilters)) {
-                            if (!val) continue;
-                            const key = headers[idx].id;
-                            const cell = String(row[key] ?? '').toLowerCase();
-                            if (!cell.includes(val)) return false;
-                        }
-                        return true;
-                    });
-
-                    render(out);
-                }
-
-                // initial & listeners
-                render(rowsData);
-                if (globalEl) globalEl.addEventListener('keyup', apply);
-                document.querySelectorAll('.mobile-col-filter').forEach(inp => {
-                    ['keyup', 'change'].forEach(ev => inp.addEventListener(ev, apply));
-                });
-            })();
-
-            /* =======================
-             *  MOBILE: ONLY collapse
-             * ======================= */
-            if (isMobile) {
-                if (btnToggle) {
-                    btnToggle.addEventListener('click', function() {
-                        const mobileCollapse = document.getElementById('mobileFilters');
-                        if (mobileCollapse && typeof bootstrap !== 'undefined') {
-                            const c = bootstrap.Collapse.getOrCreateInstance(mobileCollapse);
-                            c.toggle();
-                        }
-                    });
-                }
-                return; // penting: JANGAN init DataTables di mobile
             }
 
-            /* =======================
-             *  DESKTOP: DATATABLES
-             * ======================= */
-            function buildColumnDefs() {
-                const ths = tableEl.querySelectorAll('thead tr:first-child th');
-                return Array.from(ths).map((th, idx) => ({
-                    targets: idx,
-                    visible: th.dataset.hidden !== '1'
-                }));
-            }
+            const dt = priceTable.DataTable({
+                data: dataConverted,
+                columns: dtColumns,
 
-            const isV2 = (typeof window.DataTable === 'function') && !window.jQuery;
-            const columnDefs = buildColumnDefs();
+                // Performa untuk data besar
+                deferRender: true,
+                searchDelay: 400,
+                orderMulti: false,
+                processing: true,
+                stateSave: true,
+                pageLength: 25,
+                lengthMenu: [25, 50, 100, 250, 500, 1000],
 
-            if (isV2) {
-                const dt = new DataTable(tableEl, {
-                    pageLength: 25,
-                    orderCellsTop: true,
-                    fixedHeader: true,
-                    columnDefs,
-                    initComplete: function() {
-                        const api = this.api();
-                        tableEl.api = api;
+                // NON-RESPONSIVE: tidak collapse child rows di mobile
+                responsive: false,
 
-                        // filter per kolom (desktop)
-                        api.columns().every(function() {
-                            const colIdx = this.index();
-                            const inp = tableEl.querySelector('thead tr.filters th:nth-child(' +
-                                (colIdx + 1) + ') input');
-                            if (!inp) return;
-                            ['keyup', 'change'].forEach(ev => inp.addEventListener(ev, () => {
-                                this.search(inp.value).draw();
-                            }));
-                        });
+                // Hindari reflow berlebihan
+                autoWidth: false,
+                columnDefs: [{
+                    targets: hiddenTargets,
+                    visible: false
+                }],
+                order: [
+                    [firstVisibleCol, 'asc']
+                ],
+            });
 
-                        // global (desktop)
-                        if (globalEl) globalEl.addEventListener('keyup', () => api.search(globalEl
-                            .value).draw());
-                    }
-                });
-            } else if (window.jQuery && typeof jQuery.fn.DataTable === 'function') {
-                const $ = window.jQuery;
-                const dt = $(tableEl).DataTable({
-                    pageLength: 25,
-                    orderCellsTop: true,
-                    fixedHeader: true,
-                    columnDefs,
-                    initComplete: function() {
-                        const api = this.api();
-                        tableEl.api = api;
+            // Global search
+            $('#globalSearch').on('keyup change', function() {
+                dt.search(this.value).draw();
+            });
 
-                        // per kolom
-                        api.columns().every(function() {
-                            const col = this;
-                            const inp = $(tableEl).find('thead tr.filters th').eq(col.index())
-                                .find('input');
-                            if (!inp.length) return;
-                            inp.on('keyup change', function() {
-                                col.search(this.value).draw();
-                            });
-                        });
-
-                        // global
-                        if (globalEl) $(globalEl).on('keyup change', function() {
-                            api.search(this.value).draw();
-                        });
-                    }
-                });
-            }
-
-            // Toggle filters (desktop)
-            function toggleFiltersRow() {
+            // Toggle filter per kolom
+            const filterRow = document.querySelector('#priceTable thead tr.filters');
+            $('#btnToggleFilters').on('click', function() {
                 if (!filterRow) return;
                 filterRow.classList.toggle('d-none');
-                if (tableEl && tableEl.api) {
-                    try {
-                        tableEl.api.columns.adjust().draw(false);
-                    } catch (e) {
-                        try {
-                            tableEl.api.draw(false);
-                        } catch (_) {}
-                    }
-                }
+                dt.columns.adjust().draw(false);
+            });
+
+            // Wiring filter per kolom
+            if (filterRow) {
+                $('#priceTable thead tr.filters th').each(function(i) {
+                    const input = $(this).find('input');
+                    if (!input.length) return;
+                    input.on('keyup change', function() {
+                        dt.column(i).search(this.value).draw();
+                    });
+                });
             }
-            if (btnToggle) btnToggle.addEventListener('click', toggleFiltersRow);
         });
-    </script> --}}
+    </script>
 @endpush
