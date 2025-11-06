@@ -13,7 +13,7 @@
         @include('layouts.menu')
 
         <div class="page-wrapper"> {{-- Flex-grow aktif di sini --}}
-            <div class="page-content">
+            <div class="container-fluid container-lg">
                 @yield('content')
             </div>
 

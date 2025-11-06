@@ -30,6 +30,12 @@
             overflow-wrap: anywhere;
             /* modern */
         }
+
+        @media (max-width: 767.98px) {
+            #priceTable col {
+                width: auto !important;
+            }
+        }
     </style>
     <div class="container-fluid">
         @if ($data->isEmpty())
@@ -55,32 +61,38 @@
                 $rows = $json['data'] ?? [];
             @endphp
 
-            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
-                <div>
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+                <div class="d-flex justify-content-between w-100 align-content-center">
                     <h4 class="mb-1">{{ $pl->title }}</h4>
-                    <div class="text-muted small">
+                    {{-- <div class="text-muted small">
                         Tanggal: {{ \Illuminate\Support\Carbon::parse($pl->date)->format('d M Y') }}
                         @if ($pl->currency)
                             • Mata uang: {{ $pl->currency->code ?? ($pl->currency->name ?? $pl->currency_id) }}
                         @endif
-                    </div>
+                    </div> --}}
                 </div>
-                <div class="text-end">
+                {{-- <div class="text-end">
                     @if ($pl->show_payment_method)
                         <div class="small">Metode Pembayaran: {{ $pl->payment_method ?: '-' }}</div>
                     @endif
-                </div>
+                </div> --}}
             </div>
 
-            @if (!empty($pl->notes))
+            {{-- @if (!empty($pl->notes))
                 <div class="alert alert-info py-2">{!! $pl->notes !!}</div>
-            @endif
+            @endif --}}
 
             {{-- Toolbar global search + tombol Filters --}}
-            <div class="row g-2 align-items-center mb-2">
+            <div class="d-flex justify-content-end mb-2">
                 <div class="col-12 col-md-6">
                     <div class="input-group sticky-actions">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <span class="input-group-text">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-search" viewBox="0 0 16 16">
+                                <path
+                                    d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                            </svg>
+                        </span>
                         <input id="globalSearch" type="text" class="form-control" placeholder="Cari apa saja">
                         <button id="btnToggleFilters" class="btn btn-outline-secondary">Filters</button>
                     </div>
@@ -95,10 +107,18 @@
                             <h4 class="card-title mb-3">Daftar Item Price List</h4>
                             <div class="table-responsive">
                                 <table id="priceTable" class="table table-bordered w-100">
+                                    <colgroup>
+                                        <col style="width:15%"> <!-- KODE -->
+                                        <col style="width:55%"> <!-- NAME (lebih lebar) -->
+                                        <col style="width:15%"> <!-- BRAND -->
+                                        <col style="width:15%"> <!-- PRICE -->
+                                    </colgroup>
                                     <thead class="table-light">
                                         <tr>
                                             @foreach ($headers as $h)
-                                                <th data-hidden="{{ $h['hidden'] ? 1 : 0 }}">{{ $h['label'] }}</th>
+                                                {{-- @dump($h) --}}
+                                                <th class="{{ $h['label'] !== 'Name' ? 'text-center' : '' }}"
+                                                    data-hidden="{{ $h['hidden'] ? 1 : 0 }}">{{ $h['label'] }}</th>
                                             @endforeach
                                         </tr>
                                         <tr class="filters d-none">
@@ -131,6 +151,7 @@
 
             const headerLabels = headersObj.map(h => h.label || '');
             const hiddenFlags = headersObj.map(h => !!(h.hidden));
+
 
             function toKey(label) {
                 return String(label || '')
@@ -207,7 +228,7 @@
             const dt = priceTable.DataTable({
                 data: dataConverted,
                 columns: dtColumns,
-
+                dom: 'lrtip',
                 // Performa untuk data besar
                 deferRender: true,
                 searchDelay: 400,
@@ -223,13 +244,25 @@
                 // Hindari reflow berlebihan
                 autoWidth: false,
                 columnDefs: [{
-                    targets: hiddenTargets,
-                    visible: false
-                }],
+                        targets: hiddenTargets,
+                        visible: false,
+
+                    },
+                    {
+                        targets: 4, // PRICE
+                        className: '. dt-body-right' // rata kanan header & body
+                    },
+                    {
+                        targets: [1, 3], // PRICE
+                        className: 'dt-body-center' // rata kanan header & body
+                    }
+                ],
                 order: [
                     [firstVisibleCol, 'asc']
                 ],
             });
+
+            $('#globalSearch').val(dt.search())
 
             // Global search
             $('#globalSearch').on('keyup change', function() {
@@ -243,6 +276,8 @@
                 filterRow.classList.toggle('d-none');
                 dt.columns.adjust().draw(false);
             });
+
+            console.log(dt.search());
 
             // Wiring filter per kolom
             if (filterRow) {

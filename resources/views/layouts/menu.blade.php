@@ -1,6 +1,6 @@
 <div class="horizontal-menu">
     <nav class="navbar top-navbar">
-        <div class="container">
+        <div class="container-fluid container-lg">
             <div class="navbar-content">
                 <a href="{{ route('pricelists.index') }}" class="navbar-brand d-none d-lg-flex">
                     <img src="{{ asset('assets/logo/logo-sda-global-24.svg') }}" alt="Logo" height="30">
