@@ -35,6 +35,10 @@
             #priceTable col {
                 width: auto !important;
             }
+
+            #priceTable tbody td {
+                font-size: 9px !important;
+            }
         }
     </style>
     <div class="container-fluid">
