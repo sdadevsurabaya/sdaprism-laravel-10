@@ -22,11 +22,14 @@
             <div class="card-body">
                 <div class="d-flex w-100 justify-content-end">
 
-                    <a href="{{ route('pricelists.create') }}" type="button"
-                        class="btn btn-outline-primary btn-icon-text me-2 mb-2 mb-md-0">
-                        <i class="btn-icon-prepend" data-feather="plus"></i>
-                        Add New
-                    </a>
+                    {{-- Tombol Add New hanya untuk admin --}}
+                    @if (Auth::user()->rolesUsers->first()?->roles->name === 'admin')
+                        <a href="{{ route('pricelists.create') }}" type="button"
+                            class="btn btn-outline-primary btn-icon-text me-2 mb-2 mb-md-0">
+                            <i class="btn-icon-prepend" data-feather="plus"></i>
+                            Add New
+                        </a>
+                    @endif
                 </div>
                 <div class="table-responsive">
                     <table id="pricelist" class="table table-responsive">
@@ -51,17 +54,21 @@
                                     <td>{{ $item->title }}</td>
                                     <td>{{ $item->user->name }}</td>
                                     <td>
-                                         <a href="{{ route('pricelists.show', $item->id) }}"
+                                        <a href="{{ route('pricelists.show', $item->id) }}"
                                             class="btn btn-sm btn-primary btn-icon-text">
                                             <i class="btn-icon-prepend" data-feather="list"></i>
                                             List
                                         </a>
-                                        <a href="{{ route('pricelists.edit', $item->id) }}"
-                                            class="btn btn-sm btn-primary btn-icon-text">
-                                            <i class="btn-icon-prepend" data-feather="edit"></i>
-                                            Edit
-                                        </a>
-                                        <a href="{{ route('pricelist.pdf', $item->id) }}" class="btn btn-sm btn-primary btn-icon-text" target="_blank">
+                                         {{-- Tombol Edit hanya untuk admin --}}
+                                        @if (Auth::user()->rolesUsers->first()?->roles->name === 'admin')
+                                            <a href="{{ route('pricelists.edit', $item->id) }}"
+                                                class="btn btn-sm btn-primary btn-icon-text">
+                                                <i class="btn-icon-prepend" data-feather="edit"></i>
+                                                Edit
+                                            </a>
+                                        @endif
+                                        <a href="{{ route('pricelist.pdf', $item->id) }}"
+                                            class="btn btn-sm btn-primary btn-icon-text" target="_blank">
                                             <i class="btn-icon-prepend" data-feather="file"></i>
                                             PDF
                                         </a>

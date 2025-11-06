@@ -155,6 +155,7 @@
     }
 
     const dt = $table.DataTable({
+      dom: 'lrtip',
       responsive: { details: { type: 'column', target: 0 } },
       columnDefs,
       order: [[1, 'asc']],      // urut berdasarkan kolom pertama data (bukan tombol)

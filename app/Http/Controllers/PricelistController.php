@@ -17,9 +17,9 @@ class PricelistController extends Controller
         $data = PriceList::where('user_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->get();
-        if (Auth::user()->rolesUsers->first()?->roles->name === 'admin') {
+        // if (Auth::user()->rolesUsers->first()?->roles->name === 'admin') {
             $data = PriceList::all();
-        }
+        // }
         return view('data.view_pricelist', compact('data'));
     }
 
@@ -89,8 +89,11 @@ class PricelistController extends Controller
 
     public function show(PriceList $pricelist)
     {
-        $pl = PriceList::where('user_id', Auth::id())
-            ->where('id', $pricelist->id)
+        // $pl = PriceList::where('user_id', Auth::id())
+        //     ->where('id', $pricelist->id)
+        //     ->firstOrFail();
+
+         $pl = PriceList::where('id', $pricelist->id)
             ->firstOrFail();
 
         // kalau Anda ubah view untuk menerima $pl langsung:
