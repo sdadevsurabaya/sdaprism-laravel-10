@@ -36,9 +36,9 @@
                 width: auto !important;
             }
 
-            .table-responsive {
+            /* .table-responsive {
                 font-size: 0.6rem !important;
-            }
+            } */
         }
     </style>
     <div class="container-fluid">
