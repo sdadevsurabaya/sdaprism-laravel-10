@@ -1,2 +1,6 @@
 User-agent: *
-Disallow:
+Disallow: /pricelists
+Disallow: /login
+Disallow: /register
+Disallow: /password
+Sitemap: https://prism.sda.id/sitemap.xml

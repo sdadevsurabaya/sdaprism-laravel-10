@@ -1,0 +1,35 @@
+{
+    "name": "PRISM SDA",
+    "short_name": "PRISM",
+    "id": "/",
+    "start_url": "/?source=pwa",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#0b1220",
+    "lang": "id",
+    "dir": "ltr",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "https://sda.co.id/assets/img/logo/favicon.png",
+            "type": "image/png"
+        },
+        {
+            "src": "https://sda.co.id/assets/img/icon-sda.png",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "https://sda.co.id/assets/img/icon-sda.png",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Price List",
+            "url": "/pricelists"
+        }
+    ]
+}
