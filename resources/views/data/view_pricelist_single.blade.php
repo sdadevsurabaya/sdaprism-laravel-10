@@ -36,8 +36,8 @@
                 width: auto !important;
             }
 
-            #priceTable tbody td {
-                font-size: 9px !important;
+            .table-responsive {
+                font-size: 0.6rem !important;
             }
         }
     </style>
