@@ -76,7 +76,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
 <!-- Core CSS (punyamu) -->
-<script src="{{ asset('assets/js/color-modes.js') }}" defer></script>
+<script src="{{ asset('assets/js/color-modes.js') }}"></script>
 <link rel="stylesheet" href="{{ asset('assets/css/core.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/iconfont.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
@@ -87,7 +87,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
 <!-- Service Worker register -->
-<script>
+{{-- <script>
     if ('serviceWorker' in navigator) {
         addEventListener('load', () => {
             navigator.serviceWorker.register('{{ asset('sw.js') }}', {
@@ -96,6 +96,6 @@
                 .catch(err => console.log('SW register failed:', err));
         });
     }
-</script>
+</script> --}}
 
 @stack('head')

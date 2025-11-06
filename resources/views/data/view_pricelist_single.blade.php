@@ -61,7 +61,7 @@
                 $rows = $json['data'] ?? [];
             @endphp
 
-            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 py-3">
                 <div class="d-flex justify-content-between w-100 align-content-center">
                     <h4 class="mb-1">{{ $pl->title }}</h4>
                     {{-- <div class="text-muted small">
@@ -103,7 +103,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-body">
+                        <div class="p-3">
                             <h4 class="card-title mb-3">Daftar Item Price List</h4>
                             <div class="table-responsive">
                                 <table id="priceTable" class="table table-bordered w-100">
@@ -144,7 +144,7 @@
 @push('scripts')
     <script>
         $(function() {
-            /** ====== DATA & KONVERSI ====== */
+            /** ====== DATA ====== */
             const rowsData = @json($rows ?? []);
             const headersObj = @json($headers ?? []);
             const currency = @json($pl->currency->code ?? 'IDR');
@@ -152,14 +152,9 @@
             const headerLabels = headersObj.map(h => h.label || '');
             const hiddenFlags = headersObj.map(h => !!(h.hidden));
 
-
-            function toKey(label) {
-                return String(label || '')
-                    .trim().toLowerCase()
-                    .replace(/\s+/g, ' ')
-                    .replace(/[^\w]+/g, '_')
-                    .replace(/^_+|_+$/g, '');
-            }
+            const toKey = (label) => String(label || '')
+                .trim().toLowerCase().replace(/\s+/g, ' ')
+                .replace(/[^\w]+/g, '_').replace(/^_+|_+$/g, '');
 
             function convertRows(rows, headers) {
                 const keys = headers.map(toKey);
@@ -179,39 +174,68 @@
                 });
             }
 
-            function renderCurrency(val) {
-                const num = Number((val ?? '').toString().replace(/[^\d.-]/g, ''));
-                if (!isFinite(num)) return val ?? '';
+            const dataConverted = convertRows(rowsData, headerLabels);
+            const keys = headerLabels.map(toKey);
+
+            /** ====== DETEKSI KOLOM HARGA + PRE-FORMAT (ORTHOGONAL) ====== */
+            const priceCols = []; // { idx, key }
+            headerLabels.forEach((lbl, i) => {
+                if (/(^|[^a-z])(price|harga)([^a-z]|$)/i.test(lbl)) priceCols.push({
+                    idx: i,
+                    key: keys[i]
+                });
+            });
+
+            // Formatter currency (sekali buat semua)
+            const nf = (function() {
                 try {
                     return new Intl.NumberFormat('id-ID', {
                         style: 'currency',
                         currency: currency || 'IDR',
                         maximumFractionDigits: 0
-                    }).format(num);
+                    });
                 } catch (_) {
-                    return num.toLocaleString('id-ID');
+                    return new Intl.NumberFormat('id-ID');
+                }
+            })();
+
+            // Tambahkan field orthogonal utk setiap kolom harga: __sort (number), __disp (string)
+            for (let r = 0; r < dataConverted.length; r++) {
+                const row = dataConverted[r];
+                for (const {
+                        key
+                    }
+                    of priceCols) {
+                    const raw = Number(String(row[key] ?? '').replace(/[^\d.-]/g, ''));
+                    const n = Number.isFinite(raw) ? raw : 0;
+                    row[key + '__sort'] = n;
+                    row[key + '__disp'] = Number.isFinite(raw) ? nf.format(n) : (row[key] ?? '');
                 }
             }
 
-            const dataConverted = convertRows(rowsData, headerLabels);
-
-            /** ====== DATATABLES: non-responsive (tidak collapse) + performa ====== */
-            const priceTable = $('#priceTable');
-
-            const dtColumns = headerLabels.map(lbl => {
-                const key = toKey(lbl);
-                const isPrice = /(^|[^a-z])(price|harga)([^a-z]|$)/i.test(lbl);
-                return isPrice ? {
-                    data: key,
-                    render: d => renderCurrency(d),
-                    defaultContent: ''
-                } : {
+            /** ====== DEFINISI KOLOM ====== */
+            const dtColumns = headerLabels.map((lbl, i) => {
+                const key = keys[i];
+                const isPrice = priceCols.some(p => p.key === key);
+                if (isPrice) {
+                    return {
+                        data: {
+                            _: key + '__disp',
+                            sort: key + '__sort',
+                            type: key + '__sort',
+                            filter: key + '__disp'
+                        },
+                        className: 'dt-body-right', // <— perbaikan: tidak pakai titik
+                        defaultContent: ''
+                    };
+                }
+                return {
                     data: key,
                     defaultContent: ''
                 };
             });
 
-            // Kolom hidden langsung by index (tanpa offset kolom kontrol)
+            /** ====== KOLOM TERSEMBUNYI ====== */
             const hiddenTargets = [];
             hiddenFlags.forEach((flag, i) => {
                 if (flag) hiddenTargets.push(i);
@@ -225,70 +249,83 @@
                 }
             }
 
+            /** ====== INIT DATATABLE (SCROLLER) ====== */
+            const priceTable = $('#priceTable');
             const dt = priceTable.DataTable({
                 data: dataConverted,
                 columns: dtColumns,
+
+                // UI minimal (tanpa search bawaan, kita pakai #globalSearch)
                 dom: 'lrtip',
-                // Performa untuk data besar
-                deferRender: true,
+
+                // PERFORMA
+                deferRender: true, // penting utk scroller
                 searchDelay: 400,
                 orderMulti: false,
                 processing: true,
                 stateSave: true,
-                pageLength: 25,
-                lengthMenu: [25, 50, 100, 250, 500, 1000],
-
-                // NON-RESPONSIVE: tidak collapse child rows di mobile
-                responsive: false,
-
-                // Hindari reflow berlebihan
                 autoWidth: false,
+                paging: true, // scroller = tanpa paging
+
                 columnDefs: [{
                         targets: hiddenTargets,
-                        visible: false,
-
+                        visible: false
                     },
                     {
-                        targets: 4, // PRICE
-                        className: '. dt-body-right' // rata kanan header & body
-                    },
-                    {
-                        targets: [1, 3], // PRICE
-                        className: 'dt-body-center' // rata kanan header & body
-                    }
+                        targets: [1, 3],
+                        className: 'dt-body-center'
+                    } // opsional: contoh dari kode awalmu
                 ],
                 order: [
                     [firstVisibleCol, 'asc']
                 ],
+                language: {
+                    processing: '<div style="display:flex;align-items:center;gap:.5rem;">' +
+                        '<span class="dt-spinner"></span> Memuat…' +
+                        '</div>'
+                }
             });
 
-            $('#globalSearch').val(dt.search())
-
-            // Global search
+            // GLOBAL SEARCH (di luar tabel)
+            $('#globalSearch').val(dt.search());
             $('#globalSearch').on('keyup change', function() {
                 dt.search(this.value).draw();
             });
 
-            // Toggle filter per kolom
+            // Toggle filter per kolom (kalau ada baris .filters di thead)
             const filterRow = document.querySelector('#priceTable thead tr.filters');
             $('#btnToggleFilters').on('click', function() {
                 if (!filterRow) return;
                 filterRow.classList.toggle('d-none');
                 dt.columns.adjust().draw(false);
             });
-
-            console.log(dt.search());
-
-            // Wiring filter per kolom
             if (filterRow) {
                 $('#priceTable thead tr.filters th').each(function(i) {
-                    const input = $(this).find('input');
-                    if (!input.length) return;
-                    input.on('keyup change', function() {
+                    const $input = $(this).find('input');
+                    if (!$input.length) return;
+                    $input.on('keyup change', function() {
                         dt.column(i).search(this.value).draw();
                     });
                 });
             }
         });
     </script>
+
+    <style>
+        /* spinner kecil untuk state "processing" */
+        .dt-spinner {
+            width: 18px;
+            height: 18px;
+            border: 3px solid #e5e7eb;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: dtspin 1s linear infinite
+        }
+
+        @keyframes dtspin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+    </style>
 @endpush
