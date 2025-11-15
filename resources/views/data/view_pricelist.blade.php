@@ -38,7 +38,7 @@
                                 <th>No</th>
                                 <th>Date</th>
                                 <th>Title</th>
-                                <th>Create By</th>
+                                
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -52,7 +52,7 @@
                                     <td>{{ $no++ }}</td>
                                     <td>{{ $item->date }}</td>
                                     <td>{{ $item->title }}</td>
-                                    <td>{{ $item->user->name }}</td>
+                                   
                                     <td>
                                         <a href="{{ route('pricelists.show', $item->id) }}"
                                             class="btn btn-sm btn-primary btn-icon-text">
@@ -66,12 +66,13 @@
                                                 <i class="btn-icon-prepend" data-feather="edit"></i>
                                                 Edit
                                             </a>
-                                        @endif
+                                        
                                         <a href="{{ route('pricelist.pdf', $item->id) }}"
                                             class="btn btn-sm btn-primary btn-icon-text" target="_blank">
                                             <i class="btn-icon-prepend" data-feather="file"></i>
                                             PDF
                                         </a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
