@@ -114,10 +114,6 @@
                         responsivePriority: 1
                     }, // Title tetap prioritas utama
                     {
-                        targets: 4,
-                        responsivePriority: 2
-                    }, // Action prioritas tinggi
-                    {
                         targets: 1,
                         responsivePriority: 3
                     }, // Date
