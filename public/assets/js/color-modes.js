@@ -1,91 +1,86 @@
 (() => {
     'use strict'
-  
+
     const getStoredTheme = () => localStorage.getItem('theme')
     const setStoredTheme = theme => localStorage.setItem('theme', theme)
-  
-    // Custom event dispatch 
-    // const setStoredTheme = (theme) => { 
-    //   localStorage.setItem('theme', theme);
-    //   const event = new CustomEvent('themeChanged');
-    //   document.dispatchEvent(event)
-    // }
-  
+
+    // Tidak pakai sistem lagi, default hardcoded: 'light'
     const getPreferredTheme = () => {
-      const storedTheme = getStoredTheme()
-      if (storedTheme) {
-        return storedTheme
-      } else {
-        setStoredTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-      }
-  
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    }
-  
-    const setTheme = theme => {
-      document.documentElement.setAttribute('data-bs-theme', theme)
-    }
-  
-    setTheme(getPreferredTheme())
-  
-    const showActiveTheme = (theme) => {
-      const themeSwitcher = document.querySelector('#theme-switcher')
-  
-      if (!themeSwitcher) {
-        return
-      }
-  
-      const box = document.querySelector('.box');
-  
-      if(theme === 'dark') {
-        box.classList.remove('light')
-        box.classList.add('dark')
-      }
-      if(theme ==='light') {
-        box.classList.remove('dark')
-        box.classList.add('light')
-      }
-  
-    }
-  
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      const storedTheme = getStoredTheme()
-      if (storedTheme !== 'light' && storedTheme !== 'dark') {
-        setTheme(getPreferredTheme())
-      }
-    })
-  
-    window.addEventListener('DOMContentLoaded', () => {
-      showActiveTheme(getPreferredTheme())
-  
-      const themeSwitcher = document.querySelector('#theme-switcher')
-  
-      if (themeSwitcher) {
-        if (getStoredTheme() == 'dark') {
-          themeSwitcher.checked = true;
-        } else if (getStoredTheme() == 'light') {
-          themeSwitcher.checked = false;
+        const storedTheme = getStoredTheme()
+
+        if (storedTheme === 'light' || storedTheme === 'dark') {
+            return storedTheme
         }
-  
-        themeSwitcher.addEventListener('change', function() {
-          const theme = this.checked ? 'dark' : 'light'
-          setStoredTheme(theme)
-          setTheme(theme)
-          showActiveTheme(theme)
-        })
-      }
-  
-    })
-  
-  
-  
-    // Theme switch based on parameters from query string
-    const urlParams = new URLSearchParams(window.location.search);
-    const themeParam = urlParams.get('theme');
-    if ( (themeParam === 'light') || (themeParam === 'dark')) {
-      setStoredTheme(themeParam)
-      setTheme(themeParam)
-      showActiveTheme(themeParam)
+
+        // First time visit / value aneh -> paksa 'light'
+        const defaultTheme = 'light'
+        setStoredTheme(defaultTheme)
+        return defaultTheme
     }
-  
-  })()
+
+    const setTheme = theme => {
+        document.documentElement.setAttribute('data-bs-theme', theme)
+    }
+
+    // --- Inisialisasi theme (prioritas: query param > localStorage > default light) ---
+    const urlParams = new URLSearchParams(window.location.search)
+    const themeParam = urlParams.get('theme')
+
+    let activeTheme
+
+    if (themeParam === 'light' || themeParam === 'dark') {
+        activeTheme = themeParam
+        setStoredTheme(activeTheme)
+    } else {
+        activeTheme = getPreferredTheme()
+    }
+
+    setTheme(activeTheme)
+
+    const showActiveTheme = (theme) => {
+        const themeSwitcher = document.querySelector('#theme-switcher')
+
+        if (!themeSwitcher) {
+            return
+        }
+
+        const box = document.querySelector('.box')
+
+        if (box) {
+            if (theme === 'dark') {
+                box.classList.remove('light')
+                box.classList.add('dark')
+            } else {
+                box.classList.remove('dark')
+                box.classList.add('light')
+            }
+        }
+    }
+
+    // HAPUS: listener matchMedia (tidak follow sistem lagi)
+    // window.matchMedia('(prefers-color-scheme: dark)').addEventListener(...)
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const currentTheme = getPreferredTheme()
+        showActiveTheme(currentTheme)
+
+        const themeSwitcher = document.querySelector('#theme-switcher')
+
+        if (themeSwitcher) {
+            // Sync posisi switch pertama kali
+            themeSwitcher.checked = (currentTheme === 'dark')
+
+            themeSwitcher.addEventListener('change', function () {
+                const theme = this.checked ? 'dark' : 'light'
+                setStoredTheme(theme)
+                setTheme(theme)
+                showActiveTheme(theme)
+            })
+        }
+    })
+
+    // Bagian ini tidak perlu lagi karena sudah di-handle di atas:
+    // const urlParams = new URLSearchParams(window.location.search);
+    // ...
+
+})()

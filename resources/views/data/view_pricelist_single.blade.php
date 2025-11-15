@@ -37,8 +37,8 @@
             }
 
             /* .table-responsive {
-                font-size: 0.6rem !important;
-            } */
+                        font-size: 0.6rem !important;
+                    } */
         }
     </style>
     <div class="container-fluid">
@@ -65,31 +65,24 @@
                 $rows = $json['data'] ?? [];
             @endphp
 
-            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 py-3">
-                <div class="d-flex justify-content-between w-100 align-content-center">
-                    <h4 class="mb-1">{{ $pl->title }}</h4>
-                    {{-- <div class="text-muted small">
-                        Tanggal: {{ \Illuminate\Support\Carbon::parse($pl->date)->format('d M Y') }}
-                        @if ($pl->currency)
-                            • Mata uang: {{ $pl->currency->code ?? ($pl->currency->name ?? $pl->currency_id) }}
-                        @endif
-                    </div> --}}
+            <div
+                class="d-flex flex-column flex-md-row justify-content-center align-items-md-center gap-2 py-3 mb-3 border-bottom">
+                <div>
+                    <h4 class="mb-0">{{ $pl->title }}</h4>
                 </div>
-                {{-- <div class="text-end">
-                    @if ($pl->show_payment_method)
-                        <div class="small">Metode Pembayaran: {{ $pl->payment_method ?: '-' }}</div>
-                    @endif
-                </div> --}}
             </div>
+
 
             {{-- @if (!empty($pl->notes))
                 <div class="alert alert-info py-2">{!! $pl->notes !!}</div>
             @endif --}}
 
             {{-- Toolbar global search + tombol Filters --}}
-            <div class="d-flex justify-content-end mb-2">
-                <div class="col-12 col-md-6">
+            <div class="d-flex justify-content-end mb-3">
+                <div class="d-flex align-items-center gap-3">
                     <div class="input-group sticky-actions">
+                        <input id="globalSearch" type="text" class="form-control" placeholder="Cari apa saja">
+
                         <span class="input-group-text">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="bi bi-search" viewBox="0 0 16 16">
@@ -97,9 +90,8 @@
                                     d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
                             </svg>
                         </span>
-                        <input id="globalSearch" type="text" class="form-control" placeholder="Cari apa saja">
-                        <button id="btnToggleFilters" class="btn btn-outline-secondary">Filters</button>
                     </div>
+                    <button id="btnToggleFilters" class="btn btn-outline-secondary">Filters</button>
                 </div>
             </div>
 
@@ -108,7 +100,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="p-3">
-                            <h4 class="card-title mb-3">Daftar Item Price List</h4>
+                            {{-- <h4 class="card-title mb-3">Daftar Item Price List</h4> --}}
                             <div class="table-responsive">
                                 <table id="priceTable" class="table table-bordered w-100">
                                     <colgroup>
