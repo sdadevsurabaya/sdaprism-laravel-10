@@ -35,11 +35,11 @@
                     <table id="pricelist" class="table table-striped align-middle w-100 nowrap">
                         <thead class="text-start">
                             <tr>
-                                <th class="dtr-control" data-priority="5">No</th> {{-- toggle + nomor --}}
-                                <th data-priority="3">Date</th>
-                                <th data-priority="1">Title</th> {{-- paling penting --}}
-                                <th data-priority="4">Create By</th>
-                                <th data-priority="2">Action</th> {{-- tetap tampil --}}
+                                <th>No</th>
+                                <th>Date</th>
+                                <th>Title</th>
+
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody class="text-start">
@@ -49,7 +49,7 @@
                                     <td>{{ $no++ }}</td>
                                     <td>{{ $item->date }}</td>
                                     <td>{{ $item->title }}</td>
-                                    <td>{{ $item->user->name }}</td>
+
                                     <td>
                                         <a href="{{ route('pricelists.show', $item->id) }}"
                                             class="btn btn-sm btn-primary btn-icon-text">
@@ -60,11 +60,12 @@
                                                 class="btn btn-sm btn-primary btn-icon-text">
                                                 <i data-feather="edit" class="btn-icon-prepend"></i> Edit
                                             </a>
+
+                                            <a href="{{ route('pricelist.pdf', $item->id) }}"
+                                                class="btn btn-sm btn-primary btn-icon-text" target="_blank">
+                                                <i data-feather="file" class="btn-icon-prepend"></i> PDF
+                                            </a>
                                         @endif
-                                        <a href="{{ route('pricelist.pdf', $item->id) }}"
-                                            class="btn btn-sm btn-primary btn-icon-text" target="_blank">
-                                            <i data-feather="file" class="btn-icon-prepend"></i> PDF
-                                        </a>
                                     </td>
                                 </tr>
                             @endforeach
