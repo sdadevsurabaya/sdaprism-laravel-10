@@ -19,7 +19,6 @@
                 @endif
                 <!-- redirect ke halaman pdf -->
                 @if (session('open_pdf'))
-                    {{-- @dump(session()->all()) --}}
                     <script>
                         window.open("{{ session('open_pdf') }}", "_blank");
                     </script>
@@ -44,9 +43,6 @@
                             <button id="btnSave" class="btn btn-outline-success"><i class="btn-icon-prepend"
                                     data-feather="save"></i> Update Data & Print <i class="btn-icon-prepend"
                                     data-feather="printer"></i></button>
-                            {{-- <button id="btnPrint" class="btn btn-outline-primary" data-bs-toggle="modal"
-                                data-bs-target="#staticBackdrop"><i class="btn-icon-prepend" data-feather="printer"></i>
-                                Print</button> --}}
                         @else
                             <button id="btnSave" class="btn btn-outline-success"><i class="btn-icon-prepend"
                                     data-feather="save"></i> Simpan Data</button>
@@ -133,7 +129,7 @@
                 </div>
 
                 <input type="hidden" class="w-100" id="datatable_data" name="datatable_data"
-                    value="{{ old('datatable_data', $pricelist->datatable_data ?? '') }}">
+                    value="{{ old('datatable_data', isset($pricelist) ? $pricelist->datatable_data : '') }}">
 
                 </form>
                 <div class="mt-3 mb-3 row">
@@ -154,6 +150,24 @@
                         </div>
 
                     </div>
+
+                    {{-- PROGRESS BAR --}}
+                    <div class="w-100 mt-3">
+                        <!-- Progress upload file -->
+                        <div class="progress mb-2 d-none" id="uploadProgressWrapper">
+                            <div id="uploadProgress" class="progress-bar" role="progressbar" style="width: 0%">
+                                0%
+                            </div>
+                        </div>
+
+                        <!-- Progress proses import (simbolis, buat UX) -->
+                        <div class="progress d-none" id="processProgressWrapper">
+                            <div id="processProgress" class="progress-bar" role="progressbar" style="width: 0%">
+                                0%
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="table-responsive">
                         <table id="example" class="table align-middle table-bordered table-hover"></table>
                     </div>
@@ -163,6 +177,7 @@
         </div>
     </div>
 @endsection
+
 @push('scripts')
     {{-- <script src="https://code.jquery.com/jquery-3.7.1.js"></script> --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -200,10 +215,10 @@
         };
 
         ClassicEditor
-        .create(document.querySelector('#notes'))
-        .catch(error => {
-            console.error(error);
-        });
+            .create(document.querySelector('#notes'))
+            .catch(error => {
+                console.error(error);
+            });
 
         // ===== Utility Functions =====
 
@@ -275,7 +290,8 @@
         // Create column title with checkbox and input field
         function createColumnTitle(name, label, hidden = false, withChecked = false) {
             const checked = withChecked ? 'checked' : '';
-            const trashHead = `<div class="d-flex justify-content-center w-100"><button id="hapusKolom${name}" class="text-center btn btn-outline-danger"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+            const trashHead =
+                `<div class="d-flex justify-content-center w-100"><button id="hapusKolom${name}" class="text-center btn btn-outline-danger"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
                                 <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/>
                                 </svg></button></div>`;
             const checkbox =
@@ -288,7 +304,6 @@
 
         // Generate table header based on column data
         function generateTableHead(columnData) {
-            console.log(columnData.length);
             return columnData.map(col => ({
                 title: createColumnTitle(col.id, col.label, col.hidden, col.checkbox),
                 orderable: false,
@@ -303,7 +318,6 @@
 
         // Update table header data
         function updateDataHeader(inputName, newLabel, isHidden = false, newCheckbox = false) {
-            // console.log('updateDataHeader:', inputName, newLabel, isHidden, newCheckbox);
             const idhead = newLabel !== null ? convertNameToID(inputName) : getIdFromName(inputName);
             const itemIndex = tableHead.findIndex(item => item.id === idhead);
             if (itemIndex === -1) return;
@@ -337,19 +351,12 @@
                         }
                         return newItem;
                     });
-                    // console.log('Updated dataTbd keys:', oldId, '->', newId);
                 }
             }
 
-            // Store current data before reinitializing
-            const currentData = dataTbd.slice(); // Copy existing data
-            // Reload DataTable with updated headers
-            table.clear().draw(); // Clear any residual rows
+            // Reload DataTable with updated headers & rerender rows
             LoadDataTable(tableHead);
-
-            // Restore data by re-adding rows
-            currentData.forEach(item => addRow(item)); // Re-add rows
-            console.log('Data restored after header update');
+            renderAllRows();
             toastr.success('Header updated successfully');
         }
 
@@ -376,11 +383,8 @@
                 return newItem;
             });
 
-            const currentData = dataTbd.slice();
-            table.clear().draw();
             LoadDataTable(tableHead);
-
-            currentData.forEach(item => addRow(item));
+            renderAllRows();
             toastr.success(`Column "${removedColumn.label}" deleted successfully`);
         }
 
@@ -391,13 +395,48 @@
             return maxId;
         }
 
+        // ===== New helper: build row + renderAllRows =====
+
+        // Build row array for DataTables from data object
+        function buildRowData(data = {}) {
+            numrow++;
+
+            if (!data.id) {
+                data.id = getMaxIdFromDataTbd() + 1;
+            }
+
+            return tableHead.map((col, i) => {
+                const val = escapeHTML(data[col.id] ?? '');
+                if (i === 0) {
+                    return `
+                        <input type="checkbox" name="checkid[]" id="${col.id}${numrow}" />
+                        <input type="hidden" name="id[]" id="hidden${col.id}${numrow}" value="${data.id}" />
+                    `;
+                }
+                return `<input name="${col.id}[]" id="${col.id}${numrow}" type="text" class="form-control isi-datatable" value="${val}" />`;
+            });
+        }
+
+        // Render all rows from dataTbd into DataTables (batch)
+        function renderAllRows() {
+            if (!table) return;
+
+            table.clear();
+
+            if (!Array.isArray(dataTbd) || dataTbd.length === 0) {
+                table.draw(false);
+                return;
+            }
+
+            numrow = 0;
+            const rows = dataTbd.map(item => buildRowData(item));
+            table.rows.add(rows).draw(false);
+        }
+
         // ===== DataTable Operations =====
 
         // Load DataTable with specified columns
         function LoadDataTable(columns) {
-            // console.log('Columns passed to DataTable:', JSON.stringify(columns, null, 2));
-            // console.log('Generated columns:', JSON.stringify(generateTableHead(columns), null, 2));
-
             if ($.fn.DataTable.isDataTable('#example')) {
                 table.destroy();
                 $('#example').empty();
@@ -413,12 +452,13 @@
                 processing: true,
                 responsive: true,
                 searching: false,
+                deferRender: true,
+                pageLength: 50,
                 columns: generateTableHead(columns),
                 columnDefs: [{
                     targets: 0,
                     orderable: false,
                     searchable: false,
-                    // className: 'dt-control'
                 }]
             });
 
@@ -438,32 +478,16 @@
                         if (confirm('Are you sure you want to delete this column? (' + item.label + ')')) {
                             deleteColumn(item.id);
                         }
-                        // toastr.success(`Column "${item.label}" deleted successfully`);
                     });
                 }
             });
         }
 
-        // Add a new row to the table
+        // Add a new row to the table (used by "Tambah Baris" button)
         function addRow(data = {}) {
-            numrow++;
-
-            if (!data.id) {
-                data.id = getMaxIdFromDataTbd() + 1;
-            }
-
-            const newRow = tableHead.map((col, i) => {
-                const val = escapeHTML(data[col.id] ?? '');
-                if (i === 0) {
-                    return `
-                        <input type="checkbox" name="checkid[]" id="${col.id}${numrow}" />
-                        <input type="hidden" name="id[]" id="hidden${col.id}${numrow}" value="${data.id}" />
-                    `;
-                }
-                return `<input name="${col.id}[]" id="${col.id}${numrow}" type="text" class="form-control isi-datatable" value="${val}" />`;
-            });
-
-            table.row.add(newRow).draw(true);
+            if (!table) return;
+            const rowData = buildRowData(data);
+            table.row.add(rowData).draw(false);
         }
 
         function updateRowDataTable(id, keys, inputValue) {
@@ -498,21 +522,24 @@
                 // header: filteredHeader,
                 header: header,
                 data: data
-                // data: data.map(row => {
-                //     const filtered = {};
-                //     columnsToShow.forEach(colId => {
-                //         filtered[colId] = row[colId] ?? '';
-                //     });
-                //     return filtered;
-                // })
             };
         }
 
         function firstLoader() {
-            // Safely parse JSON (already encoded as JS object, no need for JSON.parse)
-            const dummyJson = JSON.parse({!! json_encode($pricelist->datatable_data ?? null) !!});
+            const raw = {!! json_encode(isset($pricelist) ? $pricelist->datatable_data : null) !!};
 
-            // Push to tableHead if header exists
+            let dummyJson = null;
+            if (typeof raw === 'string') {
+                try {
+                    dummyJson = JSON.parse(raw);
+                } catch (e) {
+                    console.error('Failed to parse datatable_data JSON', e);
+                    dummyJson = null;
+                }
+            } else {
+                dummyJson = raw;
+            }
+
             if (dummyJson !== null && Array.isArray(dummyJson.header)) {
                 const filteredHeader = dummyJson.header.filter(item => item.id !== 'id');
                 tableHead.push(...filteredHeader);
@@ -520,18 +547,14 @@
 
             LoadDataTable(tableHead); // Initialize DataTable
 
-            // Push to dataTbd if data exists
             if (dummyJson !== null && Array.isArray(dummyJson.data)) {
-                dataTbd.push(...dummyJson.data);
-
-                dataTbd.forEach(item => {
-                    addRow(item);
-                });
+                dataTbd = dummyJson.data;
+                renderAllRows();
             }
+
             @if (isset($pricelist))
                 toastr.info('DataTable loaded successfully');
             @endif
-
         }
 
 
@@ -543,11 +566,20 @@
             // Trigger file input when upload button is clicked
             $('#uploadBtn').on('click', () => $('#excelFile').click());
 
-            // Handle file upload and process Excel data
+            // Handle file upload and process Excel data + progress bar
             $('#excelFile').on('change', function(e) {
                 const file = e.target.files[0];
+                if (!file) return;
+
                 const formData = new FormData();
                 formData.append('file', file);
+
+                // reset progress bar
+                $('#uploadProgressWrapper').removeClass('d-none');
+                $('#uploadProgress').css('width', '0%').text('0%');
+
+                $('#processProgressWrapper').removeClass('d-none');
+                $('#processProgress').css('width', '0%').text('0%');
 
                 $.ajax({
                     url: '/api/import-excel',
@@ -555,67 +587,93 @@
                     data: formData,
                     processData: false,
                     contentType: false,
+                    xhr: function() {
+                        const xhr = new window.XMLHttpRequest();
+
+                        // progress upload file
+                        xhr.upload.addEventListener('progress', function(evt) {
+                            if (evt.lengthComputable) {
+                                const percent = Math.round((evt.loaded / evt.total) *
+                                    100);
+                                $('#uploadProgress').css('width', percent + '%').text(
+                                    percent + '%');
+                            }
+                        }, false);
+
+                        return xhr;
+                    },
+                    beforeSend: function() {
+                        $('#processProgress').css('width', '10%').text('Processing...');
+                    },
                     success: function(response) {
+                        $('#uploadProgress').css('width', '100%').text('100%');
+
                         if (response.header && response.data) {
                             const newHeaderLabels = response.header;
                             const newDataTBD = response.data;
-                            if (tableHead.length > 0) {
-                                if (newHeaderLabels.length > tableHead.length) {
-                                    newHeaderLabels.forEach((newHead) => {
-                                        const id = newHead.id;
-                                        const exists = tableHead.some(col => col.id ===
-                                            id);
 
-                                        // Jika header baru belum ada di tableHead, tambahkan ke tableHead
-                                        if (!exists) {
-                                            tableHead.push({
-                                                id: newHead.id,
-                                                label: newHead.label,
-                                                hidden: newHead.hidden ?? false,
-                                                checkbox: newHead.checkbox ??
-                                                    false
+                            // merge header lama + baru
+                            if (Array.isArray(newHeaderLabels) && newHeaderLabels.length > 0) {
+                                newHeaderLabels.forEach((newHead) => {
+                                    const id = newHead.id;
+                                    const exists = tableHead.some(col => col.id === id);
+
+                                    if (!exists) {
+                                        tableHead.push({
+                                            id: newHead.id,
+                                            label: newHead.label,
+                                            hidden: newHead.hidden ?? false,
+                                            checkbox: newHead.checkbox ?? false
+                                        });
+
+                                        if (dataTbd.length > 0) {
+                                            dataTbd.forEach(row => {
+                                                if (typeof row[id] ===
+                                                    'undefined') {
+                                                    row[id] = '';
+                                                }
                                             });
-
-                                            // Tambahkan kolom kosong untuk setiap baris data yang sudah ada agar sesuai dengan header baru
-                                            if (dataTbd.length > 0) {
-                                                dataTbd.forEach(row => {
-                                                    row[newHead.id] = '';
-                                                });
-                                            }
                                         }
-                                    });
-                                }
+                                    }
+                                });
                             }
 
-                            // Tambahkan data baru ke dataTbd
+                            // gabung data lama + baru
                             if (dataTbd.length > 0) {
                                 dataTbd.push(...newDataTBD);
                             } else {
                                 dataTbd = newDataTBD;
                             }
 
-                            // Reload DataTable with updated headers
-                            table.clear().draw();
-                            LoadDataTable(tableHead);
+                            $('#processProgress').css('width', '70%').text(
+                            'Rendering table...');
 
-                            // Clear and re-add all rows
-                            // let newnumRow = 0;
-                            dataTbd.forEach(item => {
-                                addRow(item)
-                            });
+                            LoadDataTable(tableHead);
+                            renderAllRows();
+
+                            $('#processProgress').css('width', '100%').text('Done');
 
                             console.log('File imported, dataTbd updated:', dataTbd);
                             toastr.success('Excel file imported successfully');
                         } else {
-                            // alert("Format data tidak valid.");
                             toastr.error('Invalid data format');
                         }
-                        $('#excelFile').val(''); // Reset file input
+
+                        setTimeout(() => {
+                            $('#uploadProgressWrapper').addClass('d-none');
+                            $('#processProgressWrapper').addClass('d-none');
+                        }, 1000);
+
+                        $('#excelFile').val('');
                     },
                     error: function() {
-                        // alert('Gagal mengimpor file Excel.');
                         toastr.error('Failed to import Excel file');
-                        $('#excelFile').val(''); // Reset file input
+                        $('#excelFile').val('');
+
+                        setTimeout(() => {
+                            $('#uploadProgressWrapper').addClass('d-none');
+                            $('#processProgressWrapper').addClass('d-none');
+                        }, 1000);
                     }
                 });
             });
@@ -634,7 +692,6 @@
                     toastr.error(`Column "${colNameID}" already exists`);
                     return;
                 }
-                // if (exists) return alert(`Kolom "${colNameID}" sudah ada!`);
 
                 tableHead.push({
                     id: colNameID,
@@ -643,13 +700,15 @@
                     checkbox: true
                 });
 
-                LoadDataTable(tableHead); // Reload DataTable
-                table.clear().draw(); // Clear table
+                // Tambahkan field kosong ke setiap data existing
+                if (dataTbd.length > 0) {
+                    dataTbd.forEach(row => {
+                        row[colNameID] = row[colNameID] ?? '';
+                    });
+                }
 
-                dataTbd.forEach((item, index) => {
-                    item[colNameID] = '';
-                    addRow(item);
-                });
+                LoadDataTable(tableHead);
+                renderAllRows();
                 toastr.success(`Column "${colName}" added successfully`);
             });
 
@@ -667,19 +726,13 @@
             });
 
             $('#btnSave').on('click', function() {
-                // const tbodyInputData = [];
-                // const filteredHeader = tableHead.filter(col => columnsToShow.includes(col.id));
-
                 const visibleCols = tableHead.filter(col => col.checkbox === true);
                 const columnsToShow = ['id', ...visibleCols.map(col => col.id)];
 
-                var result = filterTableData(tableHead, dataTbd, columnsToShow);
+                const result = filterTableData(tableHead, dataTbd, columnsToShow);
 
                 $('#datatable_data').val(JSON.stringify(result));
-                // $('#result').html('<pre>' + JSON.stringify(result) + '</pre>');
-                // $('#result').html('<pre>' + JSON.stringify(result, null, 2) + '</pre>');
                 $('#form-pricelist').submit();
-                // console.log('Saved data:', result);
                 toastr.success('Data saved successfully');
             });
 
@@ -705,23 +758,22 @@
 
                             if (checkbox.is(':checked')) {
                                 rowsToRemove.push(rowId);
-                                table.row(rowNode).remove(); // Hapus dari tampilan
+                                table.row(rowNode).remove();
                             }
                         });
 
                         if (rowsToRemove.length === 0) {
-                            // alert('No rows selected for deletion.');
                             toastr.warning('No rows selected for deletion');
                             return;
                         }
 
-                        // Hapus dari sumber data utama
                         dataTbd = dataTbd.filter(item => !rowsToRemove.includes(String(item.id)));
                         numrow = dataTbd.length;
+                        renderAllRows();
                         toastr.success('Selected rows deleted successfully');
                     }
 
-                    table.draw(); // Refresh DataTable
+                    table.draw();
                     console.log('Rows deleted', rowsToRemove);
                     console.log('dataTbd updated:', dataTbd);
                 }
@@ -731,15 +783,8 @@
             $('#clearCurrency').on('click', function() {
                 dataTbd = removeCurrencyFromPrice(dataTbd);
 
-                // Reload DataTable with updated headers
-                table.clear().draw();
                 LoadDataTable(tableHead);
-
-                // Clear and re-add all rows
-                // let newnumRow = 0;
-                dataTbd.forEach(item => {
-                    addRow(item)
-                });
+                renderAllRows();
 
                 toastr.success('Currency formatting cleared successfully');
             });
@@ -763,7 +808,6 @@
 
                 table.$('input[type="checkbox"][name="checkid[]"]').prop('checked', checked);
                 $.fn.dataTable.ext.checkAllStatus = checked;
-                // console.log('Checkbox header changed:', checked);
             });
 
             // Update data on row table & dataTbd
@@ -772,14 +816,11 @@
                 const inputName = $(this).attr('name');
                 const inputValue = $(this).val();
 
-                // Hapus [] dari inputName
-                const cleanInputName = inputName.replace('[]', ''); // new_1
+                const cleanInputName = inputName.replace('[]', '');
 
-                // Ambil angka dari inputId dengan menghapus cleanInputName
-                const id = inputId.replace(cleanInputName, ''); // 13 (atau 3 sesuai contoh)
+                const id = inputId.replace(cleanInputName, '');
 
-                // Ekstrak keys (bagian sebelum angka di inputName)
-                const keys = cleanInputName; // new_1 (dinamis)
+                const keys = cleanInputName;
 
                 console.log(`Input ID: ${inputId} | Value: ${inputValue} | id: ${id} | keys: ${keys}`);
                 updateRowDataTable(id, keys, inputValue);
@@ -789,11 +830,6 @@
             $('#example').on('draw.dt', function() {
                 table.$('input[type="checkbox"][name="checkid[]"]').prop('checked', $(
                     'input[type="checkbox"][name="idthead[]"]').is(':checked'));
-                // if ($.fn.dataTable.ext.checkAllStatus === true) {
-                //     table.$('input[type="checkbox"][name="checkid[]"]').prop('checked', true);
-                // } else {
-                //     table.$('input[type="checkbox"][name="checkid[]"]').prop('checked', false);
-                // }
             });
 
         });
