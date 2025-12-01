@@ -3,7 +3,8 @@
 @section('title', 'Price List')
 
 @section('css')
-
+<link href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" rel="stylesheet" />
 @endsection
 
 @section('content')
@@ -37,8 +38,8 @@
             }
 
             /* .table-responsive {
-                        font-size: 0.6rem !important;
-                    } */
+                            font-size: 0.6rem !important;
+                        } */
         }
     </style>
     <div class="container-fluid">
@@ -138,6 +139,10 @@
 @endsection
 
 @push('scripts')
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
     <script>
         $(function() {
             /** ====== DATA ====== */
