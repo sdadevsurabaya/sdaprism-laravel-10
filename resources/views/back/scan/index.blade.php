@@ -74,7 +74,7 @@
                                             </tr>
                                             <tr class="border-bottom">
                                                 <th class="ps-3 py-2 text-muted fw-normal">Customer</th>
-                                                <td class="py-2 text-primary">
+                                                <td class="py-2 text-primary text-wrap">
                                                     <span class="me-1 text-dark">:</span>
                                                     <span class="fw-bold" id="res-nama-customer">-</span>
                                                 </td>
