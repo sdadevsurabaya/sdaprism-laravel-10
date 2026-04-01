@@ -56,6 +56,10 @@ Route::middleware(['auth'])->group(function () {
     Route::put('pricelists/{pricelist}', [PricelistController::class, 'update'])->name('pricelists.update');
     Route::delete('pricelists/{pricelist}', [PricelistController::class, 'destroy'])->name('pricelists.destroy');
     Route::get('pricelistPDF', [PricelistController::class, 'template_pdf'])->name('pricelist.template_pdf');
+
+    // QR Scan
+    Route::get('/back/scan-qr', [\App\Http\Controllers\Back\ScanController::class, 'index'])->name('scan.qr');
+    Route::get('/back/rakitan-data', [\App\Http\Controllers\Back\RakitanApiController::class, 'getData'])->name('rakitan.data');
 });
 
 //quotation

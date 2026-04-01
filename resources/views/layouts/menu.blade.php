@@ -143,6 +143,14 @@
                         </li>
 
                     @endif
+
+                    <li class="nav-item">
+                        <a href="{{ route('scan.qr') }}" class="nav-link">
+                            <i class="link-icon" data-feather="maximize"></i>
+                            <span class="menu-title">QR Scan</span>
+                        </a>
+                    </li>
+
                     <li class="nav-item">
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
