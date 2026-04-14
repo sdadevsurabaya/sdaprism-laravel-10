@@ -5,6 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bootstrap demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -18,7 +21,7 @@
                     margin: auto;
                     font-size: 16px;
                     line-height: 24px;
-                    font-family: Arial, sans-serif;
+                    font-family: 'Roboto', sans-serif;
                     color: #222;
                     padding: 10px 0 10px 0;
                 }
