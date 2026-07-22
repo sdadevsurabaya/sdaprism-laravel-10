@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Back;
 
+use App\Helpers\ActivityLogger;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -25,6 +26,13 @@ class RakitanApiController extends Controller
             $response = Http::get($endpoint, [
                 'id' => $id
             ]);
+
+            ActivityLogger::log(
+                'QR Scan',
+                'QR Lookup',
+                "Melakukan scan/pencarian data rakitan QR Serial: '{$id}'",
+                ['scanned_id' => $id, 'http_status' => $response->status(), 'success' => $response->successful()]
+            );
 
             if ($response->successful()) {
                 return $response->json();

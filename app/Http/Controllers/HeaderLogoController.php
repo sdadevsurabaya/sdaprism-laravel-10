@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ActivityLogger;
 use App\Models\HeaderLogo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -49,10 +50,17 @@ class HeaderLogoController extends Controller
         // Move the file to public/logos
         $request->file('logo')->move($directory, $fileName);
 
-        HeaderLogo::create([
+        $brand = HeaderLogo::create([
             'name' => $request->name,
             'logo_path' => $logoPath,
         ]);
+
+        ActivityLogger::log(
+            'Brand Logo Master',
+            'Upload',
+            "Mengunggah Brand Logo baru: {$brand->name}",
+            ['name' => $brand->name, 'file_path' => $logoPath]
+        );
 
         return redirect()->route('brand.index')
             ->with('success', 'Brand logo created successfully.');
@@ -86,6 +94,7 @@ class HeaderLogoController extends Controller
         ]);
 
         $logo = HeaderLogo::findOrFail($id);
+        $oldName = $logo->name;
 
         $data = ['name' => $request->name];
 
@@ -112,6 +121,13 @@ class HeaderLogoController extends Controller
 
         $logo->update($data);
 
+        ActivityLogger::log(
+            'Brand Logo Master',
+            'Update',
+            "Mengubah Brand Logo: {$logo->name}",
+            ['old_name' => $oldName, 'new_name' => $logo->name, 'new_file' => isset($data['logo_path'])]
+        );
+
         return redirect()->route('brand.index')
             ->with('success', 'Brand logo updated successfully.');
     }
@@ -122,6 +138,7 @@ class HeaderLogoController extends Controller
     public function destroy(string $id)
     {
         $logo = HeaderLogo::findOrFail($id);
+        $name = $logo->name;
 
         // Delete logo file from public/logos
         if ($logo->logo_path && File::exists(public_path($logo->logo_path))) {
@@ -129,6 +146,13 @@ class HeaderLogoController extends Controller
         }
 
         $logo->delete();
+
+        ActivityLogger::log(
+            'Brand Logo Master',
+            'Delete',
+            "Menghapus Brand Logo: {$name}",
+            ['deleted_name' => $name]
+        );
 
         return redirect()->route('brand.index')
             ->with('success', 'Brand logo deleted successfully.');

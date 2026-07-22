@@ -89,47 +89,65 @@
     </div>
 
     <!-- Modal -->
-    <!-- Modal Create roles -->
+    <!-- Modal Create User -->
     <div class="modal fade" id="modalCreateUser" tabindex="-1" aria-labelledby="modalCreateUserLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <form id="form-create-roles" action="{{ route('user.store') }}" method="POST"
-                    enctype="multipart/form-data">
+                <form id="form-create-user" action="{{ route('user.store') }}" method="POST"
+                    enctype="multipart/form-data" class="needs-validation" novalidate>
                     @csrf
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalCreateUserLabel">Create Role User</h5>
+                        <h5 class="modal-title" id="modalCreateUserLabel">Create User</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Name</label>
-                            <input type="text" class="form-control" name="name" required>
+                            <label class="form-label">Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" name="name"
+                                value="{{ old('name') }}" placeholder="Masukkan nama" required>
+                            @error('name')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @else
+                                <div class="invalid-feedback">Nama wajib diisi.</div>
+                            @enderror
                         </div>
-                    </div>
-                    <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="text" class="form-control" name="email" required>
+                            <label class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control @error('email') is-invalid @enderror" name="email"
+                                value="{{ old('email') }}" placeholder="contoh@email.com" required>
+                            @error('email')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @else
+                                <div class="invalid-feedback">Email wajib diisi dengan format yang benar.</div>
+                            @enderror
                         </div>
-                    </div>
-                    <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input type="text" class="form-control" name="password" required>
+                            <label class="form-label">Password <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" name="password"
+                                placeholder="Minimal 8 karakter" minlength="8" required>
+                            @error('password')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @else
+                                <div class="invalid-feedback">Password wajib diisi (minimal 8 karakter).</div>
+                            @enderror
                         </div>
-                    </div>
-                    <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">User Role</label>
-                            <select class="form-select text-capitalize" name="roles_id" required>
+                            <label class="form-label">User Role <span class="text-danger">*</span></label>
+                            <select class="form-select text-capitalize @error('roles_id') is-invalid @enderror" name="roles_id" required>
+                                <option value="" disabled {{ old('roles_id') ? '' : 'selected' }}>Pilih Role</option>
                                 @foreach ($roles as $role)
-                                    <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                    <option value="{{ $role->id }}" {{ old('roles_id') == $role->id ? 'selected' : '' }}>{{ $role->name }}</option>
                                 @endforeach
                             </select>
+                            @error('roles_id')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @else
+                                <div class="invalid-feedback">Role wajib dipilih.</div>
+                            @enderror
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary" id="btnSubmitUser">Submit</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     </div>
                 </form>
@@ -138,43 +156,41 @@
     </div>
 
 
-    <!-- Modal Edit roles -->
+    <!-- Modal Edit User -->
     <div class="modal fade" id="modalEditRoles" tabindex="-1" aria-labelledby="modalEditRolesLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <form id="form-edit-roles" method="POST" enctype="multipart/form-data">
+                <form id="form-edit-roles" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                     @csrf
                     @method('PUT')
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalCreateUserLabel">Edit Role User</h5>
+                        <h5 class="modal-title" id="modalEditUserLabel">Edit User</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Name</label>
+                            <label class="form-label">Name <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="name" id="edit-user-name" required>
+                            <div class="invalid-feedback">Nama wajib diisi.</div>
                         </div>
-                    </div>
-                    <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="text" class="form-control" name="email" id="edit-user-email" required>
+                            <label class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" name="email" id="edit-user-email" required>
+                            <div class="invalid-feedback">Email wajib diisi dengan format yang benar.</div>
                         </div>
-                    </div>
-                    <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Password <span class="text-primary">(optional)</span></label>
-                            <input type="text" class="form-control" name="password">
+                            <label class="form-label">Password <span class="text-secondary">(opsional)</span></label>
+                            <input type="password" class="form-control" name="password" id="edit-user-password" minlength="8" placeholder="Kosongkan jika tidak ingin mengubah password">
+                            <div class="invalid-feedback">Password minimal 8 karakter.</div>
                         </div>
-                    </div>
-                    <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">User Role</label>
+                            <label class="form-label">User Role <span class="text-danger">*</span></label>
                             <select class="form-select text-capitalize" name="roles_id" id="edit-user-roles-id" required>
                                 @foreach ($roles as $role)
                                     <option value="{{ $role->id }}">{{ $role->name }}</option>
                                 @endforeach
                             </select>
+                            <div class="invalid-feedback">Role wajib dipilih.</div>
                         </div>
                     </div>
                     <input type="hidden" id="edit-user-usersroles-id" name="roles_user_id">
@@ -195,10 +211,27 @@
             // Initialize DataTable
             new DataTable('#user', {
                 columnDefs: [{
-                    targets: '_all', // or use [0, 1, 2] for specific columns
+                    targets: '_all',
                     className: 'text-center'
                 }]
             });
+
+            // Bootstrap form validation handling
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+
+            @if ($errors->any())
+                const createModal = new bootstrap.Modal(document.getElementById('modalCreateUser'));
+                createModal.show();
+            @endif
 
             document.querySelectorAll('.btn-edit-roles').forEach(button => {
                 button.addEventListener('click', function() {
@@ -214,9 +247,9 @@
                     document.querySelector('#edit-user-email').value = email;
                     document.querySelector('#edit-user-roles-id').value = roleId;
                     document.querySelector('#edit-user-usersroles-id').value = userRoleId;
+                    document.querySelector('#edit-user-password').value = '';
 
-                    const editModal = new bootstrap.Modal(document.getElementById(
-                        'modalEditRoles'));
+                    const editModal = new bootstrap.Modal(document.getElementById('modalEditRoles'));
                     editModal.show();
                 });
             });

@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\ActivityLogger;
 use App\Models\Roles;
 use App\Models\RolesUser;
 use App\Models\User;
@@ -37,18 +38,35 @@ class UserController extends Controller
             'email'    => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8',
             'roles_id' => 'required|exists:roles,id',
+        ], [
+            'name.required'     => 'Nama wajib diisi.',
+            'email.required'    => 'Email wajib diisi.',
+            'email.email'       => 'Format email tidak valid.',
+            'email.unique'      => 'Email sudah terdaftar.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min'      => 'Password minimal 8 karakter.',
+            'roles_id.required' => 'Role wajib dipilih.',
         ]);
 
-        $userId = User::create([
+        $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => bcrypt($request->password),
         ]);
 
         RolesUser::create([
-            'users_id' => $userId->id,
+            'users_id' => $user->id,
             'roles_id' => $request->roles_id,
         ]);
+
+        $role = Roles::find($request->roles_id);
+
+        ActivityLogger::log(
+            'User Management',
+            'Create',
+            "Menambahkan user baru: {$user->name} ({$user->email}) dengan Role: " . ($role?->name ?? '-'),
+            ['new_values' => ['name' => $user->name, 'email' => $user->email, 'role' => $role?->name]]
+        );
 
         return redirect()->route('user.index')
             ->with('success', 'User created successfully.');
@@ -80,10 +98,18 @@ class UserController extends Controller
             'email'         => 'required|email|max:255|unique:users,email,' . $id,
             'password'      => 'nullable|string|min:8',
             'roles_id'      => 'required|exists:roles,id',
-            'roles_user_id' => 'required|exists:roles_users,id', // tambahkan ini
+            'roles_user_id' => 'required|exists:roles_users,id',
+        ], [
+            'name.required'     => 'Nama wajib diisi.',
+            'email.required'    => 'Email wajib diisi.',
+            'email.email'       => 'Format email tidak valid.',
+            'email.unique'      => 'Email sudah terdaftar.',
+            'password.min'      => 'Password minimal 8 karakter.',
+            'roles_id.required' => 'Role wajib dipilih.',
         ]);
 
         $user = User::findOrFail($id);
+        $oldData = ['name' => $user->name, 'email' => $user->email];
 
         $user->name  = $request->name;
         $user->email = $request->email;
@@ -94,10 +120,21 @@ class UserController extends Controller
 
         $user->save();
 
-        // Update roles_users by its id
         $rolesUser           = RolesUser::findOrFail($request->roles_user_id);
         $rolesUser->roles_id = $request->roles_id;
         $rolesUser->save();
+
+        $role = Roles::find($request->roles_id);
+
+        ActivityLogger::log(
+            'User Management',
+            'Update',
+            "Mengubah data user: {$user->name} ({$user->email})",
+            [
+                'old_values' => $oldData,
+                'new_values' => ['name' => $user->name, 'email' => $user->email, 'role' => $role?->name, 'password_changed' => $request->filled('password')]
+            ]
+        );
 
         return redirect()->route('user.index')
             ->with('success', 'User updated successfully.');
@@ -109,15 +146,20 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = User::findOrFail($id);
+        $name = $user->name;
+        $email = $user->email;
 
-        // Hapus semua roles_users yang terkait
         RolesUser::where('users_id', $user->id)->delete();
-
-        // Hapus user
         $user->delete();
+
+        ActivityLogger::log(
+            'User Management',
+            'Delete',
+            "Menghapus user: {$name} ({$email})",
+            ['deleted_values' => ['name' => $name, 'email' => $email]]
+        );
 
         return redirect()->route('user.index')
             ->with('success', 'User deleted successfully.');
     }
-
 }

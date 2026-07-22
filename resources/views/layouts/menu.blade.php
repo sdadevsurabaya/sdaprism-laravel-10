@@ -107,7 +107,7 @@
                         </li>
                     @endif
 
-                    @if (strtolower(Auth::user()->rolesUsers->first()?->roles->name) === 'admin')
+                    @if ($role === 'admin')
                         <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="link-icon" data-feather="hard-drive"></i>
@@ -141,7 +141,12 @@
                                 </ul>
                             </div>
                         </li>
-
+                        <li class="nav-item">
+                            <a href="{{ route('activity-log.index') }}" class="nav-link">
+                                <i class="link-icon" data-feather="activity"></i>
+                                <span class="menu-title">Activity Log</span>
+                            </a>
+                        </li>
                     @endif
 
                     <li class="nav-item">

@@ -53,6 +53,16 @@ class ExcelImportController extends Controller
             $data[] = $entry;
         }
 
+        $fileName = $file->getClientOriginalName();
+        $totalRows = count($data);
+
+        \App\Helpers\ActivityLogger::log(
+            'Import Excel',
+            'Import',
+            "Mengimport file Excel '{$fileName}' (Total: {$totalRows} baris)",
+            ['filename' => $fileName, 'rows_count' => $totalRows, 'headers_count' => count($headers)]
+        );
+
         return response()->json([
             'header' => $headers,
             'data' => $data

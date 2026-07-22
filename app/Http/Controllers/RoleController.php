@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ActivityLogger;
 use App\Models\Roles;
 use Illuminate\Http\Request;
 
@@ -33,9 +34,16 @@ class RoleController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        Roles::create([
+        $role = Roles::create([
             'name' => $request->name,
         ]);
+
+        ActivityLogger::log(
+            'Role Management',
+            'Create',
+            "Menambahkan Role baru: {$role->name}",
+            ['new_values' => ['name' => $role->name]]
+        );
 
         return redirect()->route('roles.index')
             ->with('success', 'Roles created successfully.');
@@ -67,10 +75,21 @@ class RoleController extends Controller
         ]);
 
         $role = Roles::findOrFail($id);
+        $oldName = $role->name;
         $role->update(['name' => $request->name]);
 
+        ActivityLogger::log(
+            'Role Management',
+            'Update',
+            "Mengubah Role '{$oldName}' menjadi '{$role->name}'",
+            [
+                'old_values' => ['name' => $oldName],
+                'new_values' => ['name' => $role->name]
+            ]
+        );
+
         return redirect()->route('roles.index')
-            ->with('success', 'Roles created successfully.');
+            ->with('success', 'Roles updated successfully.');
     }
 
     /**
@@ -79,7 +98,15 @@ class RoleController extends Controller
     public function destroy(string $id)
     {
         $roles = Roles::findOrFail($id);
+        $roleName = $roles->name;
         $roles->delete();
+
+        ActivityLogger::log(
+            'Role Management',
+            'Delete',
+            "Menghapus Role: {$roleName}",
+            ['deleted_values' => ['name' => $roleName]]
+        );
 
         return redirect()->route('roles.index')
             ->with('success', 'Roles deleted successfully.');

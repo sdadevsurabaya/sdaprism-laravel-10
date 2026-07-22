@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ActivityLogger;
 use App\Models\Currency;
 use App\Models\HeaderLogo;
 use App\Models\PriceList;
@@ -78,6 +79,13 @@ class PricelistController extends Controller
                 'datatable_data'      => $request->datatable_data,
             ]);
 
+            ActivityLogger::log(
+                'Pricelist Data',
+                'Create',
+                "Membuat Pricelist baru: " . ($data->title ?? "ID #{$data->id}"),
+                ['pricelist_id' => $data->id, 'title' => $data->title]
+            );
+
             return redirect()->route('pricelists.edit', $data)
                 ->with('success', 'Data successfully created');
         } catch (\Exception $e) {
@@ -89,17 +97,9 @@ class PricelistController extends Controller
 
     public function show(PriceList $pricelist)
     {
-        // $pl = PriceList::where('user_id', Auth::id())
-        //     ->where('id', $pricelist->id)
-        //     ->firstOrFail();
-
          $pl = PriceList::where('id', $pricelist->id)
             ->firstOrFail();
 
-        // kalau Anda ubah view untuk menerima $pl langsung:
-        // return view('data.view_pricelist_single', compact('pl'));
-
-        // atau tetap kompatibel dengan view di atas (pakai $data collection):
         $data = collect([$pl]);
         return view('data.view_pricelist_single', compact('data'));
     }
@@ -140,7 +140,8 @@ class PricelistController extends Controller
         }
 
         try {
-            // Ambil hanya field yang bisa di-update
+            $oldData = $pricelist->only(['title', 'footer_text', 'date', 'currency_id', 'payment_method', 'notes']);
+
             $dataToUpdate = [
                 'user_id'             => Auth::id(),
                 'header_logo_id'      => $request->header_logo_id,
@@ -154,20 +155,28 @@ class PricelistController extends Controller
                 'datatable_data'      => $request->datatable_data,
             ];
 
-            // Cek apakah ada perubahan data
             $changes = collect($dataToUpdate)->filter(function ($value, $key) use ($pricelist) {
                 return $pricelist->$key != $value;
             });
 
             if ($changes->isNotEmpty()) {
-                // Ada perubahan, update dulu
                 $pricelist->update($dataToUpdate);
+
+                ActivityLogger::log(
+                    'Pricelist Data',
+                    'Update',
+                    "Mengubah data Pricelist: " . ($pricelist->title ?? "ID #{$pricelist->id}"),
+                    [
+                        'pricelist_id' => $pricelist->id,
+                        'old_values'   => $oldData,
+                        'new_values'   => collect($dataToUpdate)->only(['title', 'footer_text', 'date', 'currency_id', 'payment_method', 'notes'])->toArray()
+                    ]
+                );
 
                 return redirect()->route('pricelists.edit', $pricelist)
                     ->with('success', 'Data successfully updated')
                     ->with('open_pdf', route('pricelist.pdf', $pricelist->id));
             } else {
-                // Tidak ada perubahan, langsung buka PDF
                 return redirect()->route('pricelists.edit', $pricelist)
                     ->with('success', 'No changes made, opened latest PDF')
                     ->with('open_pdf', route('pricelist.pdf', $pricelist->id));
@@ -177,34 +186,22 @@ class PricelistController extends Controller
                 ->withInput()
                 ->with('error', 'Failed to update data: ' . $e->getMessage());
         }
-
-        // try {
-        //     $pricelist->update([
-        //         'header_logo_id' => $request->header_logo_id,
-        //         'title' => $request->title,
-        //         'footer_text' => $request->footer_text,
-        //         'date' => $request->date,
-        //         'currency_id' => $request->currency_id,
-        //         'show_payment_method' => $request->show_payment_method,
-        //         'payment_method' => $request->payment_method,
-        //         'notes' => $request->notes,
-        //         'datatable_data' => $request->datatable_data,
-        //     ]);
-
-        //     return redirect()->route('pricelists.edit', $pricelist)
-        //         ->with('success', 'Data successfully updated')
-        //         ->with('open_pdf', route('pricelist.pdf', $pricelist->id));
-        // } catch (\Exception $e) {
-        //     return redirect()->back()
-        //         ->withInput()
-        //         ->with('error', 'Failed to update data: ' . $e->getMessage());
-        // }
     }
 
     public function destroy(PriceList $pricelist)
     {
         try {
+            $title = $pricelist->title ?? "ID #{$pricelist->id}";
+            $id = $pricelist->id;
             $pricelist->delete();
+
+            ActivityLogger::log(
+                'Pricelist Data',
+                'Delete',
+                "Menghapus Pricelist: {$title}",
+                ['deleted_id' => $id, 'title' => $title]
+            );
+
             return redirect()->route('pricelists.index')
                 ->with('success', 'Data successfully deleted');
         } catch (\Exception $e) {

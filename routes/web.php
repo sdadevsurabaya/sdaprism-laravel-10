@@ -42,6 +42,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::post('/loginas/{id}', [AuthController::class, 'loginas'])->name('login.as');
 
+    // Activity Log (Admin Only)
+    Route::get('/activity-log', [\App\Http\Controllers\Back\ActivityLogController::class, 'index'])->name('activity-log.index');
+    Route::get('/activity-log/{id}', [\App\Http\Controllers\Back\ActivityLogController::class, 'show'])->name('activity-log.show');
+
 });
 
 // ========== UNTUK SEMUA ROLE YANG LOGIN ==========

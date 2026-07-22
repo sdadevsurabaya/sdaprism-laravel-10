@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\ActivityLogger;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -72,25 +73,29 @@ class AuthController extends Controller
         $user = User::where('email', $credentials['email'])->first();
 
         if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+            ActivityLogger::log('Authentication', 'Failed Login', "Percobaan login gagal untuk email: {$credentials['email']}", ['status' => 'failed', 'email' => $credentials['email']]);
             return back()->withErrors(['email' => 'Login failed']);
         }
 
         Auth::login($user);
+        ActivityLogger::log('Authentication', 'Login', "User {$user->name} ({$user->email}) berhasil login.", ['status' => 'success'], $user);
 
         return redirect()->route('pricelists.index')->with('login', 'Login Successfully.');
     }
 
     public function loginas(Request $request)
     {
-
         $id = $request->id;
+        $adminUser = Auth::user();
         Auth::guard('web')->logout();
         $user = User::find($id);
 
         if ($user) {
             Auth::login($user);
+            ActivityLogger::log('Authentication', 'Login As', "Admin " . ($adminUser?->name ?? '') . " login sebagai {$user->name} (ID: {$user->id}).", ['status' => 'success', 'target_user_id' => $user->id, 'target_user_name' => $user->name], $user);
             return redirect()->route('pricelists.index')->with('login', "Login As {$user->name} Successfully.");
         } else {
+            ActivityLogger::log('Authentication', 'Failed Login As', "Gagal login sebagai user ID: {$id}", ['status' => 'failed', 'target_user_id' => $id], $adminUser);
             return back()->withErrors([
                 'id' => 'The provided credentials do not match our records.',
             ]);
@@ -99,6 +104,10 @@ class AuthController extends Controller
 
     public function logout()
     {
+        $currentUser = Auth::user();
+        if ($currentUser) {
+            ActivityLogger::log('Authentication', 'Logout', "User {$currentUser->name} logout dari sistem.", ['status' => 'success'], $currentUser);
+        }
         Auth::guard('web')->logout();            // atau 'admin', 'user', dll
         request()->session()->invalidate();      // optional, recommended
         request()->session()->regenerateToken(); // optional, recommended

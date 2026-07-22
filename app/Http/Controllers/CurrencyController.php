@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ActivityLogger;
 use App\Models\Currency;
 use Illuminate\Http\Request;
 
@@ -36,12 +37,19 @@ class CurrencyController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        Currency::create([
+        $currency = Currency::create([
             'code' => $request->code,
             'symbol' => $request->symbol,
             'name' => $request->name,
             'is_active' => $request->is_active ?? 0,
         ]);
+
+        ActivityLogger::log(
+            'Currency Master',
+            'Create',
+            "Menambahkan Currency baru: {$currency->name} ({$currency->code})",
+            ['code' => $currency->code, 'name' => $currency->name, 'symbol' => $currency->symbol]
+        );
 
         return redirect()->route('currency.index')
             ->with('success', 'Currency created successfully.');
@@ -77,6 +85,7 @@ class CurrencyController extends Controller
         ]);
 
         $currency = Currency::findOrFail($id);
+        $oldData = ['code' => $currency->code, 'name' => $currency->name, 'symbol' => $currency->symbol];
 
         $currency->update([
             'code' => $request->code,
@@ -84,6 +93,16 @@ class CurrencyController extends Controller
             'name' => $request->name,
             'is_active' => $request->is_active ?? 0,
         ]);
+
+        ActivityLogger::log(
+            'Currency Master',
+            'Update',
+            "Mengubah Currency: {$currency->name} ({$currency->code})",
+            [
+                'old_values' => $oldData,
+                'new_values' => ['code' => $currency->code, 'name' => $currency->name, 'symbol' => $currency->symbol]
+            ]
+        );
 
         return redirect()->route('currency.index')
             ->with('success', 'Currency updated successfully.');
@@ -95,7 +114,16 @@ class CurrencyController extends Controller
     public function destroy(string $id)
     {
         $currency = Currency::findOrFail($id);
+        $name = $currency->name;
+        $code = $currency->code;
         $currency->delete();
+
+        ActivityLogger::log(
+            'Currency Master',
+            'Delete',
+            "Menghapus Currency: {$name} ({$code})",
+            ['deleted_name' => $name, 'deleted_code' => $code]
+        );
 
         return redirect()->route('currency.index')
             ->with('success', 'Currency deleted successfully.');
