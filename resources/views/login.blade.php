@@ -30,19 +30,25 @@
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label for="userPassword" class="form-label">Password</label>
-                                            <input id="password" type="password"
-                                                class="form-control @error('password') is-invalid @enderror"
-                                                name="password" required autocomplete="current-password">
-                                            @error('password')
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
-                                                </span>
-                                            @enderror
+                                            <label for="password" class="form-label">Password</label>
+                                            <div class="input-group">
+                                                <input id="password" type="password"
+                                                    class="form-control @error('password') is-invalid @enderror"
+                                                    name="password" required autocomplete="current-password">
+                                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                                    <i id="eyeIcon" data-feather="eye"></i>
+                                                    <i id="eyeOffIcon" data-feather="eye-off" class="d-none"></i>
+                                                </button>
+                                                @error('password')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
                                         </div>
                                         <div>
                                             <button class="mb-2 text-white btn btn-primary me-2 mb-md-0"
-                                                type="submit">Login</a>
+                                                type="submit">Login</button>
                                                 <button type="submit"
                                                     class="mb-2 btn d-none btn-outline-light btn-icon-text mb-md-0">
                                                     <svg class='btn-icon-prepend' fill='currentColor'
@@ -83,6 +89,27 @@
 </div>
 
 @include('layouts.footer')
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const togglePasswordBtn = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+        const eyeOffIcon = document.getElementById('eyeOffIcon');
+
+        if (togglePasswordBtn && passwordInput) {
+            togglePasswordBtn.addEventListener('click', function () {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                if (eyeIcon && eyeOffIcon) {
+                    eyeIcon.classList.toggle('d-none', isPassword);
+                    eyeOffIcon.classList.toggle('d-none', !isPassword);
+                }
+            });
+        }
+    });
+</script>
+@endpush
 @stack('scripts')
 </body>
 
