@@ -4,22 +4,19 @@
     <nav class="page-breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#">Main</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+            <li class="breadcrumb-item active" aria-current="page">QR Scan</li>
         </ol>
     </nav>
 
-    <div class="container py-2">
+    <div class="container py-4">
         <div class="row justify-content-center">
-            <div class="col-md-10 col-lg-8">
-                <div class="card shadow-sm border-0 rounded-3">
-                    {{-- <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between py-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="bx bx-qr-scan fs-4"></i>
-                            <span class="fw-bold fs-5">Dashboard - QR Scan & Fast Lookup</span>
-                        </div>
-                        <span class="badge bg-white text-primary rounded-pill px-3 py-2 fw-semibold">Scanner Ready</span>
-                    </div> --}}
-                    <div class="card-body p-4">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-header d-flex align-items-center gap-2">
+                        <i class="bx bx-qr-scan fs-5"></i>
+                        <span class="fw-semibold">Scan QR Code</span>
+                    </div>
+                    <div class="card-body">
 
                         {{-- Permission Notification --}}
                         <div id="permission-alert" class="alert alert-warning d-none d-flex align-items-center gap-2 mb-3" role="alert">

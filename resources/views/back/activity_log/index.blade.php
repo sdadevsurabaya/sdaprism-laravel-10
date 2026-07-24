@@ -15,6 +15,8 @@
     .pagination-wrapper .pagination {
         margin-bottom: 0;
         gap: 2px;
+        flex-wrap: wrap;
+        justify-content: center;
     }
     .pagination-wrapper .page-item .page-link {
         font-size: 0.8125rem;

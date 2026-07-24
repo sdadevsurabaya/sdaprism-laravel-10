@@ -48,8 +48,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 // ========== UNTUK SEMUA ROLE YANG LOGIN ==========
 Route::middleware(['auth'])->group(function () {
-    // Dashboard Utama & QR Scan
-    Route::get('dashboard', [\App\Http\Controllers\Back\ScanController::class, 'index'])->name('dashboard');
+    // Dashboard Utama
+    Route::get('dashboard', [HomeController::class, 'index'])->name('dashboard');
 
     // Pricelists
     Route::get('pricelists', [PricelistController::class, 'index'])->name('pricelists.index');

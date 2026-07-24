@@ -107,7 +107,7 @@
                                 <div id="mobileSinglePaginationWrapper" class="d-flex flex-column align-items-center gap-2 mt-4">
                                     <small id="mobileSinglePageInfo" class="text-muted"></small>
                                     <nav>
-                                        <ul id="mobileSinglePaginationNav" class="pagination pagination-sm mb-0"></ul>
+                                        <ul id="mobileSinglePaginationNav" class="pagination pagination-sm mb-0 flex-wrap justify-content-center"></ul>
                                     </nav>
                                 </div>
                             </div>
@@ -407,16 +407,39 @@
                     });
                     pageNav.appendChild(prevLi);
 
-                    for (let i = 1; i <= totalPages; i++) {
-                        const li = document.createElement('li');
-                        li.className = `page-item ${i === mobileCurrentPage ? 'active' : ''}`;
-                        li.innerHTML = `<a class="page-link" href="javascript:void(0)">${i}</a>`;
-                        li.addEventListener('click', () => {
-                            mobileCurrentPage = i;
-                            renderMobileCards();
-                        });
-                        pageNav.appendChild(li);
+                    // Truncated pagination range logic
+                    const pages = [];
+                    if (totalPages <= 5) {
+                        for (let i = 1; i <= totalPages; i++) pages.push(i);
+                    } else {
+                        pages.push(1);
+                        if (mobileCurrentPage > 3) pages.push('...');
+                        const startPage = Math.max(2, mobileCurrentPage - 1);
+                        const endPage = Math.min(totalPages - 1, mobileCurrentPage + 1);
+                        for (let i = startPage; i <= endPage; i++) {
+                            if (!pages.includes(i)) pages.push(i);
+                        }
+                        if (mobileCurrentPage < totalPages - 2) {
+                            if (!pages.includes('...')) pages.push('...');
+                        }
+                        if (!pages.includes(totalPages)) pages.push(totalPages);
                     }
+
+                    pages.forEach(p => {
+                        const li = document.createElement('li');
+                        if (p === '...') {
+                            li.className = 'page-item disabled';
+                            li.innerHTML = `<span class="page-link">&hellip;</span>`;
+                        } else {
+                            li.className = `page-item ${p === mobileCurrentPage ? 'active' : ''}`;
+                            li.innerHTML = `<a class="page-link" href="javascript:void(0)">${p}</a>`;
+                            li.addEventListener('click', () => {
+                                mobileCurrentPage = p;
+                                renderMobileCards();
+                            });
+                        }
+                        pageNav.appendChild(li);
+                    });
 
                     const nextLi = document.createElement('li');
                     nextLi.className = `page-item ${mobileCurrentPage === totalPages ? 'disabled' : ''}`;

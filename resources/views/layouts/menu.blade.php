@@ -80,11 +80,19 @@
                 @auth
                     @php $role = strtolower(Auth::user()->rolesUsers->first()?->roles->name); @endphp
                     
-                    {{-- Dashboard (QR Scan) --}}
+                    {{-- Dashboard --}}
                     <li class="nav-item">
                         <a href="{{ route('dashboard') }}" class="nav-link">
                             <i class="link-icon" data-feather="grid"></i>
                             <span class="menu-title">Dashboard</span>
+                        </a>
+                    </li>
+
+                    {{-- QR Scan --}}
+                    <li class="nav-item">
+                        <a href="{{ route('scan.qr') }}" class="nav-link">
+                            <i class="link-icon" data-feather="maximize"></i>
+                            <span class="menu-title">QR Scan</span>
                         </a>
                     </li>
 
