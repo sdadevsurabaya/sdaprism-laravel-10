@@ -12,6 +12,30 @@
     .json-string { color: #059669; }
     .json-number { color: #2563eb; }
     .json-boolean { color: #7c3aed; }
+    .pagination-wrapper .pagination {
+        margin-bottom: 0;
+        gap: 2px;
+    }
+    .pagination-wrapper .page-item .page-link {
+        font-size: 0.8125rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.375rem;
+        color: #495057;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        box-shadow: none;
+    }
+    .pagination-wrapper .page-item.active .page-link {
+        background-color: #6576ff;
+        border-color: #6576ff;
+        color: #fff;
+    }
+    .pagination-wrapper .page-item.disabled .page-link {
+        color: #6c757d;
+        pointer-events: none;
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+    }
 </style>
 
 @section('content')
@@ -226,13 +250,13 @@
             </div>
 
             <!-- Pagination Links -->
-            <div class="mt-3 d-flex justify-content-between align-items-center">
+            <div class="mt-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <span class="text-muted fs-12px">
                     Menampilkan {{ $logs->firstItem() ?? 0 }} - {{ $logs->lastItem() ?? 0 }} dari total
                     {{ $logs->total() }} log
                 </span>
-                <div>
-                    {{ $logs->links() }}
+                <div class="pagination-wrapper">
+                    {{ $logs->links('pagination::bootstrap-5') }}
                 </div>
             </div>
         </div>
