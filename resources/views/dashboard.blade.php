@@ -429,7 +429,63 @@
                         </div>
                     </div>
                 </div>
-                <div class="table-responsive">
+                {{-- Mobile View: Project Cards --}}
+                <div class="d-block d-md-none">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="card border shadow-none rounded-3 p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-soft-primary px-2 py-1 rounded-pill">#1</span>
+                                <span class="badge bg-danger">Released</span>
+                            </div>
+                            <h6 class="fw-bold text-dark mb-2">NobleUI jQuery</h6>
+                            <div class="fs-13px text-secondary mb-1"><i data-feather="calendar" class="icon-xs me-1"></i>01/01/2024 - 26/04/2024</div>
+                            <div class="fs-13px text-dark"><i data-feather="user" class="icon-xs me-1 text-primary"></i>Assign: Leonardo Payne</div>
+                        </div>
+
+                        <div class="card border shadow-none rounded-3 p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-soft-primary px-2 py-1 rounded-pill">#2</span>
+                                <span class="badge bg-success">Review</span>
+                            </div>
+                            <h6 class="fw-bold text-dark mb-2">NobleUI Angular</h6>
+                            <div class="fs-13px text-secondary mb-1"><i data-feather="calendar" class="icon-xs me-1"></i>01/01/2024 - 26/04/2024</div>
+                            <div class="fs-13px text-dark"><i data-feather="user" class="icon-xs me-1 text-primary"></i>Assign: Carl Henson</div>
+                        </div>
+
+                        <div class="card border shadow-none rounded-3 p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-soft-primary px-2 py-1 rounded-pill">#3</span>
+                                <span class="badge bg-info">Pending</span>
+                            </div>
+                            <h6 class="fw-bold text-dark mb-2">NobleUI ReactJs</h6>
+                            <div class="fs-13px text-secondary mb-1"><i data-feather="calendar" class="icon-xs me-1"></i>01/05/2024 - 10/09/2024</div>
+                            <div class="fs-13px text-dark"><i data-feather="user" class="icon-xs me-1 text-primary"></i>Assign: Jensen Combs</div>
+                        </div>
+
+                        <div class="card border shadow-none rounded-3 p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-soft-primary px-2 py-1 rounded-pill">#4</span>
+                                <span class="badge bg-warning">Work in Progress</span>
+                            </div>
+                            <h6 class="fw-bold text-dark mb-2">NobleUI VueJs</h6>
+                            <div class="fs-13px text-secondary mb-1"><i data-feather="calendar" class="icon-xs me-1"></i>01/01/2024 - 31/11/2024</div>
+                            <div class="fs-13px text-dark"><i data-feather="user" class="icon-xs me-1 text-primary"></i>Assign: Amiah Burton</div>
+                        </div>
+
+                        <div class="card border shadow-none rounded-3 p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-soft-primary px-2 py-1 rounded-pill">#5</span>
+                                <span class="badge bg-danger">Coming soon</span>
+                            </div>
+                            <h6 class="fw-bold text-dark mb-2">NobleUI Laravel</h6>
+                            <div class="fs-13px text-secondary mb-1"><i data-feather="calendar" class="icon-xs me-1"></i>01/01/2024 - 31/12/2024</div>
+                            <div class="fs-13px text-dark"><i data-feather="user" class="icon-xs me-1 text-primary"></i>Assign: Yaretzi Mayo</div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Desktop View: Table --}}
+                <div class="table-responsive d-none d-md-block">
                     <table class="table table-hover mb-0">
                         <thead>
                             <tr>

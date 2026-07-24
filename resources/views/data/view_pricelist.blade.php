@@ -7,6 +7,20 @@
     table.dataTable td.dt-type-date {
         text-align: left !important;
     }
+
+    .mobile-pricelist-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .mobile-pricelist-card:hover, .mobile-pricelist-card:active {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .bg-soft-primary {
+        background-color: rgba(114, 124, 245, 0.12) !important;
+        color: #727cf5 !important;
+    }
 </style>
 
 @section('content')
@@ -20,18 +34,86 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
-                <div class="d-flex w-100 justify-content-end">
+                <div class="d-flex w-100 justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Daftar Pricelist</h5>
 
                     {{-- Tombol Add New hanya untuk admin --}}
                     @if (Auth::user()->rolesUsers->first()?->roles->name === 'admin')
                         <a href="{{ route('pricelists.create') }}" type="button"
-                            class="btn btn-outline-primary btn-icon-text me-2 mb-2 mb-md-0">
+                            class="btn btn-outline-primary btn-icon-text">
                             <i class="btn-icon-prepend" data-feather="plus"></i>
                             Add New
                         </a>
                     @endif
                 </div>
-                <div class="table-responsive">
+
+                {{-- Mobile View: Card List --}}
+                <div class="d-block d-md-none">
+                    <div class="mb-3">
+                        <div class="input-group shadow-sm">
+                            <span class="input-group-text bg-white border-end-0 text-muted"><i data-feather="search" class="icon-sm"></i></span>
+                            <input type="text" id="mobile-search" class="form-control border-start-0 ps-0" placeholder="Cari pricelist...">
+                        </div>
+                    </div>
+
+                    <div id="mobile-card-container" class="d-flex flex-column gap-3">
+                        @forelse ($data as $item)
+                            <div class="card mobile-pricelist-card rounded-3 shadow-sm pricelist-item-card">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge bg-soft-primary px-2 py-1 rounded-pill fw-semibold">
+                                            #{{ $loop->iteration }}
+                                        </span>
+                                        <small class="text-muted d-flex align-items-center">
+                                            <i data-feather="calendar" class="icon-sm me-1"></i>
+                                            {{ $item->date }}
+                                        </small>
+                                    </div>
+
+                                    <h6 class="fw-bold text-dark mb-3 card-title-text">
+                                        <i data-feather="file-text" class="icon-sm me-1 text-primary"></i>
+                                        {{ $item->title ?? 'Tanpa Judul' }}
+                                    </h6>
+
+                                    <div class="d-flex gap-2 pt-2 border-top">
+                                        <a href="{{ route('pricelists.show', $item->id) }}"
+                                            class="btn btn-sm btn-primary flex-fill d-flex align-items-center justify-content-center">
+                                            <i data-feather="list" class="icon-sm me-1"></i> List
+                                        </a>
+                                        @if (Auth::user()->rolesUsers->first()?->roles->name === 'admin')
+                                            <a href="{{ route('pricelists.edit', $item->id) }}"
+                                                class="btn btn-sm btn-outline-warning flex-fill d-flex align-items-center justify-content-center">
+                                                <i data-feather="edit" class="icon-sm me-1"></i> Edit
+                                            </a>
+
+                                            <a href="{{ route('pricelist.pdf', $item->id) }}"
+                                                class="btn btn-sm btn-outline-danger flex-fill d-flex align-items-center justify-content-center"
+                                                target="_blank">
+                                                <i data-feather="file" class="icon-sm me-1"></i> PDF
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-4 text-muted">
+                                <i data-feather="inbox" class="mb-2" style="width: 36px; height: 36px;"></i>
+                                <p class="mb-0">Belum ada data pricelist.</p>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    {{-- Mobile Pagination Controls --}}
+                    <div id="mobile-pagination-wrapper" class="d-flex flex-column align-items-center gap-2 mt-4">
+                        <small id="mobile-page-info" class="text-muted"></small>
+                        <nav>
+                            <ul id="mobile-pagination-nav" class="pagination pagination-sm mb-0"></ul>
+                        </nav>
+                    </div>
+                </div>
+
+                {{-- Desktop View: Table --}}
+                <div class="table-responsive d-none d-md-block">
                     <table id="pricelist" class="table table-striped align-middle w-100 nowrap">
                         <thead class="text-start">
                             <tr>
@@ -80,57 +162,149 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const dt = new DataTable('#pricelist', {
-                responsive: {
-                    details: {
-                        type: 'column',
-                        target: 0,
-                        // Tampilkan HANYA kolom yang hidden (tanpa duplikasi kolom yang masih terlihat)
-                        renderer: function(api, rowIdx, columns) {
-                            const rows = columns
-                                .filter(col => col.hidden)
-                                .map(col => (
-                                    '<tr data-dt-row="' + col.rowIndex + '" data-dt-column="' + col
-                                    .columnIndex + '">' +
-                                    '<td class="fw-semibold pe-3">' + col.title + ':</td>' +
-                                    '<td>' + col.data + '</td>' +
-                                    '</tr>'
-                                ))
-                                .join('');
+            // DataTables untuk desktop
+            if (document.getElementById('pricelist')) {
+                const dt = new DataTable('#pricelist', {
+                    responsive: {
+                        details: {
+                            type: 'column',
+                            target: 0,
+                            renderer: function(api, rowIdx, columns) {
+                                const rows = columns
+                                    .filter(col => col.hidden)
+                                    .map(col => (
+                                        '<tr data-dt-row="' + col.rowIndex + '" data-dt-column="' + col
+                                        .columnIndex + '">' +
+                                        '<td class="fw-semibold pe-3">' + col.title + ':</td>' +
+                                        '<td>' + col.data + '</td>' +
+                                        '</tr>'
+                                    ))
+                                    .join('');
 
-                            // kalau tidak ada kolom hidden, jangan render apa-apa
-                            return rows ? $('<table class="table table-sm mb-0"><tbody/>').append(
-                                rows) : false;
+                                return rows ? $('<table class="table table-sm mb-0"><tbody/>').append(
+                                    rows) : false;
+                            }
                         }
-                    }
-                },
-                columnDefs: [{
-                        targets: 0,
-                        className: 'dtr-control',
-                        orderable: false
-                    }, // kolom toggle
-                    {
-                        targets: 2,
-                        responsivePriority: 1
-                    }, // Title tetap prioritas utama
-                    {
-                        targets: 1,
-                        responsivePriority: 3
-                    }, // Date
-                    {
-                        targets: 3,
-                        responsivePriority: 4
-                    } // Create By
-                ],
-                order: [
-                    [1, 'desc']
-                ],
-                pagingType: 'simple_numbers',
-                autoWidth: false
-            });
+                    },
+                    columnDefs: [{
+                            targets: 0,
+                            className: 'dtr-control',
+                            orderable: false
+                        },
+                        {
+                            targets: 2,
+                            responsivePriority: 1
+                        },
+                        {
+                            targets: 1,
+                            responsivePriority: 3
+                        },
+                        {
+                            targets: 3,
+                            responsivePriority: 4
+                        }
+                    ],
+                    order: [
+                        [1, 'desc']
+                    ],
+                    pagingType: 'simple_numbers',
+                    autoWidth: false
+                });
 
-            // pastikan search kosong tiap reload
-            dt.search('').draw();
+                dt.search('').draw();
+            }
+
+            // Real-time Search & Pagination untuk Mobile Cards
+            const mobileSearch = document.getElementById('mobile-search');
+            const cards = Array.from(document.querySelectorAll('.pricelist-item-card'));
+            const pageInfo = document.getElementById('mobile-page-info');
+            const pageNav = document.getElementById('mobile-pagination-nav');
+            const itemsPerPage = 10;
+            let currentPage = 1;
+
+            function updateMobileView() {
+                const query = mobileSearch ? mobileSearch.value.toLowerCase().trim() : '';
+                const matchingCards = cards.filter(card => {
+                    const text = card.textContent.toLowerCase();
+                    return text.includes(query);
+                });
+
+                const totalItems = matchingCards.length;
+                const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
+                if (currentPage > totalPages) currentPage = totalPages;
+                if (currentPage < 1) currentPage = 1;
+
+                cards.forEach(card => card.classList.add('d-none'));
+
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                matchingCards.slice(start, end).forEach(card => card.classList.remove('d-none'));
+
+                if (pageInfo) {
+                    if (totalItems === 0) {
+                        pageInfo.textContent = 'Tidak ada data ditemukan';
+                    } else {
+                        const displayStart = start + 1;
+                        const displayEnd = Math.min(end, totalItems);
+                        pageInfo.textContent = `Menampilkan ${displayStart}-${displayEnd} dari ${totalItems} data`;
+                    }
+                }
+
+                if (pageNav) {
+                    pageNav.innerHTML = '';
+                    if (totalPages <= 1) return;
+
+                    const prevLi = document.createElement('li');
+                    prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+                    prevLi.innerHTML = `<a class="page-link" href="javascript:void(0)">&laquo;</a>`;
+                    prevLi.addEventListener('click', () => {
+                        if (currentPage > 1) {
+                            currentPage--;
+                            updateMobileView();
+                        }
+                    });
+                    pageNav.appendChild(prevLi);
+
+                    for (let i = 1; i <= totalPages; i++) {
+                        const li = document.createElement('li');
+                        li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                        li.innerHTML = `<a class="page-link" href="javascript:void(0)">${i}</a>`;
+                        li.addEventListener('click', () => {
+                            currentPage = i;
+                            updateMobileView();
+                        });
+                        pageNav.appendChild(li);
+                    }
+
+                    const nextLi = document.createElement('li');
+                    nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+                    nextLi.innerHTML = `<a class="page-link" href="javascript:void(0)">&raquo;</a>`;
+                    nextLi.addEventListener('click', () => {
+                        if (currentPage < totalPages) {
+                            currentPage++;
+                            updateMobileView();
+                        }
+                    });
+                    pageNav.appendChild(nextLi);
+                }
+            }
+
+            if (mobileSearch) {
+                mobileSearch.addEventListener('input', function() {
+                    currentPage = 1;
+                    updateMobileView();
+                });
+            }
+
+            if (cards.length > 0) {
+                updateMobileView();
+            }
+
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
         });
     </script>
 @endpush
+

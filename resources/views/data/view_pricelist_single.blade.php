@@ -96,13 +96,24 @@
                 </div>
             </div>
 
-            {{-- Tabel: tanpa dt-responsive & tanpa nowrap (tidak collapse di mobile) --}}
+            {{-- Tabel & Mobile Card List --}}
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="p-3">
-                            {{-- <h4 class="card-title mb-3">Daftar Item Price List</h4> --}}
-                            <div class="table-responsive">
+                            {{-- Mobile Card List --}}
+                            <div class="d-block d-md-none">
+                                <div id="mobileCardsContainer" class="d-flex flex-column gap-3"></div>
+                                <div id="mobileSinglePaginationWrapper" class="d-flex flex-column align-items-center gap-2 mt-4">
+                                    <small id="mobileSinglePageInfo" class="text-muted"></small>
+                                    <nav>
+                                        <ul id="mobileSinglePaginationNav" class="pagination pagination-sm mb-0"></ul>
+                                    </nav>
+                                </div>
+                            </div>
+
+                            {{-- Desktop Table --}}
+                            <div class="table-responsive d-none d-md-block">
                                 <table id="priceTable" class="table table-bordered w-100">
                                     <colgroup>
                                         <col style="width:15%"> <!-- KODE -->
@@ -226,7 +237,7 @@
                             type: key + '__sort',
                             filter: key + '__disp'
                         },
-                        className: 'dt-body-right', // <— perbaikan: tidak pakai titik
+                        className: 'dt-body-right',
                         defaultContent: ''
                     };
                 }
@@ -255,19 +266,14 @@
             const dt = priceTable.DataTable({
                 data: dataConverted,
                 columns: dtColumns,
-
-                // UI minimal (tanpa search bawaan, kita pakai #globalSearch)
                 dom: 'lrtip',
-
-                // PERFORMA
-                deferRender: true, // penting utk scroller
+                deferRender: true,
                 searchDelay: 400,
                 orderMulti: false,
                 processing: true,
                 stateSave: true,
                 autoWidth: false,
-                paging: true, // scroller = tanpa paging
-
+                paging: true,
                 columnDefs: [{
                         targets: hiddenTargets,
                         visible: false
@@ -275,7 +281,7 @@
                     {
                         targets: [1, 3],
                         className: 'dt-body-center'
-                    } // opsional: contoh dari kode awalmu
+                    }
                 ],
                 order: [
                     [firstVisibleCol, 'asc']
@@ -293,7 +299,7 @@
                 dt.search(this.value).draw();
             });
 
-            // Toggle filter per kolom (kalau ada baris .filters di thead)
+            // Toggle filter per kolom
             const filterRow = document.querySelector('#priceTable thead tr.filters');
             $('#btnToggleFilters').on('click', function() {
                 if (!filterRow) return;
@@ -309,8 +315,129 @@
                     });
                 });
             }
+
+            /** ====== MOBILE CARD LIST RENDERER ====== */
+            let mobileCurrentPage = 1;
+            const mobileItemsPerPage = 10;
+
+            function renderMobileCards() {
+                const container = document.getElementById('mobileCardsContainer');
+                const pageInfo = document.getElementById('mobileSinglePageInfo');
+                const pageNav = document.getElementById('mobileSinglePaginationNav');
+                if (!container) return;
+
+                const filteredRows = dt ? dt.rows({ search: 'applied' }).data().toArray() : dataConverted;
+                const totalItems = filteredRows.length;
+                const totalPages = Math.ceil(totalItems / mobileItemsPerPage) || 1;
+
+                if (mobileCurrentPage > totalPages) mobileCurrentPage = totalPages;
+                if (mobileCurrentPage < 1) mobileCurrentPage = 1;
+
+                const start = (mobileCurrentPage - 1) * mobileItemsPerPage;
+                const end = start + mobileItemsPerPage;
+                const pageRows = filteredRows.slice(start, end);
+
+                container.innerHTML = '';
+
+                if (pageRows.length === 0) {
+                    container.innerHTML = `<div class="text-center py-4 text-muted"><p class="mb-0">Tidak ada data item.</p></div>`;
+                } else {
+                    pageRows.forEach((row, idx) => {
+                        const cardNum = start + idx + 1;
+                        let titleHtml = '';
+                        let detailsHtml = '';
+
+                        headerLabels.forEach((label, i) => {
+                            if (hiddenFlags[i]) return;
+                            const k = keys[i];
+                            const val = row[k + '__disp'] || row[k] || '-';
+                            const isPrice = priceCols.some(p => p.key === k);
+
+                            if (!titleHtml && (label.toLowerCase() === 'name' || label.toLowerCase() === 'nama' || label.toLowerCase() === 'description')) {
+                                titleHtml = `<h6 class="fw-bold text-dark mb-2"><i data-feather="box" class="icon-sm me-1 text-primary"></i>${val}</h6>`;
+                            } else {
+                                detailsHtml += `
+                                    <div class="d-flex justify-content-between align-items-center fs-13px py-1 border-bottom border-light">
+                                        <span class="text-secondary">${label}:</span>
+                                        <span class="${isPrice ? 'fw-bold text-primary' : 'fw-semibold text-dark'}">${val}</span>
+                                    </div>`;
+                            }
+                        });
+
+                        if (!titleHtml) {
+                            titleHtml = `<h6 class="fw-bold text-dark mb-2"><i data-feather="box" class="icon-sm me-1 text-primary"></i>Item #${cardNum}</h6>`;
+                        }
+
+                        const cardHtml = `
+                            <div class="card border-0 shadow-sm rounded-3">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge bg-soft-primary px-2 py-1 rounded-pill">#${cardNum}</span>
+                                    </div>
+                                    ${titleHtml}
+                                    ${detailsHtml}
+                                </div>
+                            </div>`;
+                        container.insertAdjacentHTML('beforeend', cardHtml);
+                    });
+                }
+
+                if (typeof feather !== 'undefined') feather.replace();
+
+                if (pageInfo) {
+                    if (totalItems === 0) {
+                        pageInfo.textContent = 'Tidak ada data ditemukan';
+                    } else {
+                        pageInfo.textContent = `Menampilkan ${start + 1}-${Math.min(end, totalItems)} dari ${totalItems} data`;
+                    }
+                }
+
+                if (pageNav) {
+                    pageNav.innerHTML = '';
+                    if (totalPages <= 1) return;
+
+                    const prevLi = document.createElement('li');
+                    prevLi.className = `page-item ${mobileCurrentPage === 1 ? 'disabled' : ''}`;
+                    prevLi.innerHTML = `<a class="page-link" href="javascript:void(0)">&laquo;</a>`;
+                    prevLi.addEventListener('click', () => {
+                        if (mobileCurrentPage > 1) {
+                            mobileCurrentPage--;
+                            renderMobileCards();
+                        }
+                    });
+                    pageNav.appendChild(prevLi);
+
+                    for (let i = 1; i <= totalPages; i++) {
+                        const li = document.createElement('li');
+                        li.className = `page-item ${i === mobileCurrentPage ? 'active' : ''}`;
+                        li.innerHTML = `<a class="page-link" href="javascript:void(0)">${i}</a>`;
+                        li.addEventListener('click', () => {
+                            mobileCurrentPage = i;
+                            renderMobileCards();
+                        });
+                        pageNav.appendChild(li);
+                    }
+
+                    const nextLi = document.createElement('li');
+                    nextLi.className = `page-item ${mobileCurrentPage === totalPages ? 'disabled' : ''}`;
+                    nextLi.innerHTML = `<a class="page-link" href="javascript:void(0)">&raquo;</a>`;
+                    nextLi.addEventListener('click', () => {
+                        if (mobileCurrentPage < totalPages) {
+                            mobileCurrentPage++;
+                            renderMobileCards();
+                        }
+                    });
+                    pageNav.appendChild(nextLi);
+                }
+            }
+
+            dt.on('draw', function() {
+                renderMobileCards();
+            });
+            renderMobileCards();
         });
     </script>
+
 
     <style>
         /* spinner kecil untuk state "processing" */

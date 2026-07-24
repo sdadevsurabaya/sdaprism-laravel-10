@@ -24,7 +24,86 @@
     </div>
     <div class="card">
         <div class="card-body">
-            <div class="table-responsive">
+            {{-- Mobile Card List --}}
+            <div class="d-block d-md-none">
+                <div class="mb-3">
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i data-feather="search" class="icon-sm"></i></span>
+                        <input type="text" id="mobile-user-search" class="form-control border-start-0 ps-0" placeholder="Cari pengguna...">
+                    </div>
+                </div>
+
+                <div id="mobile-user-card-container" class="d-flex flex-column gap-3">
+                    @forelse ($data as $item)
+                        <div class="card border-0 shadow-sm rounded-3 user-item-card">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-soft-primary px-2 py-1 rounded-pill fw-semibold">
+                                        #{{ $loop->iteration }}
+                                    </span>
+                                    <span class="badge bg-primary px-2 py-1 rounded-pill">
+                                        {{ $item->rolesUsers->first()?->roles->name ?? '-' }}
+                                    </span>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center text-primary fw-bold fs-5 border" style="width: 44px; height: 44px;">
+                                        {{ strtoupper(substr($item->name, 0, 1)) }}
+                                    </div>
+                                    <div class="overflow-hidden">
+                                        <h6 class="fw-bold text-dark mb-1 text-truncate">{{ $item->name }}</h6>
+                                        <p class="text-secondary small mb-0 text-truncate"><i data-feather="mail" class="icon-xs me-1"></i>{{ $item->email }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-2 pt-2 border-top">
+                                    <a href="javascript:void(0);"
+                                        class="btn btn-sm btn-outline-warning flex-fill d-flex align-items-center justify-content-center btn-edit-roles"
+                                        data-id="{{ $item->id }}" data-name="{{ $item->name }}"
+                                        data-email="{{ $item->email }}"
+                                        data-roleid="{{ $item->rolesUsers->first()?->roles->id }}"
+                                        data-userroleid="{{ $item->rolesUsers->first()?->id }}"
+                                        data-url="{{ route('user.update', $item->id) }}">
+                                        <i data-feather="edit" class="icon-sm me-1"></i> Edit
+                                    </a>
+
+                                    <form action="{{ route('user.destroy', $item->id) }}" method="POST" class="flex-fill"
+                                        onsubmit="return confirm('Are you sure you want to delete this user?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger w-100 d-flex align-items-center justify-content-center">
+                                            <i data-feather="trash" class="icon-sm me-1"></i> Delete
+                                        </button>
+                                    </form>
+
+                                    <form action="{{ route('login.as', $item->id) }}" method="POST" class="w-100"
+                                        onsubmit="return confirm('Are you sure you want to login as {{ $item->name }}?');">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-outline-primary w-100 d-flex align-items-center justify-content-center">
+                                            <i data-feather="users" class="icon-sm me-1"></i> Login As
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-4 text-muted">
+                            <i data-feather="inbox" class="mb-2" style="width: 36px; height: 36px;"></i>
+                            <p class="mb-0">Belum ada data user.</p>
+                        </div>
+                    @endforelse
+                </div>
+
+                <div id="mobile-user-pagination-wrapper" class="d-flex flex-column align-items-center gap-2 mt-4">
+                    <small id="mobile-user-page-info" class="text-muted"></small>
+                    <nav>
+                        <ul id="mobile-user-pagination-nav" class="pagination pagination-sm mb-0"></ul>
+                    </nav>
+                </div>
+            </div>
+
+            {{-- Desktop Table --}}
+            <div class="table-responsive d-none d-md-block">
                 <table id="user" class="table table-responsive">
                     <thead>
                         <tr>
@@ -54,7 +133,7 @@
                                         data-id="{{ $item->id }}" data-name="{{ $item->name }}"
                                         data-email="{{ $item->email }}"
                                         data-roleid="{{ $item->rolesUsers->first()?->roles->id }}"
-                                        data-userroleid="{{ $item->rolesUsers->first()->id }}"
+                                        data-userroleid="{{ $item->rolesUsers->first()?->id }}"
                                         data-url="{{ route('user.update', $item->id) }}">
                                         <i class="btn-icon-prepend" data-feather="edit"></i>
                                         Edit
@@ -208,15 +287,15 @@
     @include('components.toast')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize DataTable
-            new DataTable('#user', {
-                columnDefs: [{
-                    targets: '_all',
-                    className: 'text-center'
-                }]
-            });
+            if (document.getElementById('user')) {
+                new DataTable('#user', {
+                    columnDefs: [{
+                        targets: '_all',
+                        className: 'text-center'
+                    }]
+                });
+            }
 
-            // Bootstrap form validation handling
             const forms = document.querySelectorAll('.needs-validation');
             Array.from(forms).forEach(form => {
                 form.addEventListener('submit', event => {
@@ -253,6 +332,98 @@
                     editModal.show();
                 });
             });
+
+            // Real-time Search & Pagination untuk Mobile Cards
+            const mobileSearch = document.getElementById('mobile-user-search');
+            const cards = Array.from(document.querySelectorAll('.user-item-card'));
+            const pageInfo = document.getElementById('mobile-user-page-info');
+            const pageNav = document.getElementById('mobile-user-pagination-nav');
+            const itemsPerPage = 10;
+            let currentPage = 1;
+
+            function updateMobileView() {
+                const query = mobileSearch ? mobileSearch.value.toLowerCase().trim() : '';
+                const matchingCards = cards.filter(card => {
+                    const text = card.textContent.toLowerCase();
+                    return text.includes(query);
+                });
+
+                const totalItems = matchingCards.length;
+                const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
+                if (currentPage > totalPages) currentPage = totalPages;
+                if (currentPage < 1) currentPage = 1;
+
+                cards.forEach(card => card.classList.add('d-none'));
+
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                matchingCards.slice(start, end).forEach(card => card.classList.remove('d-none'));
+
+                if (pageInfo) {
+                    if (totalItems === 0) {
+                        pageInfo.textContent = 'Tidak ada data ditemukan';
+                    } else {
+                        const displayStart = start + 1;
+                        const displayEnd = Math.min(end, totalItems);
+                        pageInfo.textContent = `Menampilkan ${displayStart}-${displayEnd} dari ${totalItems} data`;
+                    }
+                }
+
+                if (pageNav) {
+                    pageNav.innerHTML = '';
+                    if (totalPages <= 1) return;
+
+                    const prevLi = document.createElement('li');
+                    prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+                    prevLi.innerHTML = `<a class="page-link" href="javascript:void(0)">&laquo;</a>`;
+                    prevLi.addEventListener('click', () => {
+                        if (currentPage > 1) {
+                            currentPage--;
+                            updateMobileView();
+                        }
+                    });
+                    pageNav.appendChild(prevLi);
+
+                    for (let i = 1; i <= totalPages; i++) {
+                        const li = document.createElement('li');
+                        li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                        li.innerHTML = `<a class="page-link" href="javascript:void(0)">${i}</a>`;
+                        li.addEventListener('click', () => {
+                            currentPage = i;
+                            updateMobileView();
+                        });
+                        pageNav.appendChild(li);
+                    }
+
+                    const nextLi = document.createElement('li');
+                    nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+                    nextLi.innerHTML = `<a class="page-link" href="javascript:void(0)">&raquo;</a>`;
+                    nextLi.addEventListener('click', () => {
+                        if (currentPage < totalPages) {
+                            currentPage++;
+                            updateMobileView();
+                        }
+                    });
+                    pageNav.appendChild(nextLi);
+                }
+            }
+
+            if (mobileSearch) {
+                mobileSearch.addEventListener('input', function() {
+                    currentPage = 1;
+                    updateMobileView();
+                });
+            }
+
+            if (cards.length > 0) {
+                updateMobileView();
+            }
+
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
         });
     </script>
 @endpush
+

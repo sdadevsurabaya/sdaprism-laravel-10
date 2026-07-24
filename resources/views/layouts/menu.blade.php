@@ -2,8 +2,8 @@
     <nav class="navbar top-navbar">
         <div class="container-fluid container-lg">
             <div class="navbar-content">
-                <a href="{{ route('pricelists.index') }}" class="navbar-brand d-none d-lg-flex">
-                    <img src="{{ asset('assets/logo/logo-sda-global-24.svg') }}" alt="Logo" height="30">
+                <a href="{{ route('pricelists.index') }}" class="navbar-brand d-flex align-items-center">
+                    <img src="{{ asset('assets/logo/logo-sda-global-24.svg') }}" alt="Logo" height="28" style="max-height: 30px;">
                 </a>
 
                 <!-- Logo-mini for small screen devices (mobile/tablet) -->

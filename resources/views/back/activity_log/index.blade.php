@@ -173,7 +173,74 @@
     <div class="card">
         <div class="card-body">
             <h6 class="card-title">Daftar Audit Trail & Activity Logs</h6>
-            <div class="table-responsive">
+            {{-- Mobile View: Activity Log Cards --}}
+            <div class="d-block d-md-none mb-3">
+                <div class="d-flex flex-column gap-3">
+                    @forelse ($logs as $index => $log)
+                        @php
+                            $badgeClass = match ($log->action) {
+                                'Create' => 'badge-create',
+                                'Update' => 'badge-update',
+                                'Delete' => 'badge-delete',
+                                'Login', 'Logout', 'Login As', 'Failed Login' => 'badge-auth',
+                                'QR Access', 'QR Lookup' => 'badge-scan',
+                                'Import' => 'badge-import',
+                                default => 'badge-default',
+                            };
+                        @endphp
+                        <div class="card border-0 shadow-sm rounded-3">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-soft-primary px-2 py-1 rounded-pill fw-semibold">
+                                        #{{ $logs->firstItem() + $index }}
+                                    </span>
+                                    <span class="badge {{ $badgeClass }}">{{ $log->action }}</span>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mb-2 fs-12px text-muted border-bottom pb-2">
+                                    <div>
+                                        <i data-feather="clock" class="icon-xs me-1"></i>
+                                        {{ $log->created_at->format('d/m/Y H:i:s') }}
+                                    </div>
+                                    <small>{{ $log->created_at->diffForHumans() }}</small>
+                                </div>
+
+                                <div class="mb-2">
+                                    <div class="fw-bold text-dark fs-14px">{{ $log->user_name ?? 'System' }}</div>
+                                    <span class="badge bg-secondary fs-10px me-1">{{ $log->user_role ?? 'Guest' }}</span>
+                                    <span class="badge bg-light text-dark border fs-10px">{{ $log->module }}</span>
+                                </div>
+
+                                <p class="text-secondary fs-13px mb-3 text-break">
+                                    {{ $log->description }}
+                                </p>
+
+                                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                    <code class="fs-12px">{{ $log->ip_address ?? '-' }}</code>
+                                    <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 btn-detail-log"
+                                        data-id="{{ $log->id }}" data-module="{{ $log->module }}"
+                                        data-action="{{ $log->action }}" data-user="{{ $log->user_name }}"
+                                        data-role="{{ $log->user_role }}"
+                                        data-time="{{ $log->created_at->format('d F Y - H:i:s') }}"
+                                        data-ip="{{ $log->ip_address }}" data-agent="{{ $log->user_agent }}"
+                                        data-description="{{ $log->description }}"
+                                        data-properties='@json($log->properties)'>
+                                        <i data-feather="eye" class="icon-sm"></i> Detail
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-4 text-muted">
+                            <i data-feather="inbox" class="icon-lg mb-2"></i>
+                            <p class="mb-0">Belum ada data activity log yang tercatat.</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            {{-- Desktop View: Table --}}
+            <div class="table-responsive d-none d-md-block">
                 <table class="table table-hover table-striped align-middle">
                     <thead>
                         <tr>
