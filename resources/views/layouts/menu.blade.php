@@ -2,7 +2,7 @@
     <nav class="navbar top-navbar">
         <div class="container-fluid container-lg">
             <div class="navbar-content">
-                <a href="{{ route('pricelists.index') }}" class="navbar-brand d-flex align-items-center">
+                <a href="{{ route('dashboard') }}" class="navbar-brand d-flex align-items-center">
                     <img src="{{ asset('assets/logo/logo-sda-global-24.svg') }}" alt="Logo" height="28" style="max-height: 30px;">
                 </a>
 
@@ -12,15 +12,6 @@
                     <img src="../assets/images/logo-mini-dark.png" class="logo-mini logo-mini-dark" alt="logo">
                 </div> --}}
 
-                {{-- <form class="search-form">
-                    <div class="input-group">
-                        <div class="input-group-text">
-                            <i data-feather="search"></i>
-                        </div>
-                        <input type="text" class="form-control" id="navbarForm" placeholder="Search here...">
-                    </div>
-                </form> --}}
-
                 <ul class="navbar-nav">
                     <li class="theme-switcher-wrapper nav-item">
                         <input type="checkbox" value="" id="theme-switcher">
@@ -28,10 +19,8 @@
                             <div class="box">
                                 <div class="ball"></div>
                                 <div class="icons">
-                                    {{-- <i data-feather="icon-sun"></i> --}}
                                     <i class='bx bxs-sun'></i>
                                     <i class='bx bxs-moon'></i>
-                                    {{-- <i data-feather="icon-moon"></i> --}}
                                 </div>
                             </div>
                         </label>
@@ -88,15 +77,22 @@
     <nav class="bottom-navbar">
         <div class="container">
             <ul class="nav page-navigation">
-                <!-- Menu untuk Admin dan Staff -->
                 @auth
                     @php $role = strtolower(Auth::user()->rolesUsers->first()?->roles->name); @endphp
+                    
+                    {{-- Dashboard (QR Scan) --}}
+                    <li class="nav-item">
+                        <a href="{{ route('dashboard') }}" class="nav-link">
+                            <i class="link-icon" data-feather="grid"></i>
+                            <span class="menu-title">Dashboard</span>
+                        </a>
+                    </li>
+
                     @if (in_array($role, ['admin', 'staff']))
                         <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="link-icon" data-feather="pie-chart"></i>
                                 <span class="menu-title">Data</span>
-                                {{-- <i class="link-arrow"></i> --}}
                             </a>
                             <div class="submenu">
                                 <ul class="submenu-item">
@@ -127,17 +123,14 @@
                             <a href="#" class="nav-link">
                                 <i class="link-icon" data-feather="users"></i>
                                 <span class="menu-title">User Management</span>
-                                {{-- <i class="link-arrow"></i> --}}
                             </a>
                             <div class="submenu">
                                 <ul class="submenu-item">
-                                    {{-- <li class="category-heading">Setting User</li> --}}
                                     <li class="nav-item"><a class="nav-link" href="{{ route('user.index') }}">User
                                             Login</a>
                                     </li>
                                     <li class="nav-item"><a class="nav-link" href="{{ route('roles.index') }}">Roles</a>
                                     </li>
-                                    {{-- <li class="nav-item"><a class="nav-link" href="">Permission</a></li> --}}
                                 </ul>
                             </div>
                         </li>
@@ -150,23 +143,16 @@
                     @endif
 
                     <li class="nav-item">
-                        <a href="{{ route('scan.qr') }}" class="nav-link">
-                            <i class="link-icon" data-feather="maximize"></i>
-                            <span class="menu-title">QR Scan</span>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+
+                        <a href="#" class="nav-link"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="link-icon" data-feather="log-out"></i>
+                            <span class="menu-title">Log Out</span>
                         </a>
                     </li>
-
-                    <li class="nav-item">
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                @csrf
-                            </form>
-
-                            <a href="#" class="nav-link"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="link-icon" data-feather="log-out"></i>
-                                <span class="menu-title">Log Out</span>
-                            </a>
-                        </li>
                 @endauth
 
             </ul>

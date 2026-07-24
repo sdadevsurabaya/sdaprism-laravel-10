@@ -80,7 +80,7 @@ class AuthController extends Controller
         Auth::login($user);
         ActivityLogger::log('Authentication', 'Login', "User {$user->name} ({$user->email}) berhasil login.", ['status' => 'success'], $user);
 
-        return redirect()->route('pricelists.index')->with('login', 'Login Successfully.');
+        return redirect()->route('dashboard')->with('login', 'Login Successfully.');
     }
 
     public function loginas(Request $request)
@@ -93,7 +93,7 @@ class AuthController extends Controller
         if ($user) {
             Auth::login($user);
             ActivityLogger::log('Authentication', 'Login As', "Admin " . ($adminUser?->name ?? '') . " login sebagai {$user->name} (ID: {$user->id}).", ['status' => 'success', 'target_user_id' => $user->id, 'target_user_name' => $user->name], $user);
-            return redirect()->route('pricelists.index')->with('login', "Login As {$user->name} Successfully.");
+            return redirect()->route('dashboard')->with('login', "Login As {$user->name} Successfully.");
         } else {
             ActivityLogger::log('Authentication', 'Failed Login As', "Gagal login sebagai user ID: {$id}", ['status' => 'failed', 'target_user_id' => $id], $adminUser);
             return back()->withErrors([

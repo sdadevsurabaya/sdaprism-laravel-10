@@ -1,15 +1,25 @@
 @extends('layouts.layout')
 
 @section('content')
-    <div class="container py-4">
+    <nav class="page-breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Main</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+        </ol>
+    </nav>
+
+    <div class="container py-2">
         <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="card shadow-sm">
-                    <div class="card-header d-flex align-items-center gap-2">
-                        <i class="bx bx-qr-scan fs-5"></i>
-                        <span class="fw-semibold">Scan QR Code</span>
-                    </div>
-                    <div class="card-body">
+            <div class="col-md-10 col-lg-8">
+                <div class="card shadow-sm border-0 rounded-3">
+                    {{-- <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between py-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bx bx-qr-scan fs-4"></i>
+                            <span class="fw-bold fs-5">Dashboard - QR Scan & Fast Lookup</span>
+                        </div>
+                        <span class="badge bg-white text-primary rounded-pill px-3 py-2 fw-semibold">Scanner Ready</span>
+                    </div> --}}
+                    <div class="card-body p-4">
 
                         {{-- Permission Notification --}}
                         <div id="permission-alert" class="alert alert-warning d-none d-flex align-items-center gap-2 mb-3" role="alert">
@@ -43,9 +53,16 @@
                         </div>
 
                         <div id="scanner-box" class="d-none text-center">
-                            <div id="reader" class="mx-auto mb-2" style="width: 100%; max-width: 420px;"></div>
+                            <div id="camera-select-wrapper" class="mb-3 d-none">
+                                <label for="camera-select" class="form-label small fw-semibold text-muted mb-1">
+                                    <i class="bx bx-camera me-1"></i>Pilih Kamera:
+                                </label>
+                                <select id="camera-select" class="form-select form-select-sm mx-auto shadow-sm" style="max-width: 340px;">
+                                </select>
+                            </div>
+                            <div id="reader" class="mx-auto mb-2 overflow-hidden rounded-3 border" style="width: 100%; max-width: 420px;"></div>
                             <button id="btn-cancel" class="btn btn-outline-secondary btn-sm mb-2" onclick="cancelScanner()">
-                                <i class="bx bx-x me-1"></i>Close Camera
+                                <i class="bx bx-x me-1"></i>Tutup Kamera
                             </button>
                         </div>
 
@@ -124,7 +141,12 @@
     <script>
         let html5QrCode = null;
         let cameraRunning = false;
+        let availableCameras = [];
+        let selectedCameraId = null;
+
         const scanInput = document.getElementById('scan-input');
+        const cameraSelect = document.getElementById('camera-select');
+        const cameraWrapper = document.getElementById('camera-select-wrapper');
 
         function isMobile() { return /Mobi|Android|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent); }
 
@@ -180,35 +202,117 @@
             });
         }
 
+        function loadCameraList() {
+            return Html5Qrcode.getCameras().then(cameras => {
+                availableCameras = cameras;
+                if (cameras && cameras.length > 0) {
+                    cameraSelect.innerHTML = '';
+                    cameras.forEach((cam, idx) => {
+                        const opt = document.createElement('option');
+                        opt.value = cam.id;
+                        opt.textContent = cam.label || `Kamera ${idx + 1}`;
+                        
+                        const labelLower = (cam.label || '').toLowerCase();
+                        if (labelLower.includes('back') || labelLower.includes('rear') || idx === cameras.length - 1) {
+                            opt.selected = true;
+                        }
+                        cameraSelect.appendChild(opt);
+                    });
+
+                    selectedCameraId = cameraSelect.value;
+                    cameraWrapper.classList.remove('d-none');
+                } else {
+                    cameraWrapper.classList.add('d-none');
+                }
+                return cameras;
+            }).catch(err => {
+                document.getElementById('permission-alert').classList.remove('d-none');
+                throw err;
+            });
+        }
+
+        if (cameraSelect) {
+            cameraSelect.addEventListener('change', function() {
+                selectedCameraId = this.value;
+                if (cameraRunning) {
+                    stopCamera().then(() => {
+                        startCameraStream(selectedCameraId);
+                    });
+                }
+            });
+        }
+
         function startScanner() {
             document.getElementById('start-box').classList.add('d-none');
             document.getElementById('scanner-box').classList.remove('d-none');
-            html5QrCode = new Html5Qrcode("reader");
-            Html5Qrcode.getCameras().then(cameras => {
-                const cameraId = cameras[cameras.length - 1].id;
-                html5QrCode.start(cameraId, { fps: 10, qrbox: 280 }, (decodedText) => {
+            document.getElementById('permission-alert').classList.add('d-none');
+
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("reader");
+            }
+
+            loadCameraList().then(cameras => {
+                if (cameras && cameras.length > 0) {
+                    const camId = selectedCameraId || cameras[cameras.length - 1].id;
+                    startCameraStream(camId);
+                } else {
+                    showError('Kamera tidak ditemukan pada perangkat Anda.');
+                }
+            }).catch(() => {
+                showError('Gagal mengakses kamera. Mohon izinkan akses kamera di browser Anda.');
+            });
+        }
+
+        function startCameraStream(cameraId) {
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("reader");
+            }
+
+            html5QrCode.start(
+                cameraId,
+                { fps: 10, qrbox: 280 },
+                (decodedText) => {
                     stopCamera().then(() => handleDecodedText(decodedText));
-                }).then(() => cameraRunning = true);
-            }).catch(err => showError('Camera Init Failed.'));
+                }
+            ).then(() => {
+                cameraRunning = true;
+            }).catch(err => {
+                showError('Gagal membuka kamera yang dipilih.');
+            });
         }
 
         function stopCamera() {
             if (!html5QrCode || !cameraRunning) return Promise.resolve();
-            return html5QrCode.stop().then(() => { cameraRunning = false; document.getElementById('reader').innerHTML = ''; }).catch(() => {});
+            return html5QrCode.stop().then(() => {
+                cameraRunning = false;
+                document.getElementById('reader').innerHTML = '';
+            }).catch(() => {
+                cameraRunning = false;
+            });
         }
 
-        function cancelScanner() { stopCamera().then(() => {
-            document.getElementById('scanner-box').classList.add('d-none');
-            document.getElementById('start-box').classList.remove('d-none');
-        });}
+        function cancelScanner() {
+            stopCamera().then(() => {
+                document.getElementById('scanner-box').classList.add('d-none');
+                document.getElementById('start-box').classList.remove('d-none');
+            });
+        }
 
         function showError(msg) {
-            stopCamera().then(() => { document.getElementById('error-msg').textContent = msg; showPanel('error-box'); });
+            stopCamera().then(() => {
+                document.getElementById('error-msg').textContent = msg;
+                showPanel('error-box');
+            });
         }
 
         if (!isMobile()) {
-            document.addEventListener('click', e => { if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'A') scanInput.focus(); });
+            document.addEventListener('click', e => {
+                if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'A' && e.target.tagName !== 'SELECT') {
+                    scanInput.focus();
+                }
+            });
             scanInput.focus();
         }
     </script>
 @endsection
+

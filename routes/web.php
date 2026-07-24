@@ -26,8 +26,6 @@ Route::post('login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 // ========== HANYA UNTUK ADMIN ==========
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('dashboard', [HomeController::class, 'index'])->name('dashboard');
-
     // Role management
     Route::resource('roles', RoleController::class);
 
@@ -50,6 +48,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 // ========== UNTUK SEMUA ROLE YANG LOGIN ==========
 Route::middleware(['auth'])->group(function () {
+    // Dashboard Utama & QR Scan
+    Route::get('dashboard', [\App\Http\Controllers\Back\ScanController::class, 'index'])->name('dashboard');
+
     // Pricelists
     Route::get('pricelists', [PricelistController::class, 'index'])->name('pricelists.index');
     Route::get('pricelists/create', [PricelistController::class, 'create'])->name('pricelists.create');
@@ -61,7 +62,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('pricelists/{pricelist}', [PricelistController::class, 'destroy'])->name('pricelists.destroy');
     Route::get('pricelistPDF', [PricelistController::class, 'template_pdf'])->name('pricelist.template_pdf');
 
-    // QR Scan
+    // QR Scan Alias & API
     Route::get('/back/scan-qr', [\App\Http\Controllers\Back\ScanController::class, 'index'])->name('scan.qr');
     Route::get('/back/rakitan-data', [\App\Http\Controllers\Back\RakitanApiController::class, 'getData'])->name('rakitan.data');
 });
