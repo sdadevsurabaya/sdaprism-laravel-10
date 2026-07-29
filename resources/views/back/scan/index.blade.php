@@ -75,12 +75,12 @@
                     <span class="fs-13px fw-semibold">Input Manual</span>
                 </button>
 
-                <div class="dropdown">
+                <div class="dropup">
                     <button class="btn btn-dark bg-opacity-75 text-white border border-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-2 shadow-lg dropdown-toggle" type="button" id="cameraDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
                         <i data-feather="camera" class="icon-sm"></i>
                         <span class="fs-13px fw-semibold" id="cameraDropdownLabel">Kamera</span>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg rounded-3 fs-12px p-2" id="cameraDropdownList" aria-labelledby="cameraDropdownBtn" style="min-width: 190px; max-height: 240px; overflow-y: auto;">
+                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg rounded-3 fs-12px p-2 mb-2" id="cameraDropdownList" aria-labelledby="cameraDropdownBtn" style="min-width: 220px; max-height: 240px; overflow-y: auto;">
                         <li><a class="dropdown-item disabled text-muted fs-11px" href="javascript:void(0);">Mencari kamera...</a></li>
                     </ul>
                 </div>

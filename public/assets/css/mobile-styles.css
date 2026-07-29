@@ -564,6 +564,13 @@
     gap: 12px;
 }
 
+.qris-fullscreen-bottom-bar .dropup .dropdown-menu {
+    z-index: 1099 !important;
+    bottom: 100% !important;
+    top: auto !important;
+    margin-bottom: 8px !important;
+}
+
 /* --- Modal Bottom Sheet Attached Directly to Bottom Nav Bar --- */
 .modal.modal-bottom-sheet {
     z-index: 1070 !important;
