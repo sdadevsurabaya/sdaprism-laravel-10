@@ -80,6 +80,7 @@
 <link rel="stylesheet" href="{{ asset('assets/css/core.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/iconfont.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/mobile-styles.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/flatpickr.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap5.css') }}">
 {{-- <link href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" rel="stylesheet" /> --}}

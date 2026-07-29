@@ -63,9 +63,9 @@
                     </li>
                 </ul>
 
-                <!-- navbar toggler for small devices -->
+                <!-- navbar toggler for small devices (hidden as bottom-nav handles touch menu, code preserved) -->
                 <div data-toggle="horizontal-menu-toggle"
-                    class="navbar-toggler navbar-toggler-right d-lg-none align-self-center">
+                    class="navbar-toggler navbar-toggler-right d-none align-self-center" style="display: none !important;">
                     <span></span>
                     <span></span>
                     <span></span>

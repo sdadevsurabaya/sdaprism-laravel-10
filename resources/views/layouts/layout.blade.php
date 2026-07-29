@@ -29,7 +29,10 @@
 <body>
 
     <div class="main-wrapper">
-        @include('layouts.menu')
+        <div class="d-none d-lg-block">
+            @include('layouts.menu')
+        </div>
+        @include('layouts.mobile-navbar')
 
         <div class="page-wrapper">
             <div class="container-fluid container-lg page-content-wrapper pb-4">

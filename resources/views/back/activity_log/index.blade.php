@@ -175,8 +175,8 @@
     <div class="card">
         <div class="card-body">
             <h6 class="card-title">Daftar Audit Trail & Activity Logs</h6>
-            {{-- Mobile View: Activity Log Cards --}}
-            <div class="d-block d-md-none mb-3">
+            {{-- Mobile & Tablet View: Activity Log Cards --}}
+            <div class="d-block d-lg-none mb-3">
                 <div class="d-flex flex-column gap-3">
                     @forelse ($logs as $index => $log)
                         @php
@@ -190,7 +190,7 @@
                                 default => 'badge-default',
                             };
                         @endphp
-                        <div class="card border-0 shadow-sm rounded-3">
+                        <div class="card prism-mobile-card border-0 shadow-sm rounded-3">
                             <div class="card-body p-3">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="badge bg-soft-primary px-2 py-1 rounded-pill fw-semibold">
@@ -242,7 +242,7 @@
             </div>
 
             {{-- Desktop View: Table --}}
-            <div class="table-responsive d-none d-md-block">
+            <div class="table-responsive d-none d-lg-block">
                 <table class="table table-hover table-striped align-middle">
                     <thead>
                         <tr>

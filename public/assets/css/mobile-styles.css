@@ -1,0 +1,641 @@
+/* ==========================================================================
+   PRISM SDA - Dedicated Mobile & Tablet UI Stylesheet
+   Designed for Touch Devices (< 992px) with Mobile-First UX Principles
+   ========================================================================== */
+
+/* --- Hide Redundant Mobile Menu Toggler (Bottom Nav handles touch menu, code preserved) --- */
+.navbar-toggler,
+[data-toggle="horizontal-menu-toggle"] {
+    display: none !important;
+}
+
+/* --- Safe Area & Padding Adjustments for Touch Screens --- */
+@media (max-width: 991.98px) {
+    body {
+        padding-bottom: 76px !important; /* Prevents bottom nav overlap */
+    }
+
+    .main-wrapper {
+        min-height: calc(100vh - 76px);
+    }
+
+    .page-content-wrapper {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        padding-top: 14px !important;
+    }
+    
+    /* Touch Target Standards (Min 44px) */
+    .btn, .form-control, .form-select, .nav-link, .dropdown-item {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
+    .btn-sm {
+        min-height: 38px;
+    }
+}
+
+/* --- Mobile Top Navigation Header --- */
+.prism-mobile-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    height: 60px;
+}
+[data-bs-theme="dark"] .prism-mobile-header {
+    background-color: #0d1525;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.prism-mobile-header .brand-logo-img {
+    height: 28px;
+    width: auto;
+}
+
+/* --- 5-Item Bottom Navigation Bar with Center FAB & Sliding Active Pill --- */
+.prism-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1090 !important; /* Stays on top of modals (1070) and backdrop (1050) for 100% clickability */
+    pointer-events: auto !important;
+    padding: 0 4px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.prism-bottom-nav * {
+    pointer-events: auto !important;
+}
+
+/* Sliding Active Pill Indicator in Bottom Nav */
+.prism-nav-active-pill {
+    position: absolute;
+    top: 5px;
+    left: 4px;
+    width: calc((100% - 8px) / 5);
+    height: 54px;
+    background: linear-gradient(135deg, rgba(101, 118, 255, 0.14), rgba(114, 9, 183, 0.08));
+    border-radius: 16px;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 0;
+    pointer-events: none !important;
+    border: 1px solid rgba(101, 118, 255, 0.22);
+}
+
+[data-bs-theme="dark"] .prism-nav-active-pill {
+    background: linear-gradient(135deg, rgba(101, 118, 255, 0.25), rgba(114, 9, 183, 0.2));
+    border-color: rgba(101, 118, 255, 0.4);
+}
+
+.prism-bottom-nav .nav-item-mobile,
+.prism-bottom-nav .prism-center-fab-wrapper {
+    position: relative;
+    z-index: 1;
+}
+
+.prism-bottom-nav .nav-item-mobile.active i,
+.prism-bottom-nav .nav-item-mobile.active svg {
+    transform: translateY(-2px) scale(1.15);
+    color: #6576ff;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Mobile Page Transition Fade-In & Slide Animation */
+@media (max-width: 991.98px) {
+    .page-content {
+        animation: mobilePageTransition 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        will-change: opacity, transform;
+    }
+}
+
+@keyframes mobilePageTransition {
+    0% {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+[data-bs-theme="dark"] .prism-bottom-nav {
+    background: rgba(13, 21, 37, 0.95);
+    border-top-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.prism-bottom-nav .nav-item-mobile {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #6c757d;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 0;
+    transition: color 0.2s ease, transform 0.15s ease;
+    background: none;
+    border: none;
+}
+
+.prism-bottom-nav .nav-item-mobile i,
+.prism-bottom-nav .nav-item-mobile svg {
+    width: 22px;
+    height: 22px;
+    margin-bottom: 2px;
+    transition: transform 0.2s ease;
+}
+
+.prism-bottom-nav .nav-item-mobile.active {
+    color: #6576ff;
+    font-weight: 700;
+}
+
+/* Center FAB Button for QR Scan */
+.prism-center-fab-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    text-decoration: none !important;
+}
+
+.prism-center-fab-btn {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6576ff 0%, #4b5be3 100%);
+    color: #ffffff !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba(101, 118, 255, 0.45);
+    border: 4px solid #ffffff;
+    margin-top: -24px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-bs-theme="dark"] .prism-center-fab-btn {
+    border-color: #0d1525;
+}
+
+.prism-center-fab-btn:active {
+    transform: scale(0.92);
+    box-shadow: 0 2px 8px rgba(101, 118, 255, 0.3);
+}
+
+.prism-center-fab-btn i,
+.prism-center-fab-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.prism-center-fab-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6c757d;
+    margin-top: 2px;
+}
+
+.prism-center-fab-wrapper.active .prism-center-fab-label {
+    color: #6576ff;
+    font-weight: 700;
+}
+
+/* --- Theme Switcher Raw Checkbox Hide --- */
+.theme-switcher-wrapper input[type="checkbox"] {
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    position: absolute !important;
+    pointer-events: none !important;
+}
+
+/* --- Mobile Bottom Sheet Menu (Replaces Side Drawer) --- */
+.prism-mobile-drawer-bottom {
+    height: auto !important;
+    max-height: 82vh !important;
+    border-top-left-radius: 20px !important;
+    border-top-right-radius: 20px !important;
+    border: none !important;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2) !important;
+    bottom: 0 !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.prism-mobile-drawer-bottom .offcanvas-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 1.25rem 1rem 0.75rem 1rem;
+    background: #f8f9fa;
+    position: relative;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.prism-mobile-drawer-bottom .offcanvas-header::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 38px;
+    height: 4px;
+    border-radius: 2px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+[data-bs-theme="dark"] .prism-mobile-drawer-bottom .offcanvas-header {
+    background: #111a2e;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+[data-bs-theme="dark"] .prism-mobile-drawer-bottom .offcanvas-header::before {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.prism-mobile-drawer .drawer-section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #8592a3;
+    font-weight: 700;
+    margin: 1.25rem 0 0.5rem 0.5rem;
+}
+
+.prism-mobile-drawer .drawer-menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.prism-mobile-drawer .drawer-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 10px;
+    color: #495057;
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 4px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+[data-bs-theme="dark"] .prism-mobile-drawer .drawer-menu-item {
+    color: #c7d2fe;
+}
+
+.prism-mobile-drawer .drawer-menu-item:hover,
+.prism-mobile-drawer .drawer-menu-item:active,
+.prism-mobile-drawer .drawer-menu-item.active {
+    background-color: rgba(101, 118, 255, 0.12);
+    color: #6576ff;
+    font-weight: 600;
+}
+
+.prism-mobile-drawer .drawer-menu-item i,
+.prism-mobile-drawer .drawer-menu-item svg {
+    margin-right: 12px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* --- Floating Action Button (FAB) --- */
+.prism-fab-container {
+    position: fixed;
+    bottom: 80px;
+    right: 16px;
+    z-index: 1040;
+}
+
+.prism-fab-btn {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background-color: #6576ff;
+    color: #ffffff !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(101, 118, 255, 0.4);
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+}
+
+.prism-fab-btn:active {
+    transform: scale(0.92);
+    box-shadow: 0 2px 8px rgba(101, 118, 255, 0.3);
+}
+
+.prism-fab-btn i,
+.prism-fab-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* --- Mobile Bottom-Sheet Modal Enhancement --- */
+@media (max-width: 767.98px) {
+    .modal-bottom-sheet .modal-dialog {
+        margin: 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-width: 100%;
+        transform: translateY(100%);
+        transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    
+    .modal-bottom-sheet.show .modal-dialog {
+        transform: translateY(0);
+    }
+    
+    .modal-bottom-sheet .modal-content {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        border: none;
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+    
+    .modal-bottom-sheet .modal-header {
+        position: relative;
+        padding-top: 1.5rem;
+    }
+    
+    .modal-bottom-sheet .modal-header::before {
+        content: '';
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 38px;
+        height: 4px;
+        border-radius: 2px;
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+    [data-bs-theme="dark"] .modal-bottom-sheet .modal-header::before {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* --- Mobile Cards & Accordion Items --- */
+.prism-mobile-card {
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+[data-bs-theme="dark"] .prism-mobile-card {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.prism-mobile-card:active {
+    transform: scale(0.99);
+}
+
+.prism-accordion-item {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+
+[data-bs-theme="dark"] .prism-accordion-item {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: #111a2e;
+}
+
+/* ==========================================================================
+   Full Screen Mobile Scanner Concept
+   ========================================================================== */
+.qris-fullscreen-scanner {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 999 !important;
+    background: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+.qris-fullscreen-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1010;
+    background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
+    padding: 16px;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.qris-fullscreen-viewfinder {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #000;
+}
+
+#qris-reader {
+    width: 100vw !important;
+    height: 100vh !important;
+    border: none !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+}
+
+#qris-reader video {
+    width: 100vw !important;
+    height: 100vh !important;
+    object-fit: cover !important;
+    object-position: center !important;
+}
+
+/* Hide html5-qrcode library internal overlay boxes completely to prevent duplicate box stacking */
+#qris-reader__scan_region,
+#qris-reader__dashboard,
+#qris-reader__status_span,
+#qris-reader img,
+#qris-reader svg {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+#qris-reader__scan_region > div,
+#qris-reader__scan_region img,
+#qris-reader__scan_region svg,
+#html5-qrcode-scannertemplate {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.qris-fullscreen-target {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 260px;
+    height: 260px;
+    border-radius: 20px;
+    z-index: 1010;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.65);
+    pointer-events: none;
+}
+
+.qris-corner {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border: 4px solid #6576ff;
+    z-index: 1011;
+}
+
+.qris-corner-tl { top: 0; left: 0; border-right: none; border-bottom: none; border-top-left-radius: 16px; }
+.qris-corner-tr { top: 0; right: 0; border-left: none; border-bottom: none; border-top-right-radius: 16px; }
+.qris-corner-bl { bottom: 0; left: 0; border-right: none; border-top: none; border-bottom-left-radius: 16px; }
+.qris-corner-br { bottom: 0; right: 0; border-left: none; border-top: none; border-bottom-right-radius: 16px; }
+
+.qris-scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #6576ff, #00f2fe, #6576ff, transparent);
+    box-shadow: 0 0 15px #6576ff, 0 0 25px #00f2fe;
+    animation: qrisLaserScan 2s infinite ease-in-out;
+    z-index: 1011;
+}
+
+@keyframes qrisLaserScan {
+    0% { top: 4%; opacity: 0.3; }
+    50% { top: 92%; opacity: 1; }
+    100% { top: 4%; opacity: 0.3; }
+}
+
+.qris-fullscreen-bottom-bar {
+    position: absolute;
+    bottom: 84px; /* Positioned right above bottom nav */
+    left: 16px;
+    right: 16px;
+    z-index: 1015;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+/* --- Modal Bottom Sheet Attached Directly to Bottom Nav Bar --- */
+.modal.modal-bottom-sheet {
+    z-index: 1070 !important;
+    padding-right: 0 !important;
+    overflow-x: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-end !important;
+    pointer-events: none !important;
+}
+
+.modal.modal-bottom-sheet .modal-dialog {
+    position: fixed !important;
+    bottom: 64px !important; /* Attached 100% flush to top of bottom nav bar (height: 64px) */
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    transform: none !important;
+    z-index: 1075 !important;
+    align-self: flex-end !important;
+    min-height: auto !important;
+    pointer-events: none !important;
+}
+
+.modal.modal-bottom-sheet .modal-content {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-top-left-radius: 24px !important;
+    border-top-right-radius: 24px !important;
+    border: none !important;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.25) !important;
+    margin-bottom: 0 !important;
+    pointer-events: auto !important;
+}
+
+.modal.modal-bottom-sheet .modal-header {
+    position: relative;
+    padding-top: 1.25rem;
+}
+
+.modal.modal-bottom-sheet .modal-header::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 38px;
+    height: 4px;
+    border-radius: 2px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+[data-bs-theme="dark"] .modal.modal-bottom-sheet .modal-header::before {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* --- Native Bottom Sheet Slide-Up Animation --- */
+.modal.modal-bottom-sheet.fade .modal-dialog {
+    transform: translateY(100%) !important;
+    transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease !important;
+    opacity: 0 !important;
+    will-change: transform, opacity;
+}
+
+.modal.modal-bottom-sheet.show .modal-dialog {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+}
+
+.modal-backdrop,
+.modal-backdrop.show {
+    z-index: 1050 !important; /* Backdrop stays below bottom nav (1060) and modals (1070) */
+}

@@ -28,8 +28,8 @@
                         Add New
                     </button>
                 </div>
-                {{-- Mobile Card List --}}
-                <div class="d-block d-md-none">
+                {{-- Mobile & Tablet Card List --}}
+                <div class="d-block d-lg-none">
                     <div class="mb-3">
                         <div class="input-group shadow-sm">
                             <span class="input-group-text bg-white border-end-0 text-muted"><i data-feather="search" class="icon-sm"></i></span>
@@ -39,7 +39,7 @@
 
                     <div id="mobile-role-card-container" class="d-flex flex-column gap-3">
                         @forelse ($data as $item)
-                            <div class="card border-0 shadow-sm rounded-3 role-item-card">
+                            <div class="card prism-mobile-card border-0 shadow-sm rounded-3 role-item-card">
                                 <div class="card-body p-3">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="badge bg-soft-primary px-2 py-1 rounded-pill fw-semibold">
@@ -78,10 +78,16 @@
                             <ul id="mobile-role-pagination-nav" class="pagination pagination-sm mb-0 flex-wrap justify-content-center"></ul>
                         </nav>
                     </div>
+
+                    <div class="prism-fab-container d-lg-none">
+                        <button type="button" class="prism-fab-btn" data-bs-toggle="modal" data-bs-target="#modalCreateRoles" aria-label="Add Role">
+                            <i data-feather="plus"></i>
+                        </button>
+                    </div>
                 </div>
 
                 {{-- Desktop Table --}}
-                <div class="table-responsive d-none d-md-block">
+                <div class="table-responsive d-none d-lg-block">
                     <table id="roles-table" class="table table-responsive" style="text-align: center;">
                         <thead style="text-align: center;">
                             <tr>

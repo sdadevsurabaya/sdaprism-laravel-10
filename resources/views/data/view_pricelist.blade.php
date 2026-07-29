@@ -47,8 +47,8 @@
                     @endif
                 </div>
 
-                {{-- Mobile View: Card List --}}
-                <div class="d-block d-md-none">
+                {{-- Mobile & Tablet View: Card List --}}
+                <div class="d-block d-lg-none">
                     <div class="mb-3">
                         <div class="input-group shadow-sm">
                             <span class="input-group-text bg-white border-end-0 text-muted"><i data-feather="search" class="icon-sm"></i></span>
@@ -58,7 +58,7 @@
 
                     <div id="mobile-card-container" class="d-flex flex-column gap-3">
                         @forelse ($data as $item)
-                            <div class="card mobile-pricelist-card rounded-3 shadow-sm pricelist-item-card">
+                            <div class="card prism-mobile-card rounded-3 shadow-sm pricelist-item-card">
                                 <div class="card-body p-3">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="badge bg-soft-primary px-2 py-1 rounded-pill fw-semibold">
@@ -110,10 +110,18 @@
                             <ul id="mobile-pagination-nav" class="pagination pagination-sm mb-0 flex-wrap justify-content-center"></ul>
                         </nav>
                     </div>
+
+                    @if (Auth::user()->rolesUsers->first()?->roles->name === 'admin')
+                        <div class="prism-fab-container d-lg-none">
+                            <a href="{{ route('pricelists.create') }}" class="prism-fab-btn" aria-label="Add Pricelist">
+                                <i data-feather="plus"></i>
+                            </a>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Desktop View: Table --}}
-                <div class="table-responsive d-none d-md-block">
+                <div class="table-responsive d-none d-lg-block">
                     <table id="pricelist" class="table table-striped align-middle w-100 nowrap">
                         <thead class="text-start">
                             <tr>
