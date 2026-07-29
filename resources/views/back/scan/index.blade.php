@@ -31,7 +31,7 @@
                     </div>
                 </div>
 
-                {{-- Camera Select Dropdown --}}
+                {{-- Camera Select Dropdown Header --}}
                 <div id="qris-camera-select-wrapper" class="d-none">
                     <select id="qris-camera-select" class="form-select form-select-sm bg-dark text-white border-secondary shadow-sm" style="max-width: 130px; font-size: 11px;">
                     </select>
@@ -70,15 +70,20 @@
 
             {{-- Floating Bottom Action Bar (Positioned above Bottom Nav) --}}
             <div class="qris-fullscreen-bottom-bar">
-                <button type="button" class="btn btn-dark bg-opacity-75 text-white border border-secondary rounded-pill px-4 py-2 d-flex align-items-center gap-2 shadow-lg" data-bs-toggle="modal" data-bs-target="#manualInputModal">
+                <button type="button" class="btn btn-dark bg-opacity-75 text-white border border-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-2 shadow-lg" data-bs-toggle="modal" data-bs-target="#manualInputModal">
                     <i data-feather="edit-3" class="icon-sm"></i>
                     <span class="fs-13px fw-semibold">Input Manual</span>
                 </button>
 
-                <button type="button" class="btn btn-dark bg-opacity-75 text-white border border-secondary rounded-pill px-4 py-2 d-flex align-items-center gap-2 shadow-lg" onclick="toggleCameraSwitch()">
-                    <i data-feather="refresh-cw" class="icon-sm"></i>
-                    <span class="fs-13px fw-semibold">Switch</span>
-                </button>
+                <div class="dropdown">
+                    <button class="btn btn-dark bg-opacity-75 text-white border border-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-2 shadow-lg dropdown-toggle" type="button" id="cameraDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i data-feather="camera" class="icon-sm"></i>
+                        <span class="fs-13px fw-semibold" id="cameraDropdownLabel">Kamera</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg rounded-3 fs-12px p-2" id="cameraDropdownList" aria-labelledby="cameraDropdownBtn" style="min-width: 190px; max-height: 240px; overflow-y: auto;">
+                        <li><a class="dropdown-item disabled text-muted fs-11px" href="javascript:void(0);">Mencari kamera...</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -315,6 +320,12 @@
         function submitManualInput() {
             const raw = manualInput.value.trim();
             if (!raw) return;
+
+            // Immediately stop camera hardware and hide camera view when processing manual input
+            stopCamera();
+            const scanner = document.querySelector('.qris-fullscreen-scanner');
+            if (scanner) scanner.style.display = 'none';
+
             const modalEl = document.getElementById('manualInputModal');
             if (modalEl) {
                 const bsModal = bootstrap.Modal.getInstance(modalEl);
@@ -331,6 +342,11 @@
         }
 
         async function handleDecodedText(decodedText) {
+            // Immediately turn off camera stream hardware & hide scanner UI
+            await stopCamera();
+            const scanner = document.querySelector('.qris-fullscreen-scanner');
+            if (scanner) scanner.style.display = 'none';
+
             document.getElementById('res-raw-data').textContent = decodedText;
             document.getElementById('m-res-raw').textContent = decodedText;
 
@@ -413,9 +429,12 @@
         function loadCameraList() {
             return Html5Qrcode.getCameras().then(cameras => {
                 availableCameras = cameras;
+                const dropdownList = document.getElementById('cameraDropdownList');
+
                 if (cameras && cameras.length > 0) {
                     if (cameraSelect) cameraSelect.innerHTML = '';
                     if (qrisCameraSelect) qrisCameraSelect.innerHTML = '';
+                    if (dropdownList) dropdownList.innerHTML = '';
 
                     cameras.forEach((cam, idx) => {
                         const opt = document.createElement('option');
@@ -430,19 +449,53 @@
 
                         if (cameraSelect) cameraSelect.appendChild(opt);
                         if (qrisCameraSelect) qrisCameraSelect.appendChild(opt.cloneNode(true));
+
+                        // Mobile Bottom Camera Dropdown List Items
+                        if (dropdownList) {
+                            const li = document.createElement('li');
+                            const a = document.createElement('a');
+                            a.className = `dropdown-item py-2 px-3 rounded-2 d-flex align-items-center justify-content-between gap-2 ${opt.selected ? 'active' : ''}`;
+                            a.href = 'javascript:void(0)';
+                            const camLabel = cam.label || `Kamera ${idx + 1}`;
+                            a.innerHTML = `<span>${camLabel}</span>`;
+                            a.onclick = () => selectCameraFromDropdown(cam.id, camLabel);
+                            li.appendChild(a);
+                            dropdownList.appendChild(li);
+                        }
                     });
 
                     selectedCameraId = (cameraSelect ? cameraSelect.value : (qrisCameraSelect ? qrisCameraSelect.value : cameras[0].id));
+                    const selectedCamObj = cameras.find(c => c.id === selectedCameraId);
+                    if (selectedCamObj) {
+                        const lbl = document.getElementById('cameraDropdownLabel');
+                        if (lbl) lbl.textContent = selectedCamObj.label || 'Kamera';
+                    }
+
                     if (cameraWrapper) cameraWrapper.classList.remove('d-none');
                     if (qrisCameraWrapper) qrisCameraWrapper.classList.remove('d-none');
                 } else {
                     if (cameraWrapper) cameraWrapper.classList.add('d-none');
                     if (qrisCameraWrapper) qrisCameraWrapper.classList.add('d-none');
+                    if (dropdownList) {
+                        dropdownList.innerHTML = '<li><a class="dropdown-item disabled text-muted fs-11px" href="javascript:void(0);">Kamera otomatis</a></li>';
+                    }
                 }
                 return cameras;
             }).catch(err => {
                 throw err;
             });
+        }
+
+        async function selectCameraFromDropdown(camId, label) {
+            selectedCameraId = camId;
+            const lbl = document.getElementById('cameraDropdownLabel');
+            if (lbl) lbl.textContent = label || 'Kamera';
+
+            if (qrisCameraSelect) qrisCameraSelect.value = camId;
+            if (cameraSelect) cameraSelect.value = camId;
+
+            await stopCamera();
+            startCameraStream(selectedCameraId, 'qris-reader');
         }
 
         if (cameraSelect) {
@@ -459,22 +512,6 @@
                 await stopCamera();
                 startCameraStream(selectedCameraId, 'qris-reader');
             });
-        }
-
-        async function toggleCameraSwitch() {
-            await stopCamera();
-
-            if (availableCameras && availableCameras.length > 1) {
-                currentCamIndex = (currentCamIndex + 1) % availableCameras.length;
-                selectedCameraId = availableCameras[currentCamIndex].id;
-                if (qrisCameraSelect) qrisCameraSelect.value = selectedCameraId;
-                if (cameraSelect) cameraSelect.value = selectedCameraId;
-                startCameraStream(selectedCameraId, 'qris-reader');
-            } else {
-                // Mobile camera toggle between rear (environment) & front (user)
-                currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
-                startCameraStream({ facingMode: currentFacingMode }, 'qris-reader');
-            }
         }
 
         function startScanner() {
@@ -593,13 +630,16 @@
         });
 
         document.addEventListener('hidden.bs.modal', function (e) {
-            const scanner = document.querySelector('.qris-fullscreen-scanner');
-            if (scanner) scanner.style.display = 'block';
-
             if (e.target && e.target.id === 'manualInputModal' && (window.innerWidth < 992 || isMobile())) {
-                setTimeout(() => {
-                    startScannerMobile();
-                }, 200);
+                // If manual input was closed without submitting, restart scanner
+                const resModal = document.getElementById('mobileResultModal');
+                if (!resModal || !resModal.classList.contains('show')) {
+                    const scanner = document.querySelector('.qris-fullscreen-scanner');
+                    if (scanner) scanner.style.display = 'block';
+                    setTimeout(() => {
+                        startScannerMobile();
+                    }, 200);
+                }
             }
         });
 
