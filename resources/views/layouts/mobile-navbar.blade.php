@@ -162,9 +162,12 @@
                                 </a>
                             </div>
                         @else
-                            <div class="col-12 text-center py-3 text-muted">
-                                <i data-feather="info" class="icon-lg mb-2"></i>
-                                <p class="mb-0">Menu master hanya tersedia untuk Admin.</p>
+                            <div class="col-12 text-center py-4">
+                                <div class="bg-soft-warning text-warning rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                                    <i data-feather="lock" class="icon-lg"></i>
+                                </div>
+                                <h6 class="fw-bold text-dark mb-1">Akses Khusus Admin</h6>
+                                <p class="text-secondary small mb-0 fs-12px px-2">Menu Data Master dan Pengaturan Sistem hanya dapat diakses oleh pengguna dengan role Admin.</p>
                             </div>
                         @endif
                     @endauth
