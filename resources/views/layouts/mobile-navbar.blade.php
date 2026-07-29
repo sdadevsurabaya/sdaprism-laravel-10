@@ -21,59 +21,65 @@
     </div>
 </div>
 
-{{-- Fixed 5-Item Bottom Navigation Bar (< 992px) --}}
-<nav class="prism-bottom-nav d-flex d-lg-none" id="prismBottomNav">
-    {{-- Sliding Active Indicator Pill --}}
-    <div class="prism-nav-active-pill" id="prismNavActivePill"></div>
+@auth
+    @php
+        $role = strtolower(Auth::user()->rolesUsers->first()?->roles->name ?? '');
+        $isAdmin = ($role === 'admin');
+        $isStaffOrAdmin = in_array($role, ['admin', 'staff']);
+        $totalItems = $isAdmin ? 5 : ($isStaffOrAdmin ? 4 : 3);
+    @endphp
 
-    {{-- 1. Dashboard --}}
-    <a href="{{ route('dashboard') }}" class="nav-item-mobile {{ request()->routeIs('dashboard') ? 'active' : '' }}" data-nav-index="0">
-        <i data-feather="grid"></i>
-        <span>Dashboard</span>
-    </a>
+    {{-- Fixed Role-Adaptive Bottom Navigation Bar (< 992px) --}}
+    <nav class="prism-bottom-nav d-flex d-lg-none" id="prismBottomNav" data-item-count="{{ $totalItems }}">
+        {{-- Sliding Active Indicator Pill --}}
+        <div class="prism-nav-active-pill" id="prismNavActivePill"></div>
 
-    {{-- 2. Data Master Modal Trigger --}}
-    <a href="javascript:void(0);" class="nav-item-mobile {{ (request()->routeIs('brand.*') || request()->routeIs('currency.*') || request()->routeIs('user.*') || request()->routeIs('roles.*') || request()->routeIs('activity-log.*')) ? 'active' : '' }}" data-bs-toggle="modal" data-bs-target="#mobileMasterModal" data-nav-index="1">
-        <i data-feather="layers"></i>
-        <span>Data Master</span>
-    </a>
+        {{-- 1. Dashboard (Index 0) --}}
+        <a href="{{ route('dashboard') }}" class="nav-item-mobile {{ request()->routeIs('dashboard') ? 'active' : '' }}" data-nav-index="0">
+            <i data-feather="grid"></i>
+            <span>Dashboard</span>
+        </a>
 
-    {{-- 3. Center FAB: QR Scan --}}
-    <a href="{{ route('scan.qr') }}" class="prism-center-fab-wrapper {{ request()->routeIs('scan.qr') ? 'active' : '' }}" data-nav-index="2">
-        <div class="prism-center-fab-btn">
-            <i data-feather="maximize"></i>
-        </div>
-        <span class="prism-center-fab-label">QR Scan</span>
-    </a>
+        @if ($isAdmin)
+            {{-- 2. Data Master (ADMIN ONLY - Index 1) --}}
+            <a href="javascript:void(0);" class="nav-item-mobile {{ (request()->routeIs('brand.*') || request()->routeIs('currency.*') || request()->routeIs('user.*') || request()->routeIs('roles.*') || request()->routeIs('activity-log.*')) ? 'active' : '' }}" data-bs-toggle="modal" data-bs-target="#mobileMasterModal" data-nav-index="1">
+                <i data-feather="layers"></i>
+                <span>Data Master</span>
+            </a>
+        @endif
 
-    {{-- 4. Pricelist --}}
-    @auth
-        @php $role = strtolower(Auth::user()->rolesUsers->first()?->roles->name ?? ''); @endphp
-        @if (in_array($role, ['admin', 'staff']))
-            <a href="{{ route('pricelists.index') }}" class="nav-item-mobile {{ request()->routeIs('pricelists.*') ? 'active' : '' }}" data-nav-index="3">
+        {{-- 3. Center FAB: QR Scan --}}
+        <a href="{{ route('scan.qr') }}" class="prism-center-fab-wrapper {{ request()->routeIs('scan.qr') ? 'active' : '' }}" data-nav-index="{{ $isAdmin ? 2 : 1 }}">
+            <div class="prism-center-fab-btn">
+                <i data-feather="maximize"></i>
+            </div>
+            <span class="prism-center-fab-label">QR Scan</span>
+        </a>
+
+        @if ($isStaffOrAdmin)
+            {{-- 4. Pricelist (Staff & Admin) --}}
+            <a href="{{ route('pricelists.index') }}" class="nav-item-mobile {{ request()->routeIs('pricelists.*') ? 'active' : '' }}" data-nav-index="{{ $isAdmin ? 3 : 2 }}">
                 <i data-feather="pie-chart"></i>
                 <span>Pricelist</span>
             </a>
-        @else
-            <a href="{{ route('dashboard') }}" class="nav-item-mobile" data-nav-index="3">
-                <i data-feather="home"></i>
-                <span>Home</span>
-            </a>
         @endif
-    @endauth
 
-    {{-- 5. Profil --}}
-    <a href="javascript:void(0);" class="nav-item-mobile" data-bs-toggle="modal" data-bs-target="#mobileProfileModal" data-nav-index="4">
-        <i data-feather="user"></i>
-        <span>Profil</span>
-    </a>
-</nav>
+        {{-- 5. Profil --}}
+        <a href="javascript:void(0);" class="nav-item-mobile" data-bs-toggle="modal" data-bs-target="#mobileProfileModal" data-nav-index="{{ $isAdmin ? 4 : ($isStaffOrAdmin ? 3 : 2) }}">
+            <i data-feather="user"></i>
+            <span>Profil</span>
+        </a>
+    </nav>
+@endauth
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const nav = document.getElementById('prismBottomNav');
         const pill = document.getElementById('prismNavActivePill');
         if (!nav || !pill) return;
+
+        const itemCount = parseInt(nav.getAttribute('data-item-count') || '5', 10);
+        pill.style.width = `calc((100% - 8px) / ${itemCount})`;
 
         function updatePillPosition(activeIndex) {
             if (activeIndex === null || activeIndex === undefined || isNaN(activeIndex)) return;

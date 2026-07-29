@@ -104,6 +104,21 @@
 .prism-bottom-nav .prism-center-fab-wrapper {
     position: relative;
     z-index: 1;
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+.prism-bottom-nav a:focus,
+.prism-bottom-nav a:active,
+.prism-bottom-nav button:focus,
+.prism-bottom-nav button:active,
+.prism-bottom-nav .nav-item-mobile:focus,
+.prism-bottom-nav .nav-item-mobile:active {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
 }
 
 .prism-bottom-nav .nav-item-mobile.active i,
