@@ -1,179 +1,20 @@
 @extends('layouts.layout')
 
-@push('css')
-<style>
-    @media (max-width: 991.98px) {
-        html, body {
-            overflow: hidden !important;
-            height: 100% !important;
-            max-height: 100vh !important;
-        }
-    }
-</style>
-@endpush
-
 @section('content')
-
     {{-- ==========================================================================
-       MOBILE & TABLET VIEW (< 992px): Fullscreen Mobile Scanner Concept
+       HOSE ASSEMBLY / QR SCAN PAGE (Desktop & Mobile Card UI)
        ========================================================================== --}}
-    <div class="d-block d-lg-none">
-        <div class="qris-fullscreen-scanner">
-            {{-- Floating Transparent Top Header --}}
-            <div class="qris-fullscreen-header">
-                <div class="d-flex align-items-center gap-2">
-                    <a href="{{ route('dashboard') }}" class="btn btn-icon btn-dark bg-opacity-50 text-white rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                        <i data-feather="arrow-left" class="icon-md"></i>
-                    </a>
-                    <div>
-                        <h6 class="mb-0 fw-bold text-white fs-15px">Scan QR Code</h6>
-                        <small class="text-white-50 fs-11px">Arahkan ke QR Code</small>
-                    </div>
-                </div>
-
-                {{-- Camera Select Dropdown Header --}}
-                <div id="qris-camera-select-wrapper" class="d-none">
-                    <select id="qris-camera-select" class="form-select form-select-sm bg-dark text-white border-secondary shadow-sm" style="max-width: 130px; font-size: 11px;">
-                    </select>
-                </div>
-            </div>
-
-            {{-- Fullscreen Camera Viewfinder --}}
-            <div class="qris-fullscreen-viewfinder">
-                {{-- Permission Alert --}}
-                <div id="permission-alert-mobile" class="alert alert-warning d-none position-absolute top-50 start-50 translate-middle text-center shadow-lg p-4 rounded-4" style="z-index: 1060; width: 88%; max-width: 340px;" role="alert">
-                    <i data-feather="camera-off" class="icon-lg text-warning mb-2" style="width: 44px; height: 44px;"></i>
-                    <div>
-                        <h6 class="fw-bold text-dark mb-1">Akses Kamera Diperlukan</h6>
-                        <small class="text-secondary d-block mb-3">Mohon izinkan akses kamera di browser Anda, lalu ketuk tombol di bawah.</small>
-                        <button type="button" class="btn btn-primary rounded-pill px-4 py-2" onclick="startScannerMobile()">
-                            <i data-feather="refresh-cw" class="icon-sm me-1"></i> Coba Buka Kamera
-                        </button>
-                    </div>
-                </div>
-
-                {{-- Camera Stream Output --}}
-                <div id="qris-reader"></div>
-
-                {{-- Cutout Target Square Mask --}}
-                <div class="qris-fullscreen-target">
-                    {{-- Laser Scan Line Animation --}}
-                    <div class="qris-scan-line"></div>
-                    
-                    {{-- Animated Corner Brackets --}}
-                    <div class="qris-corner qris-corner-tl"></div>
-                    <div class="qris-corner qris-corner-tr"></div>
-                    <div class="qris-corner qris-corner-bl"></div>
-                    <div class="qris-corner qris-corner-br"></div>
-                </div>
-            </div>
-
-            {{-- Floating Bottom Action Bar (Positioned above Bottom Nav) --}}
-            <div class="qris-fullscreen-bottom-bar">
-                <button type="button" class="btn btn-dark bg-opacity-75 text-white border border-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-2 shadow-lg" data-bs-toggle="modal" data-bs-target="#manualInputModal">
-                    <i data-feather="edit-3" class="icon-sm"></i>
-                    <span class="fs-13px fw-semibold">Input Manual</span>
-                </button>
-
-                <div class="dropup">
-                    <button class="btn btn-dark bg-opacity-75 text-white border border-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-2 shadow-lg dropdown-toggle" type="button" id="cameraDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i data-feather="camera" class="icon-sm"></i>
-                        <span class="fs-13px fw-semibold" id="cameraDropdownLabel">Kamera</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg rounded-3 fs-12px p-2 mb-2" id="cameraDropdownList" aria-labelledby="cameraDropdownBtn" style="min-width: 220px; max-height: 240px; overflow-y: auto;">
-                        <li><a class="dropdown-item disabled text-muted fs-11px" href="javascript:void(0);">Mencari kamera...</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Manual Input Sheet Modal for Mobile --}}
-    <div class="modal fade modal-bottom-sheet d-lg-none" id="manualInputModal" tabindex="-1" aria-labelledby="manualInputModalLabel">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header border-bottom-0 pb-0">
-                    <h5 class="modal-title fw-bold" id="manualInputModalLabel">Input Kode Manual</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body py-4">
-                    <p class="text-secondary small mb-3">Ketik ID Rakitan atau gunakan scanner fisik HID di bawah ini:</p>
-                    <div class="input-group input-group-lg mb-3">
-                        <span class="input-group-text bg-white text-muted"><i data-feather="barcode" class="icon-md"></i></span>
-                        <input type="text" id="mobile-manual-input" class="form-control" placeholder="Contoh: RKT-10023..." autocomplete="off">
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button type="button" class="btn btn-primary btn-lg rounded-3 d-flex align-items-center justify-content-center gap-2" onclick="submitManualInput()">
-                            <i data-feather="check" class="icon-md"></i>
-                            <span>Proses Kode</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Scan Result Bottom Sheet Modal for Mobile --}}
-    <div class="modal fade modal-bottom-sheet d-lg-none" id="mobileResultModal" tabindex="-1" aria-labelledby="mobileResultModalLabel">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white py-3">
-                    <h6 class="modal-title fw-bold d-flex align-items-center gap-2 mb-0" id="mobileResultModalLabel">
-                        <i data-feather="check-circle" class="icon-md"></i> Hasil Scan Terbaca
-                    </h6>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-0">
-                    <div class="p-3 bg-light border-bottom">
-                        <small class="text-secondary d-block mb-1 fs-11px">Raw QR Data:</small>
-                        <code class="d-block text-dark fw-bold text-break fs-12px" id="m-res-raw">-</code>
-                    </div>
-                    <ul class="list-group list-group-flush small">
-                        <li class="list-group-item d-flex justify-content-between py-2">
-                            <span class="text-secondary">ID Rakitan</span>
-                            <span class="fw-bold text-dark" id="m-res-id">-</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between py-2">
-                            <span class="text-secondary">Customer</span>
-                            <span class="fw-bold text-primary" id="m-res-cust">-</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between py-2">
-                            <span class="text-secondary">No Faktur</span>
-                            <span class="fw-bold text-dark" id="m-res-faktur">-</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between py-2">
-                            <span class="text-secondary">Tanggal</span>
-                            <span class="fw-bold text-dark" id="m-res-tanggal">-</span>
-                        </li>
-                    </ul>
-                    <div class="p-3 border-top bg-light">
-                        <small class="text-secondary d-block mb-1">Spesifikasi Rakitan:</small>
-                        <div class="fw-semibold text-dark text-break fs-13px" id="m-res-specs">-</div>
-                    </div>
-                </div>
-                <div class="modal-footer border-top-0 p-3">
-                    <button type="button" class="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2" data-bs-dismiss="modal" onclick="resetAllMobile()">
-                        <i data-feather="refresh-cw" class="icon-sm"></i>
-                        <span>Pindai Kode Lain</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    {{-- ==========================================================================
-       DESKTOP VIEW (>= 992px): Preserved Original Desktop Layout
-       ========================================================================== --}}
-    <div class="container py-4 d-none d-lg-block">
+    <div class="container py-3 py-lg-4" style="padding-bottom: 90px !important;">
         <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="card shadow-sm">
-                    <div class="card-header d-flex align-items-center gap-2">
-                        <i class="bx bx-qr-scan fs-5"></i>
-                        <span class="fw-semibold">Scan QR Code</span>
+            <div class="col-12 col-md-8 col-lg-6">
+
+                {{-- CARD VIEW: Hose Assembly Manual Input & Camera Trigger --}}
+                <div class="card shadow-sm border-0 rounded-3 overflow-hidden" id="qris-card-container">
+                    <div class="card-header bg-white border-bottom py-3 px-4 d-flex align-items-center gap-2">
+                        <i class="bx bx-qr-scan fs-4 text-primary"></i>
+                        <h5 class="fw-bold mb-0 text-dark fs-16px">Scan QR Code</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-4">
 
                         {{-- Permission Notification --}}
                         <div id="permission-alert" class="alert alert-warning d-none d-flex align-items-center gap-2 mb-3" role="alert">
@@ -184,29 +25,39 @@
                             </div>
                         </div>
 
-                        {{-- Scanner HID Input --}}
+                        {{-- Scanner Input / Manual --}}
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-muted mb-2" for="scan-input">
+                            <label class="form-label small fw-bold text-secondary mb-2" for="scan-input">
                                 <i class="bx bx-barcode-reader me-1"></i>Scanner Input / Manual
                             </label>
-                            <div class="input-group">
-                                <input type="text" id="scan-input" class="form-control" placeholder="Arahkan scanner atau ketik..." autocomplete="off" autofocus>
-                                <button class="btn btn-danger fw-semibold px-3" id="btn-ok" type="button" onclick="processScanInput()">
-                                    <i class="bx bx-check me-1"></i>OK
+                            <div class="input-group input-group-lg">
+                                <input type="text" id="scan-input" class="form-control fs-14px" placeholder="Arahkan scanner atau ketik..." autocomplete="off" autofocus>
+                                <button class="btn btn-danger fw-bold px-4" id="btn-ok" type="button" onclick="processScanInput()">
+                                    OK
                                 </button>
                             </div>
                         </div>
 
-                        <div class="d-flex align-items-center my-3"><hr class="flex-grow-1"><span class="px-3 small fw-bold text-muted">OR</span><hr class="flex-grow-1"></div>
+                        <div class="d-flex align-items-center my-4">
+                            <hr class="flex-grow-1 border-secondary opacity-25">
+                            <span class="px-3 small fw-bold text-muted">OR</span>
+                            <hr class="flex-grow-1 border-secondary opacity-25">
+                        </div>
 
-                        {{-- Camera Scan --}}
-                        <div id="start-box" class="text-center mb-3">
-                            <button id="btn-start" class="btn btn-outline-danger px-4" onclick="startScanner()">
-                                <i class="bx bx-camera me-1"></i>Scan via Camera
+                        {{-- Camera Scan Trigger --}}
+                        <div id="start-box" class="text-center">
+                            {{-- On Mobile, link directly to scan.camera route --}}
+                            <a href="{{ route('scan.camera') }}" class="btn btn-outline-danger btn-lg rounded-3 px-4 py-2 fw-semibold w-100 w-sm-auto d-inline-flex d-lg-none align-items-center justify-content-center">
+                                <i class="bx bx-camera me-2 fs-5"></i><span>Scan via Camera</span>
+                            </a>
+                            {{-- On Desktop, start inline desktop camera scanner --}}
+                            <button id="btn-start" class="btn btn-outline-danger btn-lg rounded-3 px-4 py-2 fw-semibold w-100 w-sm-auto d-none d-lg-inline-flex align-items-center justify-content-center" onclick="startScanner()">
+                                <i class="bx bx-camera me-2 fs-5"></i><span>Scan via Camera</span>
                             </button>
                         </div>
 
-                        <div id="scanner-box" class="d-none text-center">
+                        {{-- Desktop Inline Camera Box --}}
+                        <div id="scanner-box" class="d-none text-center mt-3">
                             <div id="camera-select-wrapper" class="mb-3 d-none">
                                 <label for="camera-select" class="form-label small fw-semibold text-muted mb-1">
                                     <i class="bx bx-camera me-1"></i>Pilih Kamera:
@@ -220,73 +71,77 @@
                             </button>
                         </div>
 
-                        {{-- Results Display --}}
-                        <div id="result-box" class="d-none mt-3">
-                            <div class="card border-success shadow-none mb-3 overflow-hidden">
-                                <div class="card-header bg-success text-white py-2 d-flex align-items-center gap-2">
-                                    <i class="bx bx-check-circle fs-5"></i>
-                                    <span class="fw-bold small text-uppercase">Scan Result</span>
-                                </div>
-                                <div class="card-body p-0">
-                                    {{-- Raw Data Display --}}
-                                    <div class="px-3 py-2 border-bottom bg-light bg-opacity-50">
-                                        <div class="small fw-bold text-dark mb-1">Data QR Terbaca:</div>
-                                        <div class="p-2 border rounded bg-white small text-muted font-monospace" id="res-raw-data" style="word-break: break-all;">-</div>
-                                    </div>
-
-                                    <table class="table table-sm table-borderless mb-0">
-                                        <tbody>
-                                            <tr class="border-bottom">
-                                                <th class="ps-3 py-2 text-muted fw-normal" style="width: 100px;">ID Rakitan</th>
-                                                <td class="py-2 text-dark">
-                                                    <span class="me-1">:</span>
-                                                    <span class="fw-bold" id="res-id-rakitan">-</span>
-                                                </td>
-                                            </tr>
-                                            <tr class="border-bottom">
-                                                <th class="ps-3 py-2 text-muted fw-normal">Customer</th>
-                                                <td class="py-2 text-primary text-wrap">
-                                                    <span class="me-1 text-dark">:</span>
-                                                    <span class="fw-bold" id="res-nama-customer">-</span>
-                                                </td>
-                                            </tr>
-                                            <tr class="border-bottom">
-                                                <th class="ps-3 py-2 text-muted fw-normal">No Faktur</th>
-                                                <td class="py-2 text-dark">
-                                                    <span class="me-1">:</span>
-                                                    <span class="fw-bold" id="res-no-faktur">-</span>
-                                                </td>
-                                            </tr>
-                                            <tr class="border-bottom">
-                                                <th class="ps-3 py-2 text-muted fw-normal">Tanggal</th>
-                                                <td class="py-2 text-dark">
-                                                    <span class="me-1">:</span>
-                                                    <span class="fw-bold" id="res-tanggal">-</span>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <div class="p-3 border-top bg-light bg-opacity-10">
-                                        <div class="py-1 text-muted small">Deskripsi Spesifikasi:</div>
-                                        <div class="fw-bold text-dark lh-base" id="res-spesifikasi" style="word-break: break-word;">-</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="text-center"><button class="btn btn-outline-secondary btn-sm" onclick="resetAll()">Reset / Next Scan</button></div>
-                        </div>
-
-                        <div id="loading-box" class="d-none text-center py-5">
+                        <div id="loading-box" class="d-none text-center py-4">
                             <div class="spinner-border text-danger mb-3" role="status"></div>
-                            <div class="text-muted fw-semibold">Loading Data...</div>
+                            <div class="text-muted fw-semibold">Memproses Data Rakitan...</div>
                         </div>
 
                         <div id="error-box" class="d-none text-center mt-3">
-                            <div class="alert alert-danger"><span id="error-msg">Error occurred.</span></div>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="resetAll()">Try Again</button>
+                            <div class="alert alert-danger"><span id="error-msg">Terjadi kesalahan.</span></div>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="resetAll()">Coba Lagi</button>
                         </div>
 
                     </div>
                 </div>
+
+                {{-- FULL PAGE RESULT VIEW --}}
+                <div class="card shadow-sm border-0 rounded-3 overflow-hidden d-none" id="qris-fullpage-result">
+                    <div class="card-header bg-success text-white py-3 px-4 d-flex align-items-center gap-2">
+                        <i class="bx bx-check-circle fs-3"></i>
+                        <div>
+                            <h6 class="fw-bold mb-0 fs-16px">Hasil Scan Terbaca</h6>
+                            <small class="text-white-50 fs-12px">Data Rakitan Berhasil Ditemukan</small>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        {{-- Raw QR Code Data Box --}}
+                        <div class="p-3 bg-light border-bottom">
+                            <small class="text-secondary d-block fw-semibold mb-1 fs-11px text-uppercase">Raw QR Data:</small>
+                            <code class="d-block text-dark fw-bold text-break fs-13px font-monospace bg-white p-2 rounded border" id="full-res-raw">-</code>
+                        </div>
+
+                        {{-- Details Table --}}
+                        <ul class="list-group list-group-flush fs-14px">
+                            <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4">
+                                <span class="text-secondary fw-medium">ID Rakitan</span>
+                                <span class="fw-bold text-dark fs-15px" id="full-res-id">-</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4 bg-light bg-opacity-50">
+                                <span class="text-secondary fw-medium">Customer</span>
+                                <span class="fw-bold text-primary fs-15px" id="full-res-cust">-</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4">
+                                <span class="text-secondary fw-medium">No Faktur</span>
+                                <span class="fw-bold text-dark fs-15px" id="full-res-faktur">-</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4 bg-light bg-opacity-50">
+                                <span class="text-secondary fw-medium">Tanggal</span>
+                                <span class="fw-bold text-dark fs-15px" id="full-res-tanggal">-</span>
+                            </li>
+                        </ul>
+
+                        {{-- Assembly Specs --}}
+                        <div class="p-4 border-top">
+                            <small class="text-secondary d-block fw-semibold mb-2 fs-12px text-uppercase">Spesifikasi Rakitan:</small>
+                            <div class="p-3 bg-light rounded-3 fw-semibold text-dark text-break fs-14px border" id="full-res-specs">-</div>
+                        </div>
+                    </div>
+
+                    {{-- Full Page Action Buttons --}}
+                    <div class="card-footer bg-white border-top p-3 p-sm-4">
+                        <div class="d-flex flex-column flex-sm-row gap-2">
+                            <button type="button" class="btn btn-primary btn-lg flex-grow-1 py-2 fs-14px fw-semibold d-flex align-items-center justify-content-center gap-2" onclick="resetAll()">
+                                <i class="bx bx-refresh fs-5"></i>
+                                <span>Pindai Kode Lain</span>
+                            </button>
+                            <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary btn-lg py-2 fs-14px fw-semibold d-flex align-items-center justify-content-center gap-2">
+                                <i class="bx bx-home fs-5"></i>
+                                <span>Kembali ke Dashboard</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -297,42 +152,15 @@
         let cameraRunning = false;
         let availableCameras = [];
         let selectedCameraId = null;
-        let currentCamIndex = 0;
-        let currentFacingMode = 'environment';
 
         const scanInput = document.getElementById('scan-input');
         const cameraSelect = document.getElementById('camera-select');
-        const qrisCameraSelect = document.getElementById('qris-camera-select');
         const cameraWrapper = document.getElementById('camera-select-wrapper');
-        const qrisCameraWrapper = document.getElementById('qris-camera-select-wrapper');
 
         function isMobile() { return /Mobi|Android|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent); }
 
         if (scanInput) {
             scanInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); processScanInput(); } });
-        }
-
-        const manualInput = document.getElementById('mobile-manual-input');
-        if (manualInput) {
-            manualInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submitManualInput(); } });
-        }
-
-        function submitManualInput() {
-            const raw = manualInput.value.trim();
-            if (!raw) return;
-
-            // Immediately stop camera hardware and hide camera view when processing manual input
-            stopCamera();
-            const scanner = document.querySelector('.qris-fullscreen-scanner');
-            if (scanner) scanner.style.display = 'none';
-
-            const modalEl = document.getElementById('manualInputModal');
-            if (modalEl) {
-                const bsModal = bootstrap.Modal.getInstance(modalEl);
-                if (bsModal) bsModal.hide();
-            }
-            manualInput.value = '';
-            handleDecodedText(raw);
         }
 
         function processScanInput() {
@@ -342,17 +170,12 @@
         }
 
         async function handleDecodedText(decodedText) {
-            // Immediately turn off camera stream hardware & hide scanner UI
             await stopCamera();
-            const scanner = document.querySelector('.qris-fullscreen-scanner');
-            if (scanner) scanner.style.display = 'none';
 
-            document.getElementById('res-raw-data').textContent = decodedText;
-            document.getElementById('m-res-raw').textContent = decodedText;
+            if (scanInput) scanInput.value = '';
 
             const parts = decodedText.split('|');
             const idValue = parts[0]?.trim();
-            if (scanInput) scanInput.value = '';
 
             if (!idValue) { showError('Format QR tidak valid.'); return; }
             showPanel('loading-box');
@@ -369,234 +192,113 @@
                     const tgl = data.Tanggal ? data.Tanggal.split(' ')[0].split('-').reverse().join('-') : '-';
                     const specs = data.NAMA_RAKITAN || '-';
 
-                    // Desktop populate
-                    document.getElementById('res-id-rakitan').textContent = idRakitan;
-                    document.getElementById('res-nama-customer').textContent = cust;
-                    document.getElementById('res-no-faktur').textContent = faktur;
-                    document.getElementById('res-tanggal').textContent = tgl;
-                    document.getElementById('res-spesifikasi').textContent = specs;
+                    document.getElementById('full-res-raw').textContent = decodedText;
+                    document.getElementById('full-res-id').textContent = idRakitan;
+                    document.getElementById('full-res-cust').textContent = cust;
+                    document.getElementById('full-res-faktur').textContent = faktur;
+                    document.getElementById('full-res-tanggal').textContent = tgl;
+                    document.getElementById('full-res-specs').textContent = specs;
 
-                    // Mobile populate
-                    document.getElementById('m-res-id').textContent = idRakitan;
-                    document.getElementById('m-res-cust').textContent = cust;
-                    document.getElementById('m-res-faktur').textContent = faktur;
-                    document.getElementById('m-res-tanggal').textContent = tgl;
-                    document.getElementById('m-res-specs').textContent = specs;
-
-                    showPanel('result-box');
-
-                    // Show mobile result modal if mobile
-                    const resultModalEl = document.getElementById('mobileResultModal');
-                    if (resultModalEl && (window.innerWidth < 992 || isMobile())) {
-                        const bsResultModal = new bootstrap.Modal(resultModalEl);
-                        bsResultModal.show();
-                    }
-                } else { showError('Data tidak ditemukan.'); }
-            } catch (err) { showError('Terjadi kesalahan koneksi.'); }
+                    showPanel('fullpage-result');
+                } else {
+                    showError('Data tidak ditemukan.');
+                }
+            } catch (err) {
+                showError('Terjadi kesalahan koneksi.');
+            }
         }
 
         function showPanel(id) {
-            ['result-box', 'error-box', 'loading-box'].forEach(p => {
-                const el = document.getElementById(p);
-                if (el) el.classList.add('d-none');
-            });
-            if (id === 'loading-box') {
-                document.getElementById('loading-box')?.classList.remove('d-none');
-            } else if (id === 'result-box') {
-                document.getElementById('result-box')?.classList.remove('d-none');
-            } else if (id === 'error-box') {
-                document.getElementById('error-box')?.classList.remove('d-none');
+            const cardContainer = document.getElementById('qris-card-container');
+            const fullpageResult = document.getElementById('qris-fullpage-result');
+            const loadingBox = document.getElementById('loading-box');
+            const errorBox = document.getElementById('error-box');
+
+            if (id === 'fullpage-result') {
+                if (cardContainer) cardContainer.classList.add('d-none');
+                if (fullpageResult) fullpageResult.classList.remove('d-none');
+            } else {
+                if (fullpageResult) fullpageResult.classList.add('d-none');
+                if (cardContainer) cardContainer.classList.remove('d-none');
+
+                if (loadingBox) loadingBox.classList.toggle('d-none', id !== 'loading-box');
+                if (errorBox) errorBox.classList.toggle('d-none', id !== 'error-box');
             }
+        }
+
+        function showError(msg) {
+            showPanel('error-box');
+            const errEl = document.getElementById('error-msg');
+            if (errEl) errEl.textContent = msg;
         }
 
         function resetAll() {
             stopCamera().then(() => {
                 if (scanInput) scanInput.value = '';
                 showPanel('');
-                document.getElementById('result-box')?.classList.add('d-none');
                 document.getElementById('start-box')?.classList.remove('d-none');
                 document.getElementById('scanner-box')?.classList.add('d-none');
                 if (!isMobile() && scanInput) scanInput.focus();
             });
         }
 
-        function resetAllMobile() {
-            if (window.innerWidth < 992 || isMobile()) {
-                startScannerMobile();
-            }
-        }
-
         function loadCameraList() {
             return Html5Qrcode.getCameras().then(cameras => {
                 availableCameras = cameras;
-                const dropdownList = document.getElementById('cameraDropdownList');
-
                 if (cameras && cameras.length > 0) {
                     if (cameraSelect) cameraSelect.innerHTML = '';
-                    if (qrisCameraSelect) qrisCameraSelect.innerHTML = '';
-                    if (dropdownList) dropdownList.innerHTML = '';
-
                     cameras.forEach((cam, idx) => {
                         const opt = document.createElement('option');
                         opt.value = cam.id;
                         opt.textContent = cam.label || `Kamera ${idx + 1}`;
-
-                        const labelLower = (cam.label || '').toLowerCase();
-                        if (labelLower.includes('back') || labelLower.includes('rear') || idx === cameras.length - 1) {
-                            opt.selected = true;
-                            currentCamIndex = idx;
-                        }
-
                         if (cameraSelect) cameraSelect.appendChild(opt);
-                        if (qrisCameraSelect) qrisCameraSelect.appendChild(opt.cloneNode(true));
-
-                        // Mobile Bottom Camera Dropdown List Items
-                        if (dropdownList) {
-                            const li = document.createElement('li');
-                            const a = document.createElement('a');
-                            a.className = `dropdown-item py-2 px-3 rounded-2 d-flex align-items-center justify-content-between gap-2 ${opt.selected ? 'active' : ''}`;
-                            a.href = 'javascript:void(0)';
-                            const camLabel = cam.label || `Kamera ${idx + 1}`;
-                            a.innerHTML = `<span>${camLabel}</span>`;
-                            a.onclick = () => selectCameraFromDropdown(cam.id, camLabel);
-                            li.appendChild(a);
-                            dropdownList.appendChild(li);
-                        }
                     });
-
-                    selectedCameraId = (cameraSelect ? cameraSelect.value : (qrisCameraSelect ? qrisCameraSelect.value : cameras[0].id));
-                    const selectedCamObj = cameras.find(c => c.id === selectedCameraId);
-                    if (selectedCamObj) {
-                        const lbl = document.getElementById('cameraDropdownLabel');
-                        if (lbl) lbl.textContent = selectedCamObj.label || 'Kamera';
+                    if (cameras.length > 1 && cameraWrapper) {
+                        cameraWrapper.classList.remove('d-none');
                     }
-
-                    if (cameraWrapper) cameraWrapper.classList.remove('d-none');
-                    if (qrisCameraWrapper) qrisCameraWrapper.classList.remove('d-none');
-                } else {
-                    if (cameraWrapper) cameraWrapper.classList.add('d-none');
-                    if (qrisCameraWrapper) qrisCameraWrapper.classList.add('d-none');
-                    if (dropdownList) {
-                        dropdownList.innerHTML = '<li><a class="dropdown-item disabled text-muted fs-11px" href="javascript:void(0);">Kamera otomatis</a></li>';
-                    }
+                    selectedCameraId = cameras[0].id;
                 }
-                return cameras;
-            }).catch(err => {
-                throw err;
-            });
-        }
-
-        async function selectCameraFromDropdown(camId, label) {
-            selectedCameraId = camId;
-            const lbl = document.getElementById('cameraDropdownLabel');
-            if (lbl) lbl.textContent = label || 'Kamera';
-
-            if (qrisCameraSelect) qrisCameraSelect.value = camId;
-            if (cameraSelect) cameraSelect.value = camId;
-
-            await stopCamera();
-            startCameraStream(selectedCameraId, 'qris-reader');
-        }
-
-        if (cameraSelect) {
-            cameraSelect.addEventListener('change', async function() {
-                selectedCameraId = this.value;
-                await stopCamera();
-                startCameraStream(selectedCameraId, 'reader');
-            });
-        }
-
-        if (qrisCameraSelect) {
-            qrisCameraSelect.addEventListener('change', async function() {
-                selectedCameraId = this.value;
-                await stopCamera();
-                startCameraStream(selectedCameraId, 'qris-reader');
-            });
+            }).catch(err => console.warn("Could not list cameras:", err));
         }
 
         function startScanner() {
             document.getElementById('start-box')?.classList.add('d-none');
             document.getElementById('scanner-box')?.classList.remove('d-none');
-            document.getElementById('permission-alert')?.classList.add('d-none');
+            showPanel('');
 
-            loadCameraList().then(cameras => {
-                if (cameras && cameras.length > 0) {
-                    const camId = selectedCameraId || cameras[cameras.length - 1].id;
-                    startCameraStream(camId, 'reader');
-                } else {
-                    showError('Kamera tidak ditemukan.');
-                }
-            }).catch(() => {
-                showError('Gagal mengakses kamera.');
-            });
-        }
+            if (html5QrCode && cameraRunning) return;
 
-        async function startScannerMobile() {
-            document.getElementById('permission-alert-mobile')?.classList.add('d-none');
-            const scanner = document.querySelector('.qris-fullscreen-scanner');
-            if (scanner) scanner.style.display = 'block';
+            html5QrCode = new Html5Qrcode("reader");
+            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
-            if (cameraRunning) return;
+            loadCameraList().then(() => {
+                const cameraConfig = selectedCameraId ? { deviceId: { exact: selectedCameraId } } : { facingMode: "environment" };
 
-            try {
-                const cameras = await loadCameraList();
-                if (cameras && cameras.length > 0) {
-                    const camId = selectedCameraId || cameras[cameras.length - 1].id;
-                    await startCameraStream(camId, 'qris-reader');
-                } else {
-                    await startCameraStream({ facingMode: currentFacingMode }, 'qris-reader');
-                }
-            } catch (err) {
-                console.warn("Camera load with device ID failed, trying facingMode fallback...", err);
-                try {
-                    await startCameraStream({ facingMode: currentFacingMode }, 'qris-reader');
-                } catch (err2) {
-                    try {
-                        const altFacing = (currentFacingMode === 'environment') ? 'user' : 'environment';
-                        await startCameraStream({ facingMode: altFacing }, 'qris-reader');
-                    } catch (err3) {
-                        console.error("All camera start attempts failed:", err3);
-                        document.getElementById('permission-alert-mobile')?.classList.remove('d-none');
-                    }
-                }
-            }
-        }
-
-        function startCameraStream(cameraTarget, targetContainerId) {
-            if (!html5QrCode || html5QrCode.elementId !== targetContainerId) {
-                if (html5QrCode) {
-                    try { html5QrCode.clear(); } catch(e) {}
-                }
-                html5QrCode = new Html5Qrcode(targetContainerId);
-                html5QrCode.elementId = targetContainerId;
-            }
-
-            const scanConfig = (targetContainerId === 'qris-reader')
-                ? { fps: 15 }
-                : { fps: 10, qrbox: { width: 240, height: 240 } };
-
-            return html5QrCode.start(
-                cameraTarget,
-                scanConfig,
-                (decodedText) => {
-                    stopCamera().then(() => handleDecodedText(decodedText));
-                }
-            ).then(() => {
-                cameraRunning = true;
+                html5QrCode.start(
+                    cameraConfig,
+                    config,
+                    (decodedText) => handleDecodedText(decodedText),
+                    (errorMessage) => {}
+                ).then(() => {
+                    cameraRunning = true;
+                }).catch(err => {
+                    console.error("Camera start error:", err);
+                    document.getElementById('permission-alert')?.classList.remove('d-none');
+                });
             });
         }
 
         function stopCamera() {
-            if (!html5QrCode || !cameraRunning) return Promise.resolve();
-            return html5QrCode.stop().then(() => {
-                cameraRunning = false;
-                const containerId = html5QrCode.elementId;
-                if (containerId && document.getElementById(containerId)) {
-                    document.getElementById(containerId).innerHTML = '';
-                }
-            }).catch(() => {
-                cameraRunning = false;
-            });
+            if (html5QrCode && cameraRunning) {
+                return html5QrCode.stop().then(() => {
+                    cameraRunning = false;
+                    html5QrCode.clear();
+                }).catch(err => {
+                    console.warn("Camera stop error:", err);
+                    cameraRunning = false;
+                });
+            }
+            return Promise.resolve();
         }
 
         function cancelScanner() {
@@ -606,50 +308,16 @@
             });
         }
 
-        function showError(msg) {
-            stopCamera().then(() => {
-                const desktopErr = document.getElementById('error-msg');
-                if (desktopErr) desktopErr.textContent = msg;
-            });
-        }
-
-        if (!isMobile() && scanInput) {
-            document.addEventListener('click', e => {
-                if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'A' && e.target.tagName !== 'SELECT') {
-                    scanInput.focus();
+        if (cameraSelect) {
+            cameraSelect.addEventListener('change', (e) => {
+                selectedCameraId = e.target.value;
+                if (cameraRunning && html5QrCode) {
+                    html5QrCode.stop().then(() => {
+                        cameraRunning = false;
+                        startScanner();
+                    });
                 }
             });
-            scanInput.focus();
         }
-
-        // Stop camera & hide scanner overlay whenever any modal is opened so modal is 100% accessible
-        document.addEventListener('show.bs.modal', function () {
-            stopCamera();
-            const scanner = document.querySelector('.qris-fullscreen-scanner');
-            if (scanner) scanner.style.display = 'none';
-        });
-
-        document.addEventListener('hidden.bs.modal', function (e) {
-            if (e.target && e.target.id === 'manualInputModal' && (window.innerWidth < 992 || isMobile())) {
-                // If manual input was closed without submitting, restart scanner
-                const resModal = document.getElementById('mobileResultModal');
-                if (!resModal || !resModal.classList.contains('show')) {
-                    const scanner = document.querySelector('.qris-fullscreen-scanner');
-                    if (scanner) scanner.style.display = 'block';
-                    setTimeout(() => {
-                        startScannerMobile();
-                    }, 200);
-                }
-            }
-        });
-
-        // Auto-start camera scanner on mobile/tablet page load
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.innerWidth < 992 || isMobile()) {
-                setTimeout(() => {
-                    startScannerMobile();
-                }, 300);
-            }
-        });
     </script>
 @endsection

@@ -3,6 +3,11 @@
    Designed for Touch Devices (< 992px) with Mobile-First UX Principles
    ========================================================================== */
 
+:root {
+    --bottom-nav-height: calc(64px + env(safe-area-inset-bottom, 0px));
+    --actual-bottom-nav-height: var(--bottom-nav-height);
+}
+
 /* --- Hide Redundant Mobile Menu Toggler (Bottom Nav handles touch menu, code preserved) --- */
 .navbar-toggler,
 [data-toggle="horizontal-menu-toggle"] {
@@ -455,6 +460,7 @@
     bottom: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
+    height: 100dvh !important;
     z-index: 999 !important;
     background: #000000 !important;
     margin: 0 !important;
@@ -480,6 +486,7 @@
     position: relative;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     background: #000;
 }
@@ -487,6 +494,7 @@
 #qris-reader {
     width: 100vw !important;
     height: 100vh !important;
+    height: 100dvh !important;
     border: none !important;
     overflow: hidden !important;
     position: absolute !important;
@@ -497,6 +505,7 @@
 #qris-reader video {
     width: 100vw !important;
     height: 100vh !important;
+    height: 100dvh !important;
     object-fit: cover !important;
     object-position: center !important;
 }
@@ -569,10 +578,10 @@
 
 .qris-fullscreen-bottom-bar {
     position: absolute;
-    bottom: 84px; /* Positioned right above bottom nav */
+    bottom: calc(var(--actual-bottom-nav-height, calc(64px + env(safe-area-inset-bottom, 0px))) + 16px) !important;
     left: 16px;
     right: 16px;
-    z-index: 1015;
+    z-index: 1085 !important;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -580,10 +589,12 @@
 }
 
 .qris-fullscreen-bottom-bar .dropup .dropdown-menu {
-    z-index: 1099 !important;
+    z-index: 1100 !important;
     bottom: 100% !important;
     top: auto !important;
     margin-bottom: 8px !important;
+    max-height: 45vh !important;
+    overflow-y: auto !important;
 }
 
 /* --- Modal Bottom Sheet Attached Directly to Bottom Nav Bar --- */
@@ -599,14 +610,14 @@
 
 .modal.modal-bottom-sheet .modal-dialog {
     position: fixed !important;
-    bottom: 64px !important; /* Attached 100% flush to top of bottom nav bar (height: 64px) */
+    bottom: var(--actual-bottom-nav-height, calc(64px + env(safe-area-inset-bottom, 0px))) !important;
     left: 0 !important;
     right: 0 !important;
     margin: 0 !important;
     max-width: 100% !important;
     width: 100% !important;
     transform: none !important;
-    z-index: 1075 !important;
+    z-index: 1095 !important;
     align-self: flex-end !important;
     min-height: auto !important;
     pointer-events: none !important;

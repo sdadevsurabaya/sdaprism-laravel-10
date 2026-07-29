@@ -88,11 +88,11 @@
                         </a>
                     </li>
 
-                    {{-- QR Scan --}}
+                    {{-- Hose Assembly --}}
                     <li class="nav-item">
                         <a href="{{ route('scan.qr') }}" class="nav-link">
                             <i class="link-icon" data-feather="maximize"></i>
-                            <span class="menu-title">QR Scan</span>
+                            <span class="menu-title">Hose Assembly</span>
                         </a>
                     </li>
 

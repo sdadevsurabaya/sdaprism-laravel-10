@@ -64,6 +64,7 @@ Route::middleware(['auth'])->group(function () {
 
     // QR Scan Alias & API
     Route::get('/back/scan-qr', [\App\Http\Controllers\Back\ScanController::class, 'index'])->name('scan.qr');
+    Route::get('/back/camera-scan', [\App\Http\Controllers\Back\ScanController::class, 'camera'])->name('scan.camera');
     Route::get('/back/rakitan-data', [\App\Http\Controllers\Back\RakitanApiController::class, 'getData'])->name('rakitan.data');
 });
 

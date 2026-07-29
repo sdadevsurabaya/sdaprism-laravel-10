@@ -45,13 +45,13 @@
 
 {{-- Quick Navigation App Launcher Grid --}}
 <div class="row grid-margin g-3">
-    {{-- QR Scan --}}
+    {{-- Hose Assembly --}}
     <div class="col-6 col-md-4 col-lg-3">
         <a href="{{ route('scan.qr') }}" class="card dash-tile-card h-100 shadow-sm rounded-3 p-3 bg-white text-center d-flex flex-column align-items-center justify-content-center">
             <div class="tile-icon-box bg-soft-danger text-danger">
                 <i data-feather="maximize" class="icon-lg"></i>
             </div>
-            <h6 class="fw-bold text-dark mb-0 fs-15px">QR Scan</h6>
+            <h6 class="fw-bold text-dark mb-0 fs-15px">Hose Assembly</h6>
         </a>
     </div>
 

@@ -25,8 +25,7 @@
     @php
         $role = strtolower(Auth::user()->rolesUsers->first()?->roles->name ?? '');
         $isAdmin = ($role === 'admin');
-        $isStaffOrAdmin = in_array($role, ['admin', 'staff']);
-        $totalItems = $isAdmin ? 5 : ($isStaffOrAdmin ? 4 : 3);
+        $totalItems = $isAdmin ? 5 : 3;
     @endphp
 
     {{-- Fixed Role-Adaptive Bottom Navigation Bar (< 992px) --}}
@@ -48,24 +47,24 @@
             </a>
         @endif
 
-        {{-- 3. Center FAB: QR Scan --}}
-        <a href="{{ route('scan.qr') }}" class="prism-center-fab-wrapper {{ request()->routeIs('scan.qr') ? 'active' : '' }}" data-nav-index="{{ $isAdmin ? 2 : 1 }}">
+        {{-- 3. Center FAB: Direct Mobile QR Camera Scanner --}}
+        <a href="{{ route('scan.camera') }}" class="prism-center-fab-wrapper {{ (request()->routeIs('scan.qr') || request()->routeIs('scan.camera')) ? 'active' : '' }}" data-nav-index="{{ $isAdmin ? 2 : 1 }}">
             <div class="prism-center-fab-btn">
                 <i data-feather="maximize"></i>
             </div>
             <span class="prism-center-fab-label">QR Scan</span>
         </a>
 
-        @if ($isStaffOrAdmin)
-            {{-- 4. Pricelist (Staff & Admin) --}}
-            <a href="{{ route('pricelists.index') }}" class="nav-item-mobile {{ request()->routeIs('pricelists.*') ? 'active' : '' }}" data-nav-index="{{ $isAdmin ? 3 : 2 }}">
+        @if ($isAdmin)
+            {{-- 4. Pricelist (ADMIN ONLY - Index 3) --}}
+            <a href="{{ route('pricelists.index') }}" class="nav-item-mobile {{ request()->routeIs('pricelists.*') ? 'active' : '' }}" data-nav-index="3">
                 <i data-feather="pie-chart"></i>
                 <span>Pricelist</span>
             </a>
         @endif
 
         {{-- 5. Profil --}}
-        <a href="javascript:void(0);" class="nav-item-mobile" data-bs-toggle="modal" data-bs-target="#mobileProfileModal" data-nav-index="{{ $isAdmin ? 4 : ($isStaffOrAdmin ? 3 : 2) }}">
+        <a href="javascript:void(0);" class="nav-item-mobile" data-bs-toggle="modal" data-bs-target="#mobileProfileModal" data-nav-index="{{ $isAdmin ? 4 : 2 }}">
             <i data-feather="user"></i>
             <span>Profil</span>
         </a>
@@ -73,7 +72,16 @@
 @endauth
 
 <script>
+    function updateMobileNavHeight() {
+        const nav = document.getElementById('prismBottomNav');
+        if (nav) {
+            const height = nav.offsetHeight;
+            document.documentElement.style.setProperty('--actual-bottom-nav-height', `${height}px`);
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+        updateMobileNavHeight();
         const nav = document.getElementById('prismBottomNav');
         const pill = document.getElementById('prismNavActivePill');
         if (!nav || !pill) return;
@@ -103,6 +111,12 @@
             });
         });
     });
+
+    window.addEventListener('resize', updateMobileNavHeight);
+    window.addEventListener('orientationchange', updateMobileNavHeight);
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', updateMobileNavHeight);
+    }
 </script>
 
 {{-- Mobile Data Master Bottom Sheet Modal --}}

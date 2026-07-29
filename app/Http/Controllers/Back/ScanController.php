@@ -9,7 +9,13 @@ class ScanController extends Controller
 {
     public function index()
     {
-        ActivityLogger::log('QR Scan', 'QR Access', 'Pengguna membuka halaman QR Scanner');
+        ActivityLogger::log('QR Scan', 'Hose Assembly Access', 'Pengguna membuka halaman Hose Assembly');
         return view('back.scan.index');
+    }
+
+    public function camera()
+    {
+        ActivityLogger::log('QR Scan', 'Direct Camera Access', 'Pengguna membuka kamera QR Scanner');
+        return view('back.scan.camera');
     }
 }
