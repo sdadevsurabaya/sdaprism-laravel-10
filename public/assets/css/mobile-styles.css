@@ -543,7 +543,7 @@
 
 .qris-fullscreen-target {
     position: absolute;
-    top: 48%;
+    top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 250px;
@@ -625,11 +625,14 @@
 
 .qris-fullscreen-bottom-bar {
     position: absolute;
-    bottom: 30px !important;
-    /* Floating 16px above top edge of bottom nav */
-    left: 16px;
-    right: 16px;
+    top: calc(100% + 20px) !important;
+    bottom: auto !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: max-content !important;
+    white-space: nowrap !important;
     z-index: 1085 !important;
+    pointer-events: auto !important;
     display: flex;
     justify-content: center;
     align-items: center;
