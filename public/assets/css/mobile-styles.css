@@ -454,13 +454,12 @@
    ========================================================================== */
 .qris-fullscreen-scanner {
     position: fixed !important;
-    top: 0 !important;
+    top: 60px !important; /* Fits right below 60px top header */
     left: 0 !important;
     right: 0 !important;
-    bottom: 0 !important;
+    bottom: var(--actual-bottom-nav-height, calc(64px + env(safe-area-inset-bottom, 0px))) !important; /* Fits right above bottom nav */
     width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important;
+    height: calc(100dvh - 60px - var(--actual-bottom-nav-height, calc(64px + env(safe-area-inset-bottom, 0px)))) !important;
     z-index: 999 !important;
     background: #000000 !important;
     margin: 0 !important;
@@ -475,8 +474,7 @@
     right: 0;
     z-index: 1010;
     background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
-    padding: 16px;
-    padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
+    padding: 12px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -484,17 +482,15 @@
 
 .qris-fullscreen-viewfinder {
     position: relative;
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
     background: #000;
 }
 
 #qris-reader {
-    width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important;
+    width: 100% !important;
+    height: 100% !important;
     border: none !important;
     overflow: hidden !important;
     position: absolute !important;
@@ -503,9 +499,8 @@
 }
 
 #qris-reader video {
-    width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important;
+    width: 100% !important;
+    height: 100% !important;
     object-fit: cover !important;
     object-position: center !important;
 }
@@ -534,11 +529,11 @@
 
 .qris-fullscreen-target {
     position: absolute;
-    top: 45%;
+    top: 48%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 260px;
-    height: 260px;
+    width: 250px;
+    height: 250px;
     border-radius: 20px;
     z-index: 1010;
     box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.65);
@@ -578,7 +573,7 @@
 
 .qris-fullscreen-bottom-bar {
     position: absolute;
-    bottom: calc(var(--actual-bottom-nav-height, calc(64px + env(safe-area-inset-bottom, 0px))) + 16px) !important;
+    bottom: 16px !important; /* Floating 16px above top edge of bottom nav */
     left: 16px;
     right: 16px;
     z-index: 1085 !important;
