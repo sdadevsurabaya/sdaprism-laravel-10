@@ -454,12 +454,12 @@
    ========================================================================== */
 .qris-fullscreen-scanner {
     position: fixed !important;
-    top: 60px !important; /* Fits right below 60px top header */
+    top: 60px !important; /* Fits right below top mobile header (60px) */
     left: 0 !important;
     right: 0 !important;
     bottom: var(--actual-bottom-nav-height, calc(64px + env(safe-area-inset-bottom, 0px))) !important; /* Fits right above bottom nav */
-    width: 100vw !important;
-    height: calc(100dvh - 60px - var(--actual-bottom-nav-height, calc(64px + env(safe-area-inset-bottom, 0px)))) !important;
+    width: 100% !important;
+    height: auto !important; /* Stretches dynamically to available height without fixed height */
     z-index: 999 !important;
     background: #000000 !important;
     margin: 0 !important;
@@ -505,26 +505,26 @@
     object-position: center !important;
 }
 
-/* Hide html5-qrcode library internal overlay boxes completely to prevent duplicate box stacking */
+/* Hide html5-qrcode internal overlay boxes completely to prevent duplicate box stacking */
 #qris-reader__scan_region,
-#qris-reader__dashboard,
-#qris-reader__status_span,
-#qris-reader img,
-#qris-reader svg {
+#qris-reader__scan_region *,
+#qr-shaded-region,
+#html5-qrcode-scannertemplate {
     border: none !important;
     box-shadow: none !important;
-    background: transparent !important;
+    outline: none !important;
 }
 
-#qris-reader__scan_region > div,
-#qris-reader__scan_region img,
+#qr-shaded-region,
+#qris-reader__scan_region > div:not(#qris-reader__scan_region),
 #qris-reader__scan_region svg,
-#html5-qrcode-scannertemplate {
+#qris-reader__scan_region img,
+#qris-reader__dashboard,
+#qris-reader__status_span {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
     border: none !important;
-    box-shadow: none !important;
 }
 
 .qris-fullscreen-target {

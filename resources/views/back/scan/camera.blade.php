@@ -7,6 +7,32 @@
             height: 100% !important;
             height: 100dvh !important;
             overflow: hidden !important;
+            position: fixed !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            padding-bottom: 0 !important;
+            touch-action: none !important;
+        }
+        body {
+            padding-bottom: 0 !important;
+        }
+        .main-wrapper {
+            height: 100dvh !important;
+            min-height: 100dvh !important;
+            overflow: hidden !important;
+        }
+        .page-wrapper {
+            height: calc(100dvh - 60px) !important;
+            overflow: hidden !important;
+        }
+        .page-content-wrapper {
+            padding: 0 !important;
+            margin: 0 !important;
+            padding-bottom: 0 !important;
+        }
+        footer.footer {
+            display: none !important;
         }
     }
 </style>
@@ -314,7 +340,7 @@
             if (html5QrCode && cameraRunning) return;
 
             html5QrCode = new Html5Qrcode("qris-reader");
-            const config = { fps: 15, qrbox: { width: 260, height: 260 }, aspectRatio: 1.0 };
+            const config = { fps: 15, aspectRatio: 1.0 };
 
             loadCameraList().then(() => {
                 const cameraConfig = selectedCameraId ? { deviceId: { exact: selectedCameraId } } : { facingMode: "environment" };

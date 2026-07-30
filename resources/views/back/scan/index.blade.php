@@ -269,7 +269,7 @@
             if (html5QrCode && cameraRunning) return;
 
             html5QrCode = new Html5Qrcode("reader");
-            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+            const config = { fps: 10 };
 
             loadCameraList().then(() => {
                 const cameraConfig = selectedCameraId ? { deviceId: { exact: selectedCameraId } } : { facingMode: "environment" };
