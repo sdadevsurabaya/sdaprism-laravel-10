@@ -65,13 +65,6 @@
                     </div>
                 </div>
 
-                {{-- Camera Select Dropdown Header --}}
-                <div id="qris-camera-select-wrapper" class="d-none">
-                    <select id="qris-camera-select"
-                        class="form-select form-select-sm bg-dark text-white border-secondary shadow-sm"
-                        style="max-width: 130px; font-size: 11px;">
-                    </select>
-                </div>
             </div>
 
             {{-- Fullscreen Camera Viewfinder --}}
@@ -227,9 +220,6 @@
         let selectedCameraId = null;
         let currentCamIndex = 0;
 
-        const qrisCameraSelect = document.getElementById('qris-camera-select');
-        const qrisCameraWrapper = document.getElementById('qris-camera-select-wrapper');
-
         function showLoadingOverlay() {
             const overlay = document.getElementById('qris-loading-overlay');
             if (overlay) {
@@ -377,29 +367,17 @@
                 availableCameras = cameras;
 
                 if (cameras && cameras.length > 0) {
-                    if (qrisCameraSelect) qrisCameraSelect.innerHTML = '';
-
                     let defaultIndex = 0;
                     cameras.forEach((cam, idx) => {
-                        const opt = document.createElement('option');
-                        opt.value = cam.id;
-                        opt.textContent = cam.label || `Kamera ${idx + 1}`;
-
                         const labelLower = (cam.label || '').toLowerCase();
                         if (labelLower.includes('back') || labelLower.includes('rear') || labelLower.includes('belakang') || labelLower.includes('environment')) {
-                            opt.selected = true;
                             defaultIndex = idx;
                         }
-                        if (qrisCameraSelect) qrisCameraSelect.appendChild(opt);
                     });
 
                     if (selectedCameraId === null) {
                         currentCamIndex = defaultIndex;
                         selectedCameraId = cameras[currentCamIndex].id;
-                    }
-
-                    if (cameras.length > 1 && qrisCameraWrapper) {
-                        qrisCameraWrapper.classList.remove('d-none');
                     }
 
                     updateCameraDropdownUI();
