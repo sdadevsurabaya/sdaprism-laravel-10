@@ -95,39 +95,42 @@
                 {{-- Camera Stream Output --}}
                 <div id="qris-reader"></div>
 
-                {{-- Cutout Target Square Mask --}}
-                <div class="qris-fullscreen-target">
-                    {{-- Laser Scan Line Animation --}}
-                    <div class="qris-scan-line"></div>
+                {{-- Unified Flexbox Scanner Group (Target Box + Action Bar) --}}
+                <div class="qris-scanner-group">
+                    {{-- Cutout Target Square Mask --}}
+                    <div class="qris-fullscreen-target">
+                        {{-- Laser Scan Line Animation --}}
+                        <div class="qris-scan-line"></div>
 
-                    {{-- Animated Corner Brackets --}}
-                    <div class="qris-corner qris-corner-tl"></div>
-                    <div class="qris-corner qris-corner-tr"></div>
-                    <div class="qris-corner qris-corner-bl"></div>
-                    <div class="qris-corner qris-corner-br"></div>
-                </div>
+                        {{-- Animated Corner Brackets --}}
+                        <div class="qris-corner qris-corner-tl"></div>
+                        <div class="qris-corner qris-corner-tr"></div>
+                        <div class="qris-corner qris-corner-bl"></div>
+                        <div class="qris-corner qris-corner-br"></div>
+                    </div>
 
-                {{-- Floating Action Bar (Positioned 20px below the Target Box) --}}
-                <div class="qris-fullscreen-bottom-bar">
-                    <a href="{{ route('scan.qr') }}"
-                        class="btn btn-dark bg-opacity-75 text-white border border-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-2 shadow-lg text-decoration-none">
-                        <i data-feather="edit-3" class="icon-sm"></i>
-                        <span class="fs-13px fw-semibold">Input Manual</span>
-                    </a>
+                    {{-- Action Buttons Bar (Flex child stacked 20px below Target Box) --}}
+                    <div class="qris-fullscreen-bottom-bar">
+                        <a href="{{ route('scan.qr') }}"
+                            class="btn btn-dark bg-opacity-85 text-white border border-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-2 shadow-lg text-decoration-none">
+                            <i data-feather="edit-3" class="icon-sm"></i>
+                            <span class="fs-13px fw-semibold">Input Manual</span>
+                        </a>
 
-                    <div class="dropup">
-                        <button
-                            class="btn btn-dark bg-opacity-75 text-white border border-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-2 shadow-lg dropdown-toggle"
-                            type="button" id="cameraDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i data-feather="camera" class="icon-sm"></i>
-                            <span class="fs-13px fw-semibold" id="cameraDropdownLabel">Kamera</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg rounded-3 fs-12px p-2 mb-2"
-                            id="cameraDropdownList" aria-labelledby="cameraDropdownBtn"
-                            style="min-width: 220px; max-height: 240px; overflow-y: auto;">
-                            <li><a class="dropdown-item disabled text-muted fs-11px" href="javascript:void(0);">Mencari
-                                    kamera...</a></li>
-                        </ul>
+                        <div class="dropup">
+                            <button
+                                class="btn btn-dark bg-opacity-85 text-white border border-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-2 shadow-lg dropdown-toggle"
+                                type="button" id="cameraDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i data-feather="camera" class="icon-sm"></i>
+                                <span class="fs-13px fw-semibold" id="cameraDropdownLabel">Kamera</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg rounded-3 fs-12px p-2 mb-2"
+                                id="cameraDropdownList" aria-labelledby="cameraDropdownBtn"
+                                style="min-width: 220px; max-height: 240px; overflow-y: auto;">
+                                <li><a class="dropdown-item disabled text-muted fs-11px" href="javascript:void(0);">Mencari
+                                        kamera...</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
