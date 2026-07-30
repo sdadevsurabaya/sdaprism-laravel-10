@@ -625,7 +625,7 @@
 
 .qris-fullscreen-bottom-bar {
     position: absolute;
-    top: calc(100% + 20px) !important;
+    top: calc(40% + 145px) !important; /* Exactly 20px below bottom edge of 250px target box centered at 40% */
     bottom: auto !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
