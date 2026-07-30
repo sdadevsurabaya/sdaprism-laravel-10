@@ -325,77 +325,154 @@
             startScannerMobile();
         }
 
+        function updateCameraDropdownUI() {
+            const dropdownList = document.getElementById('cameraDropdownList');
+            const dropdownLabel = document.getElementById('cameraDropdownLabel');
+
+            if (!availableCameras || availableCameras.length === 0) return;
+
+            if (dropdownLabel && availableCameras[currentCamIndex]) {
+                const activeLabel = availableCameras[currentCamIndex].label || `Kamera ${currentCamIndex + 1}`;
+                let shortName = activeLabel;
+                if (shortName.toLowerCase().includes('back') || shortName.toLowerCase().includes('rear') || shortName.toLowerCase().includes('belakang')) {
+                    shortName = 'Kamera Belakang';
+                } else if (shortName.toLowerCase().includes('front') || shortName.toLowerCase().includes('depan')) {
+                    shortName = 'Kamera Depan';
+                }
+                dropdownLabel.textContent = shortName;
+            }
+
+            if (dropdownList) {
+                dropdownList.innerHTML = '';
+                availableCameras.forEach((cam, idx) => {
+                    const isActive = (idx === currentCamIndex);
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+
+                    a.className = `dropdown-item d-flex align-items-center justify-content-between py-2 px-3 ${isActive ? 'active bg-primary text-white fw-bold' : 'text-white'}`;
+                    a.href = 'javascript:void(0);';
+
+                    const camName = cam.label || `Kamera ${idx + 1}`;
+                    a.innerHTML = `
+                        <span class="fs-12px">${camName}</span>
+                        ${isActive ? '<i data-feather="check-circle" class="icon-xs ms-2 text-white"></i>' : ''}
+                    `;
+
+                    a.onclick = (e) => {
+                        e.preventDefault();
+                        switchMobileCamera(cam.id, idx);
+                    };
+                    li.appendChild(a);
+                    dropdownList.appendChild(li);
+                });
+
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+            }
+        }
+
         function loadCameraList() {
             return Html5Qrcode.getCameras().then(cameras => {
                 availableCameras = cameras;
-                const dropdownList = document.getElementById('cameraDropdownList');
 
                 if (cameras && cameras.length > 0) {
                     if (qrisCameraSelect) qrisCameraSelect.innerHTML = '';
-                    if (dropdownList) dropdownList.innerHTML = '';
 
+                    let defaultIndex = 0;
                     cameras.forEach((cam, idx) => {
                         const opt = document.createElement('option');
                         opt.value = cam.id;
                         opt.textContent = cam.label || `Kamera ${idx + 1}`;
 
                         const labelLower = (cam.label || '').toLowerCase();
-                        if (labelLower.includes('back') || labelLower.includes('rear') || idx === cameras
-                            .length - 1) {
+                        if (labelLower.includes('back') || labelLower.includes('rear') || labelLower.includes('belakang') || labelLower.includes('environment')) {
                             opt.selected = true;
-                            currentCamIndex = idx;
+                            defaultIndex = idx;
                         }
-
                         if (qrisCameraSelect) qrisCameraSelect.appendChild(opt);
-
-                        if (dropdownList) {
-                            const li = document.createElement('li');
-                            const a = document.createElement('a');
-                            a.className =
-                                `dropdown-item d-flex align-items-center justify-content-between py-2 ${idx === currentCamIndex ? 'active fw-bold' : ''}`;
-                            a.href = 'javascript:void(0);';
-                            a.innerHTML =
-                                `<span>${cam.label || 'Kamera ' + (idx + 1)}</span> ${idx === currentCamIndex ? '<i data-feather="check" class="icon-xs ms-2"></i>' : ''}`;
-                            a.onclick = () => switchMobileCamera(cam.id, idx);
-                            li.appendChild(a);
-                            dropdownList.appendChild(li);
-                        }
                     });
 
-                    if (feather) feather.replace();
+                    if (selectedCameraId === null) {
+                        currentCamIndex = defaultIndex;
+                        selectedCameraId = cameras[currentCamIndex].id;
+                    }
+
                     if (cameras.length > 1 && qrisCameraWrapper) {
                         qrisCameraWrapper.classList.remove('d-none');
                     }
-                    selectedCameraId = cameras[currentCamIndex].id;
+
+                    updateCameraDropdownUI();
                 }
             }).catch(err => {
                 console.warn("Could not list cameras:", err);
             });
         }
 
+        async function switchMobileCamera(deviceId, idx) {
+            if (selectedCameraId === deviceId && cameraRunning) return;
+
+            selectedCameraId = deviceId;
+            currentCamIndex = idx;
+            updateCameraDropdownUI();
+
+            showLoadingOverlay();
+
+            try {
+                if (html5QrCode && cameraRunning) {
+                    await html5QrCode.stop();
+                    cameraRunning = false;
+                }
+
+                if (!html5QrCode) {
+                    html5QrCode = new Html5Qrcode("qris-reader");
+                }
+
+                const config = { fps: 15, aspectRatio: 1.0 };
+                const cameraConfig = { deviceId: { exact: selectedCameraId } };
+
+                await html5QrCode.start(
+                    cameraConfig,
+                    config,
+                    (decodedText) => handleDecodedText(decodedText),
+                    () => {}
+                );
+                cameraRunning = true;
+            } catch (err) {
+                console.error("Camera switch error:", err);
+                try {
+                    await html5QrCode.start(
+                        { facingMode: "environment" },
+                        { fps: 15, aspectRatio: 1.0 },
+                        (decodedText) => handleDecodedText(decodedText),
+                        () => {}
+                    );
+                    cameraRunning = true;
+                } catch (e) {
+                    document.getElementById('permission-alert-mobile')?.classList.remove('d-none');
+                }
+            } finally {
+                hideLoadingOverlay();
+            }
+        }
+
         function startScannerMobile() {
             if (html5QrCode && cameraRunning) return;
 
-            html5QrCode = new Html5Qrcode("qris-reader");
-            const config = {
-                fps: 15,
-                aspectRatio: 1.0
-            };
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("qris-reader");
+            }
+
+            const config = { fps: 15, aspectRatio: 1.0 };
 
             loadCameraList().then(() => {
-                const cameraConfig = selectedCameraId ? {
-                    deviceId: {
-                        exact: selectedCameraId
-                    }
-                } : {
-                    facingMode: "environment"
-                };
+                const cameraConfig = selectedCameraId ? { deviceId: { exact: selectedCameraId } } : { facingMode: "environment" };
 
                 html5QrCode.start(
                     cameraConfig,
                     config,
                     (decodedText) => handleDecodedText(decodedText),
-                    (errorMessage) => {}
+                    () => {}
                 ).then(() => {
                     cameraRunning = true;
                 }).catch(err => {
@@ -403,17 +480,6 @@
                     document.getElementById('permission-alert-mobile')?.classList.remove('d-none');
                 });
             });
-        }
-
-        function switchMobileCamera(deviceId, idx) {
-            selectedCameraId = deviceId;
-            currentCamIndex = idx;
-            if (cameraRunning && html5QrCode) {
-                html5QrCode.stop().then(() => {
-                    cameraRunning = false;
-                    startScannerMobile();
-                });
-            }
         }
 
         function stopCamera() {

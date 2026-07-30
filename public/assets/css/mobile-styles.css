@@ -544,7 +544,7 @@
     border: none !important;
 }
 
-/* Clean Viewfinder Target Box */
+/* Clean Viewfinder Target Box with Dark Mask Overlay */
 .qris-fullscreen-target {
     position: absolute;
     top: 50%;
@@ -555,8 +555,7 @@
     border-radius: 20px;
     z-index: 1010;
     pointer-events: none;
-    border: 2px dashed rgba(101, 118, 255, 0.4);
-    background: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.65);
 }
 
 .qris-corner {
