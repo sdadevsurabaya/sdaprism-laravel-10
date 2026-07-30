@@ -17,7 +17,8 @@
 /* --- Safe Area & Padding Adjustments for Touch Screens --- */
 @media (max-width: 991.98px) {
     body {
-        padding-bottom: 76px !important; /* Prevents bottom nav overlap */
+        padding-bottom: 76px !important;
+        /* Prevents bottom nav overlap */
     }
 
     .main-wrapper {
@@ -29,13 +30,18 @@
         padding-right: 12px !important;
         padding-top: 14px !important;
     }
-    
+
     /* Touch Target Standards (Min 44px) */
-    .btn, .form-control, .form-select, .nav-link, .dropdown-item {
+    .btn,
+    .form-control,
+    .form-select,
+    .nav-link,
+    .dropdown-item {
         min-height: 44px;
         display: inline-flex;
         align-items: center;
     }
+
     .btn-sm {
         min-height: 38px;
     }
@@ -50,6 +56,7 @@
     z-index: 1030;
     height: 60px;
 }
+
 [data-bs-theme="dark"] .prism-mobile-header {
     background-color: #0d1525;
     border-bottom-color: rgba(255, 255, 255, 0.08);
@@ -74,7 +81,8 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    z-index: 1090 !important; /* Stays on top of modals (1070) and backdrop (1050) for 100% clickability */
+    z-index: 1090 !important;
+    /* Stays on top of modals (1070) and backdrop (1050) for 100% clickability */
     pointer-events: auto !important;
     padding: 0 4px;
     padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -146,6 +154,7 @@
         opacity: 0;
         transform: translateY(12px) scale(0.98);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -286,6 +295,7 @@
     background: #111a2e;
     border-bottom-color: rgba(255, 255, 255, 0.08);
 }
+
 [data-bs-theme="dark"] .prism-mobile-drawer-bottom .offcanvas-header::before {
     background-color: rgba(255, 255, 255, 0.2);
 }
@@ -383,11 +393,11 @@
         transform: translateY(100%);
         transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
-    
+
     .modal-bottom-sheet.show .modal-dialog {
         transform: translateY(0);
     }
-    
+
     .modal-bottom-sheet .modal-content {
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
@@ -397,12 +407,12 @@
         max-height: 85vh;
         overflow-y: auto;
     }
-    
+
     .modal-bottom-sheet .modal-header {
         position: relative;
         padding-top: 1.5rem;
     }
-    
+
     .modal-bottom-sheet .modal-header::before {
         content: '';
         position: absolute;
@@ -414,6 +424,7 @@
         border-radius: 2px;
         background-color: rgba(0, 0, 0, 0.2);
     }
+
     [data-bs-theme="dark"] .modal-bottom-sheet .modal-header::before {
         background-color: rgba(255, 255, 255, 0.2);
     }
@@ -454,12 +465,15 @@
    ========================================================================== */
 .qris-fullscreen-scanner {
     position: fixed !important;
-    top: 60px !important; /* Fits right below top mobile header (60px) */
+    top: 60px !important;
+    /* Fits right below top mobile header (60px) */
     left: 0 !important;
     right: 0 !important;
-    bottom: var(--actual-bottom-nav-height, calc(64px + env(safe-area-inset-bottom, 0px))) !important; /* Fits right above bottom nav */
+    bottom: var(--actual-bottom-nav-height, calc(64px + env(safe-area-inset-bottom, 0px))) !important;
+    /* Fits right above bottom nav */
     width: 100% !important;
-    height: auto !important; /* Stretches dynamically to available height without fixed height */
+    height: auto !important;
+    /* Stretches dynamically to available height without fixed height */
     z-index: 999 !important;
     background: #000000 !important;
     margin: 0 !important;
@@ -473,7 +487,7 @@
     left: 0;
     right: 0;
     z-index: 1010;
-    background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 100%);
     padding: 12px 16px;
     display: flex;
     align-items: center;
@@ -516,7 +530,7 @@
 }
 
 #qr-shaded-region,
-#qris-reader__scan_region > div:not(#qris-reader__scan_region),
+#qris-reader__scan_region>div:not(#qris-reader__scan_region),
 #qris-reader__scan_region svg,
 #qris-reader__scan_region img,
 #qris-reader__dashboard,
@@ -548,10 +562,37 @@
     z-index: 1011;
 }
 
-.qris-corner-tl { top: 0; left: 0; border-right: none; border-bottom: none; border-top-left-radius: 16px; }
-.qris-corner-tr { top: 0; right: 0; border-left: none; border-bottom: none; border-top-right-radius: 16px; }
-.qris-corner-bl { bottom: 0; left: 0; border-right: none; border-top: none; border-bottom-left-radius: 16px; }
-.qris-corner-br { bottom: 0; right: 0; border-left: none; border-top: none; border-bottom-right-radius: 16px; }
+.qris-corner-tl {
+    top: 0;
+    left: 0;
+    border-right: none;
+    border-bottom: none;
+    border-top-left-radius: 16px;
+}
+
+.qris-corner-tr {
+    top: 0;
+    right: 0;
+    border-left: none;
+    border-bottom: none;
+    border-top-right-radius: 16px;
+}
+
+.qris-corner-bl {
+    bottom: 0;
+    left: 0;
+    border-right: none;
+    border-top: none;
+    border-bottom-left-radius: 16px;
+}
+
+.qris-corner-br {
+    bottom: 0;
+    right: 0;
+    border-left: none;
+    border-top: none;
+    border-bottom-right-radius: 16px;
+}
 
 .qris-scan-line {
     position: absolute;
@@ -566,14 +607,26 @@
 }
 
 @keyframes qrisLaserScan {
-    0% { top: 4%; opacity: 0.3; }
-    50% { top: 92%; opacity: 1; }
-    100% { top: 4%; opacity: 0.3; }
+    0% {
+        top: 4%;
+        opacity: 0.3;
+    }
+
+    50% {
+        top: 92%;
+        opacity: 1;
+    }
+
+    100% {
+        top: 4%;
+        opacity: 0.3;
+    }
 }
 
 .qris-fullscreen-bottom-bar {
     position: absolute;
-    bottom: 16px !important; /* Floating 16px above top edge of bottom nav */
+    bottom: 30px !important;
+    /* Floating 16px above top edge of bottom nav */
     left: 16px;
     right: 16px;
     z-index: 1085 !important;
@@ -665,5 +718,6 @@
 
 .modal-backdrop,
 .modal-backdrop.show {
-    z-index: 1050 !important; /* Backdrop stays below bottom nav (1060) and modals (1070) */
+    z-index: 1050 !important;
+    /* Backdrop stays below bottom nav (1060) and modals (1070) */
 }
