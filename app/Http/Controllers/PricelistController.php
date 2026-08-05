@@ -7,26 +7,57 @@ use App\Models\Currency;
 use App\Models\HeaderLogo;
 use App\Models\PriceList;
 use App\Models\User;
+use App\Services\PriceListBridgeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class PricelistController extends Controller
 {
+    /**
+     * Service Instance untuk API Price List
+     *
+     * @var PriceListBridgeService
+     */
+    protected PriceListBridgeService $priceListService;
+
+    /**
+     * Inject PriceListBridgeService
+     */
+    public function __construct(PriceListBridgeService $priceListService)
+    {
+        $this->priceListService = $priceListService;
+    }
+
     public function index()
     {
-        $data = PriceList::where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->get();
-        // if (Auth::user()->rolesUsers->first()?->roles->name === 'admin') {
-            $data = PriceList::all();
-        // }
-        return view('data.view_pricelist', compact('data'));
+        $data = PriceList::all();
+
+        // 1 Data terpisah mandiri khusus dari API TokoSDA (Realtime)
+        // Hanya tampilkan jika user berhak mengakses (Admin atau Staff Whitelisted)
+        if (Auth::user()?->canAccessRealtimePricelist()) {
+            $apiItem = new PriceList([
+                'title'               => 'Price Lists',
+                'date'                => date('Y-m-d'),
+                'show_payment_method' => 0,
+                'created_at'          => now(),
+            ]);
+            $apiItem->id = 'api';
+
+            // Sisipkan item API di paling atas daftar list
+            $data->prepend($apiItem);
+        }
+
+        $whitelistedUserIds = \App\Models\PricelistApiWhitelist::pluck('user_id')->toArray();
+        $staffUsers         = \App\Models\User::all()->filter(fn($u) => !$u->hasRole('admin'));
+
+        return view('data.view_pricelist', compact('data', 'whitelistedUserIds', 'staffUsers'));
     }
+
+
 
     public function create()
     {
-
         $logo     = HeaderLogo::all();
         $currency = Currency::all();
         return view('forms.pricelist', compact('logo', 'currency'));
@@ -95,24 +126,88 @@ class PricelistController extends Controller
         }
     }
 
-    public function show(PriceList $pricelist)
+    public function show($id)
     {
-         $pl = PriceList::where('id', $pricelist->id)
-            ->firstOrFail();
+        // Khusus jika item yang diminta adalah ID 'api' atau 0
+        if ($id === 'api' || $id === '0' || $id === 0) {
+            if (!Auth::user()?->canAccessRealtimePricelist()) {
+                return redirect()->route('pricelists.index')
+                    ->with('error', 'Akses ditolak. Anda tidak memiliki izin untuk melihat Pricelist Realtime.');
+            }
 
+            // Ambil data langsung dari API PriceList (v2.0)
+
+            $response = $this->priceListService->getAll();
+
+            $items = [];
+            if (isset($response['success']) && $response['success'] && !empty($response['data'])) {
+                $items = $response['data'];
+
+                // Urutkan data berdasarkan 'Kode' secara natural & case-insensitive
+                usort($items, function ($a, $b) {
+                    return strnatcasecmp($a['Kode'] ?? '', $b['Kode'] ?? '');
+                });
+            }
+
+            // Format data agar sesuai dengan skema tabel & view_pricelist_single
+            $formattedData = [
+                'header' => [
+                    ['id' => 'kode',  'label' => 'KODE',  'hidden' => false, 'checkbox' => true],
+                    ['id' => 'name',  'label' => 'NAME',  'hidden' => false, 'checkbox' => true],
+                    ['id' => 'brand', 'label' => 'BRAND', 'hidden' => false, 'checkbox' => true],
+                    ['id' => 'price', 'label' => 'PRICE', 'hidden' => false, 'checkbox' => true],
+                ],
+                'data' => array_map(function ($item) {
+                    return [
+                        'kode'  => $item['Kode'] ?? '',
+                        'name'  => $item['nama'] ?? '',
+                        'brand' => $item['merk'] ?? '',
+                        'price' => $item['Harga'] ?? 0,
+                    ];
+                }, $items),
+            ];
+
+            $pl = new PriceList([
+                'title'               => 'Price Lists',
+                'date'                => date('Y-m-d'),
+                'currency_id'         => null,
+                'notes'               => '<p>Data bersumber langsung dari API bridge remote server (Realtime).</p>',
+                'datatable_data'      => json_encode($formattedData),
+            ]);
+            $pl->id = 'api';
+
+            $data = collect([$pl]);
+            return view('data.view_pricelist_single', compact('data'));
+        }
+
+        // Panggilan database biasa untuk item pricelist Excel
+        $pl = PriceList::where('id', $id)->firstOrFail();
         $data = collect([$pl]);
         return view('data.view_pricelist_single', compact('data'));
     }
 
-    public function edit(PriceList $pricelist)
+    public function edit($id)
     {
+        if ($id === 'api' || $id === '0' || $id === 0) {
+            return redirect()->route('pricelists.show', 'api')
+                ->with('info', 'Pricelist API terhubung langsung ke server remote secara realtime.');
+        }
+
+        $pricelist = PriceList::findOrFail($id);
         $logo     = HeaderLogo::all();
         $currency = Currency::all();
         return view('forms.pricelist', compact('logo', 'currency', 'pricelist'));
     }
 
-    public function update(Request $request, PriceList $pricelist)
+    public function update(Request $request, $id)
     {
+        if ($id === 'api' || $id === '0' || $id === 0) {
+            return redirect()->route('pricelists.show', 'api');
+        }
+
+        $pricelist = PriceList::findOrFail($id);
+
+
         $rules = [
             'header_logo_id'      => 'nullable|string|max:255',
             'title'               => 'nullable|string|max:255',
@@ -173,11 +268,11 @@ class PricelistController extends Controller
                     ]
                 );
 
-                return redirect()->route('pricelists.edit', $pricelist)
+                return redirect()->route('pricelists.edit', $pricelist->id)
                     ->with('success', 'Data successfully updated')
                     ->with('open_pdf', route('pricelist.pdf', $pricelist->id));
             } else {
-                return redirect()->route('pricelists.edit', $pricelist)
+                return redirect()->route('pricelists.edit', $pricelist->id)
                     ->with('success', 'No changes made, opened latest PDF')
                     ->with('open_pdf', route('pricelist.pdf', $pricelist->id));
             }
@@ -188,18 +283,24 @@ class PricelistController extends Controller
         }
     }
 
-    public function destroy(PriceList $pricelist)
+    public function destroy($id)
     {
+        if ($id === 'api' || $id === '0' || $id === 0) {
+            return redirect()->back()->with('error', 'Data Price List API tidak dapat dihapus.');
+        }
+
+
         try {
+            $pricelist = PriceList::findOrFail($id);
             $title = $pricelist->title ?? "ID #{$pricelist->id}";
-            $id = $pricelist->id;
+            $deletedId = $pricelist->id;
             $pricelist->delete();
 
             ActivityLogger::log(
                 'Pricelist Data',
                 'Delete',
                 "Menghapus Pricelist: {$title}",
-                ['deleted_id' => $id, 'title' => $title]
+                ['deleted_id' => $deletedId, 'title' => $title]
             );
 
             return redirect()->route('pricelists.index')

@@ -16,12 +16,18 @@
         </ol>
     </nav>
     <div class="flex-wrap mb-2 d-flex justify-content-end text-nowrap">
+        <button type="button" class="mb-2 btn btn-outline-success btn-icon-text me-2 mb-md-0" data-bs-toggle="modal"
+            data-bs-target="#modalManageWhitelist">
+            <i class="btn-icon-prepend" data-feather="shield-check"></i>
+            Whitelist Realtime
+        </button>
         <button type="button" class="mb-2 btn btn-outline-primary btn-icon-text me-2 mb-md-0" data-bs-toggle="modal"
             data-bs-target="#modalCreateUser">
             <i class="btn-icon-prepend" data-feather="plus"></i>
             Create
         </button>
     </div>
+
     <div class="card">
         <div class="card-body">
             {{-- Mobile & Tablet Card List --}}
@@ -63,7 +69,9 @@
                                         data-email="{{ $item->email }}"
                                         data-roleid="{{ $item->rolesUsers->first()?->roles->id }}"
                                         data-userroleid="{{ $item->rolesUsers->first()?->id }}"
+                                        data-iswhitelisted="{{ in_array($item->id, $whitelistedUserIds ?? []) ? '1' : '0' }}"
                                         data-url="{{ route('user.update', $item->id) }}">
+
                                         <i data-feather="edit" class="icon-sm me-1"></i> Edit
                                     </a>
 
@@ -140,7 +148,9 @@
                                         data-email="{{ $item->email }}"
                                         data-roleid="{{ $item->rolesUsers->first()?->roles->id }}"
                                         data-userroleid="{{ $item->rolesUsers->first()?->id }}"
+                                        data-iswhitelisted="{{ in_array($item->id, $whitelistedUserIds ?? []) ? '1' : '0' }}"
                                         data-url="{{ route('user.update', $item->id) }}">
+
                                         <i class="btn-icon-prepend" data-feather="edit"></i>
                                         Edit
                                     </a>
@@ -230,6 +240,14 @@
                                 <div class="invalid-feedback">Role wajib dipilih.</div>
                             @enderror
                         </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="can_access_realtime" value="1" id="create_can_access_realtime">
+                                <label class="form-check-label fw-semibold" for="create_can_access_realtime">
+                                    Beri Akses Pricelist Realtime (Whitelist)
+                                </label>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary" id="btnSubmitUser">Submit</button>
@@ -277,6 +295,14 @@
                             </select>
                             <div class="invalid-feedback">Role wajib dipilih.</div>
                         </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="can_access_realtime" value="1" id="edit-user-can-access-realtime">
+                                <label class="form-check-label fw-semibold" for="edit-user-can-access-realtime">
+                                    Beri Akses Pricelist Realtime (Whitelist)
+                                </label>
+                            </div>
+                        </div>
                     </div>
                     <input type="hidden" id="edit-user-usersroles-id" name="roles_user_id">
                     <div class="modal-footer">
@@ -287,6 +313,49 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Manage Whitelist Realtime -->
+    <div class="modal fade" id="modalManageWhitelist" tabindex="-1" aria-labelledby="modalManageWhitelistLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="{{ route('user.update-whitelist') }}" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="modalManageWhitelistLabel">
+                            <i data-feather="shield-check" class="text-success me-1"></i> Whitelist Akses Pricelist Realtime
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted small mb-3">
+                            Pilih user <strong>Staff</strong> yang diizinkan untuk melihat &amp; membuka <strong>Pricelist Realtime</strong>. User dengan role <strong>Admin</strong> memiliki akses secara default.
+                        </p>
+                        <div class="list-group list-group-flush border rounded overflow-auto" style="max-height: 280px;">
+                            @forelse($data->filter(fn($u) => !$u->hasRole('admin')) as $staffUser)
+                                <label class="list-group-item d-flex align-items-center justify-content-between py-2.5 px-3 cursor-pointer">
+                                    <div>
+                                        <div class="fw-semibold text-dark">{{ $staffUser->name }}</div>
+                                        <small class="text-secondary">{{ $staffUser->email }}</small>
+                                    </div>
+                                    <div class="form-check form-switch mb-0">
+                                        <input class="form-check-input" type="checkbox" name="user_ids[]" value="{{ $staffUser->id }}"
+                                            {{ in_array($staffUser->id, $whitelistedUserIds ?? []) ? 'checked' : '' }}>
+                                    </div>
+                                </label>
+                            @empty
+                                <div class="text-center py-3 text-muted">Belum ada akun Staff terdaftar.</div>
+                            @endforelse
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Simpan Whitelist</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')
@@ -325,6 +394,7 @@
                     const email = this.dataset.email;
                     const roleId = this.dataset.roleid;
                     const userRoleId = this.dataset.userroleid;
+                    const isWhitelisted = this.dataset.iswhitelisted === '1';
                     const url = this.dataset.url;
 
                     document.querySelector('#form-edit-roles').action = url;
@@ -333,6 +403,8 @@
                     document.querySelector('#edit-user-roles-id').value = roleId;
                     document.querySelector('#edit-user-usersroles-id').value = userRoleId;
                     document.querySelector('#edit-user-password').value = '';
+                    document.querySelector('#edit-user-can-access-realtime').checked = isWhitelisted;
+
 
                     const editModal = new bootstrap.Modal(document.getElementById('modalEditRoles'));
                     editModal.show();

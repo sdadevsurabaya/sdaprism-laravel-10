@@ -20,3 +20,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/import-excel', [ExcelImportController::class,'import']);
+Route::get('/pricelist-data', [\App\Http\Controllers\Back\PriceListBridgeApiController::class, 'getData']);
+

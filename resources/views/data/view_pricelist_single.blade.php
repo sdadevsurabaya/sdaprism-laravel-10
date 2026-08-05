@@ -266,7 +266,8 @@
                 searchDelay: 400,
                 orderMulti: false,
                 processing: true,
-                stateSave: true,
+                stateSave: false,
+
                 autoWidth: false,
                 paging: true,
                 columnDefs: [{

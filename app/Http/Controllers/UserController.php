@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ActivityLogger;
+use App\Models\PricelistApiWhitelist;
 use App\Models\Roles;
 use App\Models\RolesUser;
 use App\Models\User;
@@ -14,11 +15,13 @@ class UserController extends Controller
      */
     public function index()
     {
-        $data  = User::all();
-        $roles = Roles::all();
-        return view('user.CreateUser', compact('data', 'roles'));
+        $data               = User::all();
+        $roles              = Roles::all();
+        $whitelistedUserIds = PricelistApiWhitelist::pluck('user_id')->toArray();
 
+        return view('user.CreateUser', compact('data', 'roles', 'whitelistedUserIds'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -58,6 +61,10 @@ class UserController extends Controller
             'users_id' => $user->id,
             'roles_id' => $request->roles_id,
         ]);
+
+        if ($request->has('can_access_realtime') && $request->can_access_realtime) {
+            PricelistApiWhitelist::firstOrCreate(['user_id' => $user->id]);
+        }
 
         $role = Roles::find($request->roles_id);
 
@@ -124,6 +131,12 @@ class UserController extends Controller
         $rolesUser->roles_id = $request->roles_id;
         $rolesUser->save();
 
+        if ($request->has('can_access_realtime') && $request->can_access_realtime) {
+            PricelistApiWhitelist::firstOrCreate(['user_id' => $user->id]);
+        } else {
+            PricelistApiWhitelist::where('user_id', $user->id)->delete();
+        }
+
         $role = Roles::find($request->roles_id);
 
         ActivityLogger::log(
@@ -141,6 +154,31 @@ class UserController extends Controller
     }
 
     /**
+     * Update Whitelist Akses Pricelist Realtime untuk Staff
+     */
+    public function updateWhitelist(Request $request)
+    {
+        $userIds = $request->input('user_ids', []);
+
+        PricelistApiWhitelist::query()->delete();
+
+        foreach ($userIds as $userId) {
+            PricelistApiWhitelist::create(['user_id' => $userId]);
+        }
+
+        ActivityLogger::log(
+            'User Management',
+            'Update Whitelist',
+            'Mengubah Whitelist Akses Pricelist Realtime',
+            ['whitelisted_user_ids' => $userIds]
+        );
+
+        return redirect()->back()
+            ->with('success', 'Whitelist Pricelist Realtime berhasil diperbarui.');
+    }
+
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy($id)
@@ -149,6 +187,7 @@ class UserController extends Controller
         $name = $user->name;
         $email = $user->email;
 
+        PricelistApiWhitelist::where('user_id', $user->id)->delete();
         RolesUser::where('users_id', $user->id)->delete();
         $user->delete();
 

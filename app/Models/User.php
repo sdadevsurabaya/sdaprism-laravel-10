@@ -62,4 +62,19 @@ class User extends Authenticatable
     public function priceLists(){
         return $this->hasMany(PriceList::class, 'user_id');
     }
+
+    public function pricelistWhitelist()
+    {
+        return $this->hasOne(PricelistApiWhitelist::class, 'user_id');
+    }
+
+    public function canAccessRealtimePricelist(): bool
+    {
+        if ($this->hasRole('admin')) {
+            return true;
+        }
+
+        return PricelistApiWhitelist::where('user_id', $this->id)->exists();
+    }
 }
+

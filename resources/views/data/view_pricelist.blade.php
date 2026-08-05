@@ -21,6 +21,51 @@
         background-color: rgba(114, 124, 245, 0.12) !important;
         color: #727cf5 !important;
     }
+
+    /* Pulse animation badge untuk item Realtime */
+    .pulse-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background-color: rgba(16, 185, 129, 0.12) !important;
+        color: #10b981 !important;
+        font-weight: 600;
+        font-size: 11px;
+        padding: 3px 9px;
+        border-radius: 12px;
+    }
+
+    .pulse-dot {
+        width: 7px;
+        height: 7px;
+        background-color: #10b981;
+        border-radius: 50%;
+        position: relative;
+        display: inline-block;
+    }
+
+    .pulse-dot::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        border-radius: 50%;
+        background-color: rgba(16, 185, 129, 0.6);
+        animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+
+    @keyframes pulse-ring {
+        0% {
+            transform: scale(0.8);
+            opacity: 0.9;
+        }
+        100% {
+            transform: scale(2.4);
+            opacity: 0;
+        }
+    }
 </style>
 
 @section('content')
@@ -36,7 +81,7 @@
         {{-- Header & Add New Button --}}
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="fw-bold text-dark mb-0 fs-16px text-uppercase">Daftar Pricelist</h5>
-            @if (Auth::user()->rolesUsers->first()?->roles->name === 'admin')
+            @if (Auth::user()->rolesUsers?->first()?->roles?->name === 'admin' || Auth::user()->hasRole('admin'))
                 <a href="{{ route('pricelists.create') }}" class="btn btn-primary btn-sm rounded-pill px-3 d-flex align-items-center gap-1 shadow-sm">
                     <i data-feather="plus" class="icon-sm"></i>
                     <span>Add New</span>
@@ -55,12 +100,23 @@
         {{-- Mobile List Items (Standalone Cards) --}}
         <div id="mobile-card-container" class="d-flex flex-column gap-3">
             @forelse ($data as $item)
+                @php
+                    $isApiItem = ($item->id === 'api' || $item->id === 0 || $item->id === '0');
+                    $itemId = $isApiItem ? 'api' : $item->id;
+                    $isAdmin = (Auth::user()->rolesUsers?->first()?->roles?->name === 'admin' || Auth::user()->hasRole('admin'));
+                @endphp
                 <div class="card prism-mobile-card border-0 shadow-sm rounded-3 pricelist-item-card bg-white">
                     <div class="card-body p-3">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="badge bg-soft-primary px-2.5 py-1 rounded-pill fw-bold fs-11px">
-                                #{{ $loop->iteration }}
-                            </span>
+                            @if($isApiItem)
+                                <span class="pulse-badge">
+                                    <span class="pulse-dot"></span> Realtime
+                                </span>
+                            @else
+                                <span class="badge bg-soft-primary px-2.5 py-1 rounded-pill fw-bold fs-11px">
+                                    #{{ $loop->iteration }}
+                                </span>
+                            @endif
                             <small class="text-secondary d-flex align-items-center fs-12px">
                                 <i data-feather="calendar" class="icon-xs me-1"></i>
                                 {{ $item->date }}
@@ -72,18 +128,24 @@
                             {{ $item->title ?? 'Tanpa Judul' }}
                         </h6>
 
-                        <div class="d-flex gap-2 pt-2 border-top">
-                            <a href="{{ route('pricelists.show', $item->id) }}"
+                        <div class="d-flex gap-2 pt-2 border-top flex-wrap">
+                            <a href="{{ route('pricelists.show', $itemId) }}"
                                 class="btn btn-sm btn-primary flex-fill d-flex align-items-center justify-content-center gap-1 py-1.5 fs-13px fw-semibold">
                                 <i data-feather="list" class="icon-xs"></i> List
                             </a>
-                            @if (Auth::user()->rolesUsers->first()?->roles->name === 'admin')
-                                <a href="{{ route('pricelists.edit', $item->id) }}"
-                                    class="btn btn-sm btn-outline-warning flex-fill d-flex align-items-center justify-content-center gap-1 py-1.5 fs-13px fw-semibold">
-                                    <i data-feather="edit" class="icon-xs"></i> Edit
-                                </a>
+                            @if ($isAdmin)
+                                @if(!$isApiItem)
+                                    <a href="{{ route('pricelists.edit', $itemId) }}"
+                                        class="btn btn-sm btn-outline-warning flex-fill d-flex align-items-center justify-content-center gap-1 py-1.5 fs-13px fw-semibold">
+                                        <i data-feather="edit" class="icon-xs"></i> Edit
+                                    </a>
+                                @else
+                                    <button type="button" class="btn btn-sm btn-outline-success flex-fill d-flex align-items-center justify-content-center gap-1 py-1.5 fs-13px fw-semibold" data-bs-toggle="modal" data-bs-target="#modalManageWhitelist">
+                                        <i data-feather="shield-check" class="icon-xs"></i> Whitelist
+                                    </button>
+                                @endif
 
-                                <a href="{{ route('pricelist.pdf', $item->id) }}"
+                                <a href="{{ route('pricelist.pdf', $itemId) }}"
                                     class="btn btn-sm btn-outline-danger flex-fill d-flex align-items-center justify-content-center gap-1 py-1.5 fs-13px fw-semibold"
                                     target="_blank">
                                     <i data-feather="file" class="icon-xs"></i> PDF
@@ -110,7 +172,7 @@
             </nav>
         </div>
 
-        @if (Auth::user()->rolesUsers->first()?->roles->name === 'admin')
+        @if (Auth::user()->rolesUsers?->first()?->roles?->name === 'admin' || Auth::user()->hasRole('admin'))
             <div class="prism-fab-container d-lg-none">
                 <a href="{{ route('pricelists.create') }}" class="prism-fab-btn" aria-label="Add Pricelist">
                     <i data-feather="plus"></i>
@@ -128,7 +190,7 @@
                         <h5 class="card-title mb-0">Daftar Pricelist</h5>
 
                         {{-- Tombol Add New hanya untuk admin --}}
-                        @if (Auth::user()->rolesUsers->first()?->roles->name === 'admin')
+                        @if (Auth::user()->rolesUsers?->first()?->roles?->name === 'admin' || Auth::user()->hasRole('admin'))
                             <a href="{{ route('pricelists.create') }}" type="button"
                                 class="btn btn-outline-primary btn-icon-text">
                                 <i class="btn-icon-prepend" data-feather="plus"></i>
@@ -152,23 +214,41 @@
                             <tbody class="text-start">
                                 @php $no = 1; @endphp
                                 @foreach ($data as $item)
+                                    @php
+                                        $isApiItem = ($item->id === 'api' || $item->id === 0 || $item->id === '0');
+                                        $itemId = $isApiItem ? 'api' : $item->id;
+                                        $isAdmin = (Auth::user()->rolesUsers?->first()?->roles?->name === 'admin' || Auth::user()->hasRole('admin'));
+                                    @endphp
                                     <tr>
                                         <td>{{ $no++ }}</td>
                                         <td>{{ $item->date }}</td>
-                                        <td>{{ $item->title }}</td>
+                                        <td>
+                                            {{ $item->title }}
+                                            @if($isApiItem)
+                                                <span class="pulse-badge ms-2">
+                                                    <span class="pulse-dot"></span> Realtime
+                                                </span>
+                                            @endif
+                                        </td>
 
                                         <td>
-                                            <a href="{{ route('pricelists.show', $item->id) }}"
+                                            <a href="{{ route('pricelists.show', $itemId) }}"
                                                 class="btn btn-sm btn-primary btn-icon-text">
                                                 <i data-feather="list" class="btn-icon-prepend"></i> List
                                             </a>
-                                            @if (Auth::user()->rolesUsers->first()?->roles->name === 'admin')
-                                                <a href="{{ route('pricelists.edit', $item->id) }}"
-                                                    class="btn btn-sm btn-primary btn-icon-text">
-                                                    <i data-feather="edit" class="btn-icon-prepend"></i> Edit
-                                                </a>
+                                            @if ($isAdmin)
+                                                @if(!$isApiItem)
+                                                    <a href="{{ route('pricelists.edit', $itemId) }}"
+                                                        class="btn btn-sm btn-primary btn-icon-text">
+                                                        <i data-feather="edit" class="btn-icon-prepend"></i> Edit
+                                                    </a>
+                                                @else
+                                                    <button type="button" class="btn btn-sm btn-outline-success btn-icon-text me-1" data-bs-toggle="modal" data-bs-target="#modalManageWhitelist">
+                                                        <i data-feather="shield-check" class="btn-icon-prepend"></i> Whitelist
+                                                    </button>
+                                                @endif
 
-                                                <a href="{{ route('pricelist.pdf', $item->id) }}"
+                                                <a href="{{ route('pricelist.pdf', $itemId) }}"
                                                     class="btn btn-sm btn-primary btn-icon-text" target="_blank">
                                                     <i data-feather="file" class="btn-icon-prepend"></i> PDF
                                                 </a>
@@ -183,6 +263,51 @@
             </div>
         </div>
     </div>
+
+    @if (Auth::user()->rolesUsers?->first()?->roles?->name === 'admin' || Auth::user()->hasRole('admin'))
+        <!-- Modal Manage Whitelist Realtime (Khusus Admin) -->
+        <div class="modal fade" id="modalManageWhitelist" tabindex="-1" aria-labelledby="modalManageWhitelistLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form action="{{ route('user.update-whitelist') }}" method="POST">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold" id="modalManageWhitelistLabel">
+                                <i data-feather="shield-check" class="text-success me-1"></i> Whitelist Akses Pricelist Realtime
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-start">
+                            <p class="text-muted small mb-3">
+                                Pilih user <strong>Staff</strong> yang diizinkan untuk melihat &amp; membuka <strong>Pricelist Realtime</strong>. User dengan role <strong>Admin</strong> memiliki akses secara default.
+                            </p>
+                            <div class="list-group list-group-flush border rounded overflow-auto" style="max-height: 280px;">
+                                @forelse($staffUsers ?? [] as $staffUser)
+                                    <label class="list-group-item d-flex align-items-center justify-content-between py-2.5 px-3 cursor-pointer">
+                                        <div>
+                                            <div class="fw-semibold text-dark">{{ $staffUser->name }}</div>
+                                            <small class="text-secondary">{{ $staffUser->email }}</small>
+                                        </div>
+                                        <div class="form-check form-switch mb-0">
+                                            <input class="form-check-input" type="checkbox" name="user_ids[]" value="{{ $staffUser->id }}"
+                                                {{ in_array($staffUser->id, $whitelistedUserIds ?? []) ? 'checked' : '' }}>
+                                        </div>
+                                    </label>
+                                @empty
+                                    <div class="text-center py-3 text-muted">Belum ada akun Staff terdaftar.</div>
+                                @endforelse
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Simpan Whitelist</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
+
 @endsection
 
 @push('scripts')
@@ -230,9 +355,7 @@
                             responsivePriority: 4
                         }
                     ],
-                    order: [
-                        [1, 'desc']
-                    ],
+                    order: [],
                     pagingType: 'simple_numbers',
                     autoWidth: false
                 });
@@ -326,7 +449,6 @@
                         pageNav.appendChild(li);
                     });
 
-                    const nextLi = document.getElementById('next-li') || document.createElement('li');
                     const nextLiElem = document.createElement('li');
                     nextLiElem.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
                     nextLiElem.innerHTML = `<a class="page-link" href="javascript:void(0)">&raquo;</a>`;

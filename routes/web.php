@@ -36,9 +36,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('currency', CurrencyController::class);
 
     // Users
+    Route::post('user/whitelist-realtime', [UserController::class, 'updateWhitelist'])->name('user.update-whitelist');
     Route::resource('user', UserController::class);
 
     Route::post('/loginas/{id}', [AuthController::class, 'loginas'])->name('login.as');
+
 
     // Activity Log (Admin Only)
     Route::get('/activity-log', [\App\Http\Controllers\Back\ActivityLogController::class, 'index'])->name('activity-log.index');
@@ -66,6 +68,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/back/scan-qr', [\App\Http\Controllers\Back\ScanController::class, 'index'])->name('scan.qr');
     Route::get('/back/camera-scan', [\App\Http\Controllers\Back\ScanController::class, 'camera'])->name('scan.camera');
     Route::get('/back/rakitan-data', [\App\Http\Controllers\Back\RakitanApiController::class, 'getData'])->name('rakitan.data');
+    Route::get('/back/pricelist-bridge-data', [\App\Http\Controllers\Back\PriceListBridgeApiController::class, 'getData'])->name('pricelist.bridge.data');
+
 });
 
 //quotation
