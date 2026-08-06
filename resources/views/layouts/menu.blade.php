@@ -98,16 +98,10 @@
 
                     @if (in_array($role, ['admin', 'staff']))
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a href="{{ route('pricelists.realtime') }}" class="nav-link">
                                 <i class="link-icon" data-feather="pie-chart"></i>
-                                <span class="menu-title">Data</span>
+                                <span class="menu-title">Pricelist</span>
                             </a>
-                            <div class="submenu">
-                                <ul class="submenu-item">
-                                    <li class="nav-item"><a class="nav-link"
-                                            href="{{ route('pricelists.index') }}">Pricelist</a></li>
-                                </ul>
-                            </div>
                         </li>
                     @endif
 

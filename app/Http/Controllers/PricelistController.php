@@ -31,10 +31,11 @@ class PricelistController extends Controller
 
     public function index()
     {
-        $data = PriceList::all();
+        // Route lama tetap ada di kode namun dialihkan langsung ke halaman Detail Pricelist Realtime yang baru
+        return redirect()->route('pricelists.realtime');
 
-        // 1 Data terpisah mandiri khusus dari API TokoSDA (Realtime)
-        // Hanya tampilkan jika user berhak mengakses (Admin atau Staff Whitelisted)
+        /* Kode lama tersimpan aman sebagai fallback & referensi:
+        $data = PriceList::all();
         if (Auth::user()?->canAccessRealtimePricelist()) {
             $apiItem = new PriceList([
                 'title'               => 'Price Lists',
@@ -43,15 +44,73 @@ class PricelistController extends Controller
                 'created_at'          => now(),
             ]);
             $apiItem->id = 'api';
-
-            // Sisipkan item API di paling atas daftar list
             $data->prepend($apiItem);
         }
-
         $whitelistedUserIds = \App\Models\PricelistApiWhitelist::pluck('user_id')->toArray();
         $staffUsers         = \App\Models\User::all()->filter(fn($u) => !$u->hasRole('admin'));
-
         return view('data.view_pricelist', compact('data', 'whitelistedUserIds', 'staffUsers'));
+        */
+    }
+
+    /**
+     * Halaman Baru: Langsung Menampilkan Detail Pricelist Realtime
+     */
+    public function realtime(Request $request)
+    {
+        if (!Auth::user()?->canAccessRealtimePricelist()) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Akses ditolak. Anda tidak memiliki izin untuk melihat Pricelist Realtime.');
+        }
+
+        // Jika tombol perbarui ditekan (?realtime=1), ambil data baru lalu alihkan ke URL bersih
+        if ($request->has('realtime') && $request->realtime == '1') {
+            $this->priceListService->getAll(true);
+
+            return redirect()->route('pricelists.realtime')
+                ->with('success', 'Data pricelist berhasil diperbarui!');
+        }
+
+        $response = $this->priceListService->getAll(false);
+
+        $items = [];
+        if (isset($response['success']) && $response['success'] && !empty($response['data'])) {
+            $items = $response['data'];
+
+            // Urutkan data berdasarkan 'Kode' secara natural & case-insensitive
+            usort($items, function ($a, $b) {
+                return strnatcasecmp($a['Kode'] ?? '', $b['Kode'] ?? '');
+            });
+        }
+
+        // Format data agar sesuai dengan skema tabel & view_pricelist_realtime
+        $formattedData = [
+            'header' => [
+                ['id' => 'kode',  'label' => 'KODE',  'hidden' => false, 'checkbox' => true],
+                ['id' => 'name',  'label' => 'NAME',  'hidden' => false, 'checkbox' => true],
+                ['id' => 'brand', 'label' => 'BRAND', 'hidden' => false, 'checkbox' => true],
+                ['id' => 'price', 'label' => 'PRICE', 'hidden' => false, 'checkbox' => true],
+            ],
+            'data' => array_map(function ($item) {
+                return [
+                    'kode'  => $item['Kode'] ?? '',
+                    'name'  => $item['nama'] ?? '',
+                    'brand' => $item['merk'] ?? '',
+                    'price' => $item['Harga'] ?? 0,
+                ];
+            }, $items),
+        ];
+
+        $pl = new PriceList([
+            'title'               => 'Price Lists',
+            'date'                => date('Y-m-d'),
+            'currency_id'         => null,
+            'notes'               => '<p>Data bersumber langsung dari API bridge remote server (Realtime TokoSDA).</p>',
+            'datatable_data'      => json_encode($formattedData),
+        ]);
+        $pl->id = 'api';
+
+        $data = collect([$pl]);
+        return view('data.view_pricelist_realtime', compact('data'));
     }
 
 

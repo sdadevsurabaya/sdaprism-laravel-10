@@ -54,6 +54,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', [HomeController::class, 'index'])->name('dashboard');
 
     // Pricelists
+    Route::get('pricelists/realtime', [PricelistController::class, 'realtime'])->name('pricelists.realtime');
     Route::get('pricelists', [PricelistController::class, 'index'])->name('pricelists.index');
     Route::get('pricelists/create', [PricelistController::class, 'create'])->name('pricelists.create');
     Route::get('pricelists/{pricelist}', [PricelistController::class, 'show'])->name('pricelists.show');

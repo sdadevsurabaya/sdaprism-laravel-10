@@ -57,7 +57,7 @@
 
         @if ($isAdmin)
             {{-- 4. Pricelist (ADMIN ONLY - Index 3) --}}
-            <a href="{{ route('pricelists.index') }}" class="nav-item-mobile {{ request()->routeIs('pricelists.*') ? 'active' : '' }}" data-nav-index="3">
+            <a href="{{ route('pricelists.realtime') }}" class="nav-item-mobile {{ request()->routeIs('pricelists.*') ? 'active' : '' }}" data-nav-index="3">
                 <i data-feather="pie-chart"></i>
                 <span>Pricelist</span>
             </a>

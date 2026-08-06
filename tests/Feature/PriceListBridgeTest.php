@@ -200,16 +200,48 @@ class PriceListBridgeTest extends TestCase
     }
 
     /**
-     * Test route /pricelists (List Utama) menampilkan item Price List API di paling atas.
+     * Test route /pricelists (Route Lama) dialihkan langsung ke /pricelists/realtime.
      */
-    public function test_pricelists_index_shows_api_item_at_top()
+    public function test_pricelists_index_redirects_to_realtime()
     {
         $user = \App\Models\User::first() ?? \App\Models\User::factory()->create();
 
         $response = $this->actingAs($user)->get('/pricelists');
 
+        $response->assertStatus(302);
+        $response->assertRedirect(route('pricelists.realtime'));
+    }
+
+    /**
+     * Test route baru /pricelists/realtime langsung menampilkan Halaman Detail Pricelist Realtime.
+     */
+    public function test_pricelists_realtime_shows_detail_page()
+    {
+        $user = \App\Models\User::first() ?? \App\Models\User::factory()->create();
+
+        Http::fake([
+            'https://bridge.tokosda.com/api-v2/endpoints/pricelist.php*' => Http::response([
+                'success' => true,
+                'data' => [
+                    [
+                        'Kode' => 'BRG-00100',
+                        'nama' => 'ASUS ROG ZEPHYRUS',
+                        'merk' => 'ASUS',
+                        'Harga' => 25000000,
+                    ]
+                ],
+                'total' => 1,
+                'limit' => -1,
+                'offset' => 0,
+                'cached' => true
+            ], 200)
+        ]);
+
+        $response = $this->actingAs($user)->get('/pricelists/realtime');
+
         $response->assertStatus(200);
-        $response->assertSee('Price Lists');
+        $response->assertSee('Detail Pricelist Realtime');
+        $response->assertSee('BRG-00100');
     }
 
     /**
@@ -243,7 +275,6 @@ class PriceListBridgeTest extends TestCase
         $response->assertSee('Price Lists');
     }
 
-
     /**
      * Test Staff tanpa whitelist tidak dapat melihat atau membuka Realtime Price List.
      */
@@ -256,15 +287,10 @@ class PriceListBridgeTest extends TestCase
         // Pastikan tidak ada di whitelist
         \App\Models\PricelistApiWhitelist::where('user_id', $staffUser->id)->delete();
 
-        // 1. Tidak tampil di /pricelists
-        $responseIndex = $this->actingAs($staffUser)->get('/pricelists');
-        $responseIndex->assertStatus(200);
-        $responseIndex->assertDontSee('Price Lists');
-
-        // 2. Ditolak saat membuka /pricelists/api
-        $responseShow = $this->actingAs($staffUser)->get('/pricelists/api');
-        $responseShow->assertRedirect('/pricelists');
-        $responseShow->assertSessionHas('error');
+        // Ditolak saat membuka /pricelists/realtime
+        $responseRealtime = $this->actingAs($staffUser)->get('/pricelists/realtime');
+        $responseRealtime->assertRedirect(route('dashboard'));
+        $responseRealtime->assertSessionHas('error');
     }
 
     /**
@@ -297,15 +323,10 @@ class PriceListBridgeTest extends TestCase
             ], 200)
         ]);
 
-        // 1. Tampil di /pricelists
-        $responseIndex = $this->actingAs($staffUser)->get('/pricelists');
-        $responseIndex->assertStatus(200);
-        $responseIndex->assertSee('Price Lists');
-
-        // 2. Berhasil membuka /pricelists/api
-        $responseShow = $this->actingAs($staffUser)->get('/pricelists/api');
+        // Berhasil membuka /pricelists/realtime
+        $responseShow = $this->actingAs($staffUser)->get('/pricelists/realtime');
         $responseShow->assertStatus(200);
-        $responseShow->assertSee('Price Lists');
+        $responseShow->assertSee('Detail Pricelist Realtime');
     }
 
     /**

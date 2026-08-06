@@ -57,7 +57,7 @@
 
     {{-- Pricelist --}}
     <div class="col-6 col-md-4 col-lg-3">
-        <a href="{{ route('pricelists.index') }}" class="card dash-tile-card h-100 shadow-sm rounded-3 p-3 bg-white text-center d-flex flex-column align-items-center justify-content-center">
+        <a href="{{ route('pricelists.realtime') }}" class="card dash-tile-card h-100 shadow-sm rounded-3 p-3 bg-white text-center d-flex flex-column align-items-center justify-content-center">
             <div class="tile-icon-box bg-soft-primary text-primary">
                 <i data-feather="pie-chart" class="icon-lg"></i>
             </div>
